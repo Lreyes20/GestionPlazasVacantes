@@ -1,0 +1,356 @@
+@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+@{
+    ViewData["Title"] = "Asignación de Plazas";
+    var colaboradores = ViewBag.Colaboradores as List<GestionPlazasVacantes.Models.Usuario>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-person-check"></i> Asignación de Plazas a Colaboradores
+            </h2>
+            <p class="text-muted">
+                Gestiona la asignación de plazas vacantes activas a los colaboradores de Recursos Humanos.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="bi bi-briefcase"></i> Total Plazas Activas
+                    </h5>
+                    <h2 class="mb-0">@Model.Count()</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-success">
+                        <i class="bi bi-check-circle"></i> Plazas Asignadas
+                    </h5>
+                    <h2 class="mb-0">@Model.Count(p => p.UsuarioAsignadoId != null)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">
+                        <i class="bi bi-exclamation-circle"></i> Sin Asignar
+                    </h5>
+                    <h2 class="mb-0">@Model.Count(p => p.UsuarioAsignadoId == null)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de plazas -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-table"></i> Plazas Activas</h5>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No hay plazas activas en este momento.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>N° Concurso</th>
+                                <th>Departamento</th>
+                                <th>Fecha Límite</th>
+                                <th>Postulantes</th>
+                                <th>Asignado a</th>
+                                <th style="width: 250px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var plaza in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@plaza.Titulo</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@plaza.TipoConcurso</span>
+                                    </td>
+                                    <td>@plaza.NumeroConcurso</td>
+                                    <td>@(plaza.Departamento ?? "N/A")</td>
+                                    <td>
+                                        @plaza.FechaLimite.ToString("dd/MM/yyyy")
+                                        @if (plaza.FechaLimite < DateTime.Now.AddDays(7))
+                                        {
+                                            <span class="badge bg-danger ms-1">Próxima</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            @plaza.Postulantes.Count
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (plaza.UsuarioAsignado != null)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-person-check"></i> @plaza.UsuarioAsignado.FullName
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-exclamation-triangle"></i> Sin asignar
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <form method="post" class="d-flex gap-2 align-items-center">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="plazaId" value="@plaza.Id" />
+                                            
+                                            <select name="usuarioId" class="form-select form-select-sm" style="width: 150px;">
+                                                <option value="">Seleccionar...</option>
+                                                @foreach (var colaborador in colaboradores)
+                                                {
+                                                    var isSelected = plaza.UsuarioAsignadoId == colaborador.Id;
+                                                    <option value="@colaborador.Id" selected="@isSelected">
+                                                        @colaborador.FullName
+                                                    </option>
+                                                }
+                                            </select>
+                                            
+                                            <button type="submit" 
+                                                    formaction="@Url.Action("AsignarPlaza")" 
+                                                    class="btn btn-sm btn-primary"
+                                                    title="Asignar">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                            
+                                            @if (plaza.UsuarioAsignadoId != null)
+                                            {
+                                                <button type="submit" 
+                                                        formaction="@Url.Action("RemoverAsignacion")" 
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Remover asignación"
+                                                        onclick="return confirm('¿Está seguro de remover la asignación de esta plaza?');">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            }
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info">
+                        <i class="bi bi-info-circle"></i> Información
+                    </h5>
+                    <ul class="mb-0">
+                        <li>Las plazas asignadas solo serán visibles para el colaborador asignado en el módulo de "Seguimiento de Postulantes".</li>
+                        <li>El Jefe de RRHH siempre puede ver todas las plazas activas.</li>
+                        <li>Solo se pueden asignar plazas que estén activas.</li>
+                        <li>Puedes cambiar la asignación de una plaza en cualquier momento.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ===== COLORES INSTITUCIONALES ===== */
+    :root {
+        --color-naranja: #FF8200;
+        --color-naranja-oscuro: #E66F00;
+        --color-gris-urbano: #435563;
+        --color-fondo: #F8F9FA;
+    }
+
+    /* ===== TÍTULOS ===== */
+    h2 {
+        color: var(--color-gris-urbano);
+        font-weight: 700;
+        border-left: 6px solid var(--color-naranja);
+        padding-left: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    h2 i {
+        color: var(--color-naranja);
+    }
+
+    /* ===== TARJETAS ===== */
+    .card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 0.8rem;
+    }
+    
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header.bg-primary {
+        background: linear-gradient(90deg, var(--color-naranja) 0%, var(--color-naranja-oscuro) 100%) !important;
+        border: none;
+        border-radius: 0.8rem 0.8rem 0 0 !important;
+    }
+
+    .card.border-primary {
+        border-top: 5px solid var(--color-naranja) !important;
+    }
+
+    .card.border-success {
+        border-top: 5px solid #28a745 !important;
+    }
+
+    .card.border-warning {
+        border-top: 5px solid #ffc107 !important;
+    }
+
+    .card.border-info {
+        border-top: 5px solid var(--color-naranja) !important;
+        background-color: #fff4eb;
+    }
+
+    .card-title.text-primary {
+        color: var(--color-naranja) !important;
+    }
+
+    .card-title.text-info {
+        color: var(--color-naranja) !important;
+    }
+
+    /* ===== TABLA ===== */
+    .table td {
+        vertical-align: middle;
+        color: var(--color-gris-urbano);
+    }
+
+    .table thead.table-dark {
+        background: linear-gradient(90deg, var(--color-gris-urbano) 0%, #5a6c7d 100%);
+        border: none;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #fff4eb;
+    }
+
+    /* ===== BOTONES ===== */
+    .btn-primary {
+        background: linear-gradient(90deg, var(--color-naranja) 0%, var(--color-naranja-oscuro) 100%);
+        border: none;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(90deg, var(--color-naranja-oscuro) 0%, #d66000 100%);
+        transform: scale(1.05);
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #b00020 0%, #d33a4f 100%);
+        border: none;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #8e0018 0%, #b00020 100%);
+        transform: scale(1.05);
+    }
+
+    /* ===== BADGES ===== */
+    .badge {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.4rem 0.7rem;
+        border-radius: 0.5rem;
+    }
+
+    .badge.bg-info {
+        background: linear-gradient(90deg, var(--color-naranja) 0%, var(--color-naranja-oscuro) 100%) !important;
+    }
+
+    /* ===== ALERTAS ===== */
+    .alert {
+        border-radius: 0.8rem;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-success {
+        background: #e7f8ee;
+        border-left: 6px solid #28a745;
+        color: #256c2e;
+    }
+
+    .alert-danger {
+        background: #ffe5e5;
+        border-left: 6px solid #dc3545;
+        color: #b00020;
+    }
+
+    .alert-info {
+        background: #fff4eb;
+        border-left: 6px solid var(--color-naranja);
+        color: var(--color-gris-urbano);
+    }
+
+    /* ===== SELECT ===== */
+    .form-select {
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        transition: all 0.25s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--color-naranja);
+        box-shadow: 0 0 0 0.2rem rgba(255, 130, 0, 0.25);
+    }
+</style>

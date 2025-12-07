@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Confirmación de Postulación";
+}
+
+<style>
+    /* ===== CONTENEDOR ===== */
+    .confirmacion-container {
+        max-width: 650px;
+        margin: 5rem auto;
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        text-align: center;
+        animation: fadeIn 0.6s ease-in-out;
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563; /* Gris urbano institucional */
+    }
+
+        /* ===== TÍTULO ===== */
+        .confirmacion-container h2 {
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+        }
+
+        /* ===== PÁRRAFO ===== */
+        .confirmacion-container p {
+            color: #435563;
+            font-size: 1.05rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.6;
+        }
+
+        /* ===== ÍCONO DE ÉXITO ===== */
+        .confirmacion-container .icono-exito {
+            font-size: 4rem;
+            color: #28a745; /* Verde éxito */
+            margin-bottom: 1rem;
+            animation: popIn 0.7s ease-in-out;
+        }
+
+        /* ===== BOTÓN VOLVER ===== */
+        .confirmacion-container a.btn-volver {
+            background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%); /* Naranja institucional */
+            color: white;
+            border: none;
+            border-radius: 0.6rem;
+            padding: 0.7rem 1.3rem;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+
+            .confirmacion-container a.btn-volver:hover {
+                background: linear-gradient(90deg, #E66F00 0%, #CC5F00 100%);
+                transform: scale(1.04);
+            }
+
+    /* ===== ANIMACIONES ===== */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes popIn {
+        0% {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+
+        80% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="confirmacion-container">
+    <div class="icono-exito">
+        <i class="bi bi-check-circle-fill"></i>
+    </div>
+
+    <h2>¡Tu postulación fue enviada con éxito!</h2>
+
+    <p>
+        Gracias por aplicar a una de nuestras plazas.
+        Nuestro equipo revisará tu información y se pondrá en contacto contigo si avanzas en el proceso. 🚀
+    </p>
+
+    <br /><br />
+
+    <a asp-controller="Postulacion" asp-action="Index" class="btn-volver">
+        <i class="bi bi-arrow-left-circle"></i> Volver al listado de plazas
+    </a>
+</div>

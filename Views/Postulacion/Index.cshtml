@@ -1,0 +1,217 @@
+﻿@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+
+@{
+    ViewData["Title"] = "Plazas Disponibles";
+    var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
+}
+
+<style>
+    /* ===== CONTENEDOR GENERAL ===== */
+    .container-fluid {
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563;
+    }
+
+    /* ===== TÍTULO PRINCIPAL ===== */
+    .titulo-pagina {
+        color: #435563;
+        text-align: left;
+        margin-top: 2rem;
+        font-weight: 800;
+        font-size: 1.8rem;
+        border-left: 6px solid #FF8200;
+        padding-left: 0.6rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* ===== GRID DE TARJETAS ===== */
+    .plaza-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+        justify-items: start;
+        margin: 2rem 0;
+    }
+
+    /* ===== TARJETA ===== */
+    .plaza-card {
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 1.6rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-top: 6px solid #FF8200;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.25s ease-in-out;
+        width: 100%;
+        max-width: 380px;
+        min-height: 400px;
+    }
+
+        .plaza-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .plaza-card h5 {
+            color: #435563;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+
+        .plaza-card .subtitulo {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.8rem;
+        }
+
+        .plaza-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: #4c4c4c;
+            line-height: 1.4;
+        }
+
+        .plaza-card strong {
+            color: #FF8200;
+        }
+
+    /* ===== BLOQUES DE INFO ===== */
+    .bloque {
+        background-color: #f8f9fa;
+        padding: 0.7rem 1rem;
+        border-radius: 0.6rem;
+        margin-top: 0.8rem;
+        font-size: 0.88rem;
+        border: 1px solid #e6e6e6;
+    }
+
+        .bloque strong {
+            display: block;
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+    /* ===== BOTÓN POSTULARME ===== */
+    .btn-postularme {
+        background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
+        border: none;
+        color: #fff;
+        border-radius: 0.6rem;
+        padding: 0.6rem 1rem;
+        font-weight: 700;
+        transition: all 0.25s ease;
+        text-align: center;
+        font-size: 0.95rem;
+        margin-top: 1rem;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+
+        .btn-postularme:hover {
+            transform: scale(1.04);
+            background: linear-gradient(90deg, #E66F00 0%, #CC5F00 100%);
+        }
+
+    /* ===== SIN PLAZAS ===== */
+    .no-plazas {
+        text-align: center;
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-top: 3rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (min-width: 1200px) {
+        .plaza-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media (max-width: 991px) {
+        .plaza-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .plaza-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .titulo-pagina {
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <h2 class="titulo-pagina">💼 Plazas Disponibles para Postulación</h2>
+
+    @if (!plazasVigentes.Any())
+    {
+        <p class="no-plazas">🚫 No hay plazas disponibles en este momento.</p>
+    }
+    else
+    {
+        <div class="plaza-grid">
+            @foreach (var plaza in plazasVigentes)
+            {
+                <div class="plaza-card">
+                    <div>
+                        <h5>@plaza.Titulo</h5>
+                        <p class="subtitulo">
+                            <i class="bi bi-briefcase"></i> @plaza.TipoConcurso Nº @plaza.NumeroConcurso
+                        </p>
+
+                        <p><strong>Departamento:</strong> @plaza.Departamento</p>
+                        <p><strong>Horario:</strong> @plaza.Horario</p>
+
+                        <div class="bloque">
+                            <strong>Requisitos:</strong>
+                            <p>@plaza.Requisitos</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(plaza.Observaciones))
+                        {
+                            <div class="bloque">
+                                <strong>Observaciones:</strong>
+                                <p>@plaza.Observaciones</p>
+                            </div>
+                        }
+
+                        <div class="bloque">
+                            <strong>Salario:</strong>
+                            <p>Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
+                            <p>Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
+                        </div>
+
+                        <div class="bloque">
+                            <strong>Fecha límite:</strong>
+                            <p>📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
+                            <p>🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
+                        </div>
+
+                        <p class="text-muted mt-2">
+                            <small>📢 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy") a las @plaza.FechaCreacion.ToString("hh:mm tt")</small>
+                        </p>
+                    </div>
+
+                    <div class="acciones">
+                        <a asp-controller="Postulacion" asp-action="Aplicar" asp-route-id="@plaza.Id"
+                           class="btn btn-postularme w-100">
+                            <i class="bi bi-pencil-square"></i> Postularme
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

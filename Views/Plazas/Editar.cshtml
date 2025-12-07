@@ -1,0 +1,277 @@
+﻿@model GestionPlazasVacantes.Models.PlazaVacante
+
+@{
+    ViewData["Title"] = "Editar Plaza Vacante";
+}
+
+<style>
+    /* ===== FORMULARIO INSTITUCIONAL ===== */
+    .formulario-plaza {
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+        max-width: 900px;
+        margin: 2rem auto;
+        border-top: 6px solid #FF8200; /* Naranja institucional */
+        animation: fadeIn 0.4s ease-in-out;
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563; /* Gris urbano */
+    }
+
+        .formulario-plaza h4 {
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .formulario-plaza p.subtitle {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+    label {
+        font-weight: 600;
+        color: #435563;
+        margin-top: 1rem;
+        font-size: 0.95rem;
+    }
+
+    input, textarea, select {
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        padding: 0.55rem 0.75rem;
+        width: 100%;
+        font-size: 0.95rem;
+        transition: border 0.2s ease;
+        color: #435563;
+    }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #FF8200;
+            box-shadow: 0 0 0 0.2rem rgba(255, 130, 0, 0.2);
+            outline: none;
+        }
+
+    .seccion {
+        background: #F8F9FA;
+        padding: 1.5rem;
+        border-radius: 0.8rem;
+        margin-bottom: 2rem;
+        border: 1px solid #dee2e6;
+    }
+
+        .seccion h5 {
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #FF8200;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+    .botones-formulario {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
+        border: none;
+        color: white;
+        border-radius: 0.5rem;
+        padding: 0.65rem 1.3rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        transition: transform 0.2s ease;
+    }
+
+        .btn-guardar:hover {
+            transform: scale(1.04);
+            background: linear-gradient(90deg, #E66F00 0%, #CC5F00 100%);
+        }
+
+    .btn-cancelar {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+        border-radius: 0.5rem;
+        padding: 0.65rem 1.3rem;
+        background: transparent;
+        transition: all 0.2s ease;
+        font-weight: 600;
+    }
+
+        .btn-cancelar:hover {
+            background: #6c757d;
+            color: white;
+        }
+
+    .encabezado-concurso {
+        background: #F3F4F6;
+        border: 1px solid #d0d7dc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+        .encabezado-concurso h5 {
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .encabezado-concurso p {
+            font-size: 1rem;
+            color: #435563;
+        }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+
+<div class="formulario-plaza">
+    <h4><i class="bi bi-pencil-square me-2"></i>Editar Plaza Vacante</h4>
+    <p class="subtitle">Actualice los campos necesarios y guarde los cambios.</p>
+
+    <form asp-action="Editar" method="post" class="needs-validation" novalidate>
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Encabezado del concurso -->
+        <div class="encabezado-concurso">
+            <div class="row g-3 align-items-center justify-content-center">
+                <div class="col-md-4">
+                    <label asp-for="TipoConcurso"></label>
+                    <select asp-for="TipoConcurso" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Interno">Interno</option>
+                        <option value="Externo">Externo</option>
+                    </select>
+                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="NumeroConcurso"></label>
+                    <input asp-for="NumeroConcurso" class="form-control" placeholder="Ej. 04-2025" />
+                    <span asp-validation-for="NumeroConcurso" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div id="previewConcurso" class="mt-4">
+                <h5 id="tituloConcurso">CONCURSO @Model.TipoConcurso?.ToUpper() N° @Model.NumeroConcurso</h5>
+                <p>Requiere contratar los servicios de:</p>
+            </div>
+        </div>
+
+        <!-- Sección 1 -->
+        <div class="seccion">
+            <h5>1️⃣ Información General</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="Titulo"></label>
+                    <input asp-for="Titulo" class="form-control" placeholder="Ejemplo: Ingeniero Civil" />
+                    <span asp-validation-for="Titulo" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Departamento"></label>
+                    <input asp-for="Departamento" class="form-control" placeholder="Ejemplo: Obras Públicas" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 2 -->
+        <div class="seccion">
+            <h5>2️⃣ Condiciones del Puesto</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="SalarioCompuesto"></label>
+                    <input asp-for="SalarioCompuesto" type="number" step="0.01" class="form-control" />
+                    <span asp-validation-for="SalarioCompuesto" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SalarioGlobal"></label>
+                    <input asp-for="SalarioGlobal" type="number" step="0.01" class="form-control" />
+                    <span asp-validation-for="SalarioGlobal" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="Horario"></label>
+                    <input asp-for="Horario" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FechaLimite"></label>
+                    <input asp-for="FechaLimite" type="datetime-local" class="form-control"
+                           value="@Model.FechaLimite.ToString("yyyy-MM-ddTHH:mm")" />
+                    <span asp-validation-for="FechaLimite" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3 -->
+        <div class="seccion">
+            <h5>3️⃣ Requisitos y Observaciones</h5>
+            <div class="row">
+                <div class="col-12">
+                    <label asp-for="Requisitos"></label>
+                    <textarea asp-for="Requisitos" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Requisitos" class="text-danger"></span>
+                </div>
+                <div class="col-12 mt-3">
+                    <label asp-for="Observaciones"></label>
+                    <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="botones-formulario mt-4">
+            <a asp-action="Index" class="btn-cancelar">
+                <i class="bi bi-arrow-left-circle"></i> Cancelar
+            </a>
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-save2"></i> Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Actualiza el encabezado dinámicamente
+        const tipo = document.getElementById('TipoConcurso');
+        const numero = document.getElementById('NumeroConcurso');
+        const titulo = document.getElementById('tituloConcurso');
+
+        function actualizarTitulo() {
+            const tipoTexto = tipo.value ? tipo.value.toUpperCase() : "—";
+            const numTexto = numero.value || "—";
+            titulo.textContent = `CONCURSO ${tipoTexto} N° ${numTexto}`;
+        }
+
+        tipo.addEventListener('change', actualizarTitulo);
+        numero.addEventListener('input', actualizarTitulo);
+    </script>
+}

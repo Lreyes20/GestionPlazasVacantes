@@ -1,0 +1,394 @@
+﻿@model GestionPlazasVacantes.Models.Postulante
+@{
+    ViewData["Title"] = "Detalle del Postulante";
+    var s = ViewBag.Seguimiento;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+<style>
+    body {
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563;
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        padding: 2.5rem 2rem;
+        border-radius: 1rem;
+    }
+
+    h3 {
+        color: #435563;
+        font-weight: 800;
+        border-left: 6px solid #FF8200;
+        padding-left: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        h3 i {
+            color: #FF8200;
+            font-size: 1.4rem;
+        }
+
+    .card {
+        border: none;
+        border-top: 6px solid #FF8200;
+        border-radius: 1rem;
+        box-shadow: 0 3px 18px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        background: #fff;
+        transition: all 0.25s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+
+    .btn-outline-primary {
+        border-color: #FF8200;
+        color: #FF8200;
+        font-weight: 600;
+        border-radius: 0.6rem;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-primary:hover {
+            background: #FF8200;
+            color: #fff;
+            transform: scale(1.03);
+        }
+
+    .btn-outline-secondary {
+        border-color: #435563;
+        color: #435563;
+        font-weight: 600;
+        border-radius: 0.6rem;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #FF8200;
+            color: #fff;
+            border-color: #FF8200;
+        }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #FF8200 0%, #ff9a3c 100%);
+        border: none;
+        border-radius: 0.6rem;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.03);
+            background: linear-gradient(90deg, #e56f00 0%, #ff8200 100%);
+        }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #b00020 0%, #d33a4f 100%);
+        border: none;
+        border-radius: 0.6rem;
+        font-weight: 600;
+    }
+
+    .alert-success {
+        background: #e7f8ee;
+        border-left: 6px solid #28a745;
+        color: #256c2e;
+        font-weight: 600;
+    }
+
+    .alert-danger {
+        background: #ffe6e6;
+        border-left: 6px solid #b00020;
+        color: #b00020;
+        font-weight: 600;
+    }
+
+    label {
+        color: #435563;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .img-thumbnail {
+        max-height: 250px;
+        border-radius: 0.8rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .documentos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.2rem;
+    }
+</style>
+
+<div class="container">
+    <!-- 🔹 DATOS DEL POSTULANTE -->
+    <div class="card">
+        <div class="card-body">
+            <h3><i class="bi bi-person-badge"></i> @Model.NombreCompleto</h3>
+            <p class="text-muted mb-1"><i class="bi bi-briefcase"></i> @Model.PlazaVacante.Titulo</p>
+            <p class="text-muted"><i class="bi bi-building"></i> @Model.PlazaVacante.Departamento</p>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><i class="bi bi-envelope"></i> <strong>Correo:</strong> @(Model.Correo ?? "No registrado")</p>
+                    <p><i class="bi bi-telephone"></i> <strong>Teléfono:</strong> @(Model.Telefono ?? "No registrado")</p>
+                    <p><i class="bi bi-person-vcard"></i> <strong>Cédula:</strong> @Model.Cedula</p>
+                </div>
+                <div class="col-md-6">
+                    <p><i class="bi bi-geo-alt"></i> <strong>Dirección:</strong> @(Model.Direccion ?? "No registrada")</p>
+                    <p><i class="bi bi-calendar-event"></i> <strong>Actualizado:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+
+            <!-- 📎 Documentos Adjuntos -->
+            <hr class="my-4" />
+            <h5 class="fw-bold text-secondary"><i class="bi bi-folder2-open"></i> Documentos Adjuntos</h5>
+            <div class="documentos-grid mt-3">
+
+                <!-- CV -->
+                <div>
+                    <label>📄 Currículum Vitae</label><br />
+                    @if (!string.IsNullOrEmpty(Model.CurriculumPath))
+                    {
+                        <a href="@Model.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm mt-1">
+                            <i class="bi bi-file-earmark-pdf"></i> Ver CV
+                        </a>
+                    }
+                    else
+                    {
+
+                        <span class="text-muted fst-italic">No adjuntado</span>
+                    }
+                </div>
+
+                <!-- Foto del Título -->
+                <div>
+                    <label>🎓 Foto del Título</label><br />
+                    @if (!string.IsNullOrEmpty(Model.FotoTituloPath))
+                    {
+                        if (Model.FotoTituloPath.EndsWith(".pdf"))
+                        {
+                            <a href="@Model.FotoTituloPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                            </a>
+                        }
+                        else
+                        {
+                            <img src="@Model.FotoTituloPath" alt="Título" class="img-thumbnail mt-1" />
+                        }
+                    }
+                    else
+                    {
+
+                        <span class="text-muted fst-italic">No adjuntado</span>
+                    }
+                </div>
+
+                <!-- Colegiatura -->
+                <div>
+                    <label>🏛️ Colegiatura</label><br />
+                    @if (!string.IsNullOrEmpty(Model.FotoColegiaturaPath))
+                    {
+                        if (Model.FotoColegiaturaPath.EndsWith(".pdf"))
+                        {
+                            <a href="@Model.FotoColegiaturaPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                            </a>
+                        }
+                        else
+                        {
+                            <img src="@Model.FotoColegiaturaPath" alt="Colegiatura" class="img-thumbnail mt-1" />
+                        }
+                    }
+                    else
+                    {
+
+                        <span class="text-muted fst-italic">No adjuntada</span>
+                    }
+                </div>
+
+                <!-- Licencia -->
+                <div>
+                    <label>🚗 Licencia</label><br />
+                    @if (!string.IsNullOrEmpty(Model.FotoLicenciaPath))
+                    {
+                        if (Model.FotoLicenciaPath.EndsWith(".pdf"))
+                        {
+                            <a href="@Model.FotoLicenciaPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                            </a>
+                        }
+                        else
+                        {
+                            <img src="@Model.FotoLicenciaPath" alt="Licencia" class="img-thumbnail mt-1" />
+                        }
+                    }
+                    else
+                    {
+
+                        <span class="text-muted fst-italic">No adjuntada</span>
+                    }
+                </div>
+
+                <!-- Permiso de Armas -->
+                <div>
+                    <label>🔫 Permiso de Armas</label><br />
+                    @if (!string.IsNullOrEmpty(Model.FotoPermisoArmasPath))
+                    {
+                        if (Model.FotoPermisoArmasPath.EndsWith(".pdf"))
+                        {
+                            <a href="@Model.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                            </a>
+                        }
+                        else
+                        {
+                            <img src="@Model.FotoPermisoArmasPath" alt="Permiso" class="img-thumbnail mt-1" />
+                        }
+                    }
+                    else
+                    {
+
+                        <span class="text-muted fst-italic">No adjuntado</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 SEGUIMIENTO -->
+    <div class="card">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pb-0">
+            <h5 style="color:#435563; font-weight:700;">
+                <i class="bi bi-check2-square" style="color:#FF8200;"></i> Seguimiento del Proceso
+            </h5>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#descartarModal">
+                <i class="bi bi-person-x"></i> Descartar
+            </button>
+        </div>
+
+        <div class="card-body mt-2">
+            <form asp-action="Actualizar" asp-controller="Seguimiento" method="post" class="row g-3">
+                <input type="hidden" name="postulanteId" value="@Model.Id" />
+
+                <div class="col-md-6">
+                    <label>Etapa actual</label>
+                    <select name="etapa" class="form-select">
+                        <option value="Revisión documental" selected="@(s.EtapaActual == "Revisión documental")">Revisión documental</option>
+                        <option value="Pruebas técnicas" selected="@(s.EtapaActual == "Pruebas técnicas")">Pruebas técnicas</option>
+                        <option value="Pruebas psicométricas" selected="@(s.EtapaActual == "Pruebas psicométricas")">Pruebas psicométricas</option>
+                        <option value="Entrevista presencial" selected="@(s.EtapaActual == "Entrevista presencial")">Entrevista presencial</option>
+                        <option value="Final" selected="@(s.EtapaActual == "Final")">Final</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Cumple requisitos</label>
+                    <select name="cumple" class="form-select">
+                        <option value="true" selected="@s.CumpleRequisitos">Sí</option>
+                        <option value="false" selected="@(!s.CumpleRequisitos)">No</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Nota prueba técnica</label>
+                    <input type="number" name="notaTec" value="@s.NotaPruebaTecnica" step="0.1" min="0" max="100" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label>Nota prueba psicométrica</label>
+                    <input type="number" name="notaPsi" value="@s.NotaPsicometrica" step="0.1" min="0" max="100" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label>Observaciones</label>
+                    <textarea name="obs" class="form-control" rows="3">@s.Observaciones</textarea>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                    <a href="@Url.Action("PorPlaza", "Seguimiento", new { plazaId = Model.PlazaVacanteId })" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save"></i> Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (s.Aprobado)
+    {
+        <div class="alert alert-success mt-4 text-center shadow-sm rounded-3">
+            <i class="bi bi-award"></i> Postulante seleccionado como <strong>candidato final</strong> 🎯
+        </div>
+    }
+    else if (!s.CumpleRequisitos)
+    {
+        <div class="alert alert-danger mt-4 text-center shadow-sm rounded-3">
+            <i class="bi bi-x-circle"></i> Postulante <strong>descartado</strong> del proceso ❌
+        </div>
+    }
+</div>
+
+<!-- 🔹 MODAL DESCARTE -->
+<div class="modal fade" id="descartarModal" tabindex="-1" aria-labelledby="descartarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Descartar" asp-controller="Seguimiento" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="descartarModalLabel">
+                        <i class="bi bi-exclamation-triangle"></i> Descartar Postulante
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="postulanteId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label>Motivo del descarte</label>
+                        <textarea name="motivo"
+                                  class="form-control border-danger-subtle"
+                                  rows="3"
+                                  required
+                                  placeholder="Explique brevemente por qué se descarta al postulante..."></textarea>
+                    </div>
+                    <p class="text-muted small">
+                        Este postulante será removido del seguimiento activo y no aparecerá más en las plazas abiertas.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check-circle"></i> Confirmar descarte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 🔹 SCRIPT CONFIRMACIONES -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".btn-eliminar-plaza").forEach(btn => {
+            btn.addEventListener("click", e => {
+                if (!confirm("⚠️ ¿Seguro que deseas eliminar esta plaza? Esta acción no se puede deshacer.")) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>

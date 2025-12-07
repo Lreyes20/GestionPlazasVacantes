@@ -1,0 +1,276 @@
+﻿@model IEnumerable<GestionPlazasVacantes.Models.Postulante>
+
+@{
+    ViewData["Title"] = "Postulantes de la plaza";
+    var plaza = ViewBag.Plaza as GestionPlazasVacantes.Models.PlazaVacante;
+    var seguimientos = ViewBag.Seguimientos as List<GestionPlazasVacantes.Models.SeguimientoPostulante>;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+<style>
+    /* ===== GENERAL ===== */
+    body {
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563;
+    }
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 2.5rem 2rem;
+        border-radius: 1rem;
+    }
+
+    /* ===== TÍTULOS ===== */
+    h2 {
+        color: #435563;
+        font-weight: 800;
+        border-left: 6px solid #FF8200;
+        padding-left: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.8rem;
+    }
+
+        h2 i {
+            color: #FF8200;
+            font-size: 1.6rem;
+        }
+
+    .badge {
+        font-weight: 600;
+        border-radius: 999px;
+    }
+
+        .badge.bg-primary-subtle {
+            background: #fff4eb !important;
+            color: #FF8200 !important;
+        }
+
+    /* ===== BOTÓN FINALIZAR ===== */
+    .btn-success {
+        background: linear-gradient(90deg, #28a745 0%, #4cb64f 100%);
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        padding: 0.6rem 1.2rem;
+        transition: all 0.25s ease;
+    }
+
+        .btn-success:hover {
+            transform: scale(1.03);
+            background: linear-gradient(90deg, #1f8f39 0%, #28a745 100%);
+        }
+
+    /* ===== ALERTA ===== */
+    .alert-warning {
+        background: #fff4eb;
+        border-left: 6px solid #FF8200;
+        color: #435563;
+        font-weight: 600;
+    }
+
+    /* ===== TABLA ===== */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #ffffff;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+        .table thead {
+            background: #FF8200;
+            color: #fff;
+        }
+
+        .table th {
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 0.8rem;
+        }
+
+        .table td {
+            font-size: 0.9rem;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        .table tbody tr:hover {
+            background: #fff9f3;
+        }
+
+    /* ===== BADGES EN TABLA ===== */
+    .badge.bg-info {
+        background: #e3f2fd;
+        color: #0d6efd;
+    }
+
+    .badge.bg-secondary {
+        background: #f0f0f0;
+        color: #435563;
+    }
+
+    .badge.bg-success {
+        background: #e7f8ee;
+        color: #28a745;
+        border: 1px solid #c3e6cb;
+    }
+
+    .badge.bg-danger {
+        background: #ffe6e6;
+        color: #b00020;
+        border: 1px solid #ffb3b3;
+    }
+
+    .badge.bg-warning {
+        background: #fff4eb;
+        color: #FF8200;
+        border: 1px solid #ffd4a5;
+    }
+
+    /* ===== BOTÓN REVISAR ===== */
+    .btn-outline-primary {
+        border-color: #FF8200;
+        color: #FF8200;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-primary:hover {
+            background: #FF8200;
+            color: #fff;
+        }
+
+    /* ===== BOTÓN VOLVER ===== */
+    .btn-outline-secondary {
+        border-color: #435563;
+        color: #435563;
+        font-weight: 600;
+        border-radius: 0.6rem;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #FF8200;
+            border-color: #FF8200;
+            color: #fff;
+        }
+</style>
+
+<div class="container">
+    <!-- 🔹 TÍTULO -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+        <div>
+            <h2><i class="bi bi-people-fill"></i> Postulantes — @plaza?.Titulo</h2>
+            <span class="ms-1 badge bg-primary-subtle">
+                <i class="bi bi-building"></i> Depto: @plaza?.Departamento
+            </span>
+        </div>
+
+        <!-- Botón Finalizar Proceso -->
+        <form asp-action="FinalizarPlaza" asp-controller="Seguimiento" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="plazaId" value="@ViewBag.Plaza.Id" />
+            <button type="submit" class="btn btn-success shadow-sm">
+                <i class="bi bi-check-circle"></i> Finalizar proceso
+            </button>
+        </form>
+
+    </div>
+
+    <!-- 🔹 TABLA DE POSTULANTES -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning shadow-sm border-0 rounded-3">
+            <i class="bi bi-info-circle"></i> No hay postulantes registrados para esta plaza.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Nombre completo</th>
+                        <th>Cédula</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Etapa actual</th>
+                        <th>Notas</th>
+                        <th>Estado</th>
+                        <th>Actualizado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        var s = seguimientos?.FirstOrDefault(x => x.PostulanteId == p.Id);
+
+                        <tr>
+                            <td class="fw-semibold">@p.NombreCompleto</td>
+                            <td>@p.Cedula</td>
+                            <td>@(p.Correo ?? "No registrado")</td>
+                            <td>@(p.Telefono ?? "No registrado")</td>
+                            <td>@((s?.EtapaActual) ?? "Revisión documental")</td>
+
+                            <td>
+                                <div class="d-flex flex-column align-items-center">
+                                    <span class="badge bg-info mb-1">
+                                        <i class="bi bi-gear"></i> Técnica: @(s?.NotaPruebaTecnica?.ToString("0.0") ?? "-")
+                                    </span>
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-brain"></i> Psico: @(s?.NotaPsicometrica?.ToString("0.0") ?? "-")
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (s?.Aprobado == true)
+                                {
+                                    <span class="badge bg-success px-2 py-1">
+                                        <i class="bi bi-award"></i> Aprobado
+                                    </span>
+                                }
+                                else if (s?.CumpleRequisitos == false)
+                                {
+                                    <span class="badge bg-danger px-2 py-1">
+                                        <i class="bi bi-x-circle"></i> Descartado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning px-2 py-1">
+                                        <i class="bi bi-hourglass-split"></i> En proceso
+                                    </span>
+                                }
+                            </td>
+
+                            <td>@p.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            <td>
+                                <a asp-controller="Seguimiento" asp-action="Detalle" asp-route-id="@p.Id"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> Revisar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- 🔹 BOTÓN VOLVER -->
+    <div class="mt-4 text-end">
+        <a asp-controller="Seguimiento" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver al Seguimiento
+        </a>
+    </div>
+</div>

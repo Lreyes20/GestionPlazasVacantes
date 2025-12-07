@@ -1,0 +1,210 @@
+﻿@model GestionPlazasVacantes.Models.PlazaVacante
+@{
+    ViewData["Title"] = "Detalle de Plaza";
+    var postulantes = ViewBag.Postulantes as List<GestionPlazasVacantes.Models.Postulante> ?? new();
+    bool cerrada = !(Model.Estado == "Abierta" && Model.FechaLimite > DateTime.Now);
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+<style>
+    /* ===== ESTILO GENERAL ===== */
+    .wrap {
+        padding: 2.5rem 2rem;
+        background: #f8f9fa;
+        min-height: 100vh;
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563;
+    }
+
+    /* ===== TÍTULO ===== */
+    .title {
+        color: #435563;
+        font-weight: 800;
+        font-size: 1.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        border-left: 6px solid #FF8200;
+        padding-left: 0.6rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .title i {
+            color: #FF8200;
+        }
+
+    /* ===== CARD GENERAL ===== */
+    .card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-top: 6px solid #FF8200;
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+        transition: 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+    /* ===== PASTILLA / ETIQUETA ===== */
+    .pill {
+        display: inline-flex;
+        gap: 0.4rem;
+        align-items: center;
+        background: #fff4eb;
+        color: #FF8200;
+        border-radius: 999px;
+        padding: 0.3rem 0.75rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .badge-closed {
+        background: #ffe6e6;
+        color: #b00020;
+        border: 1px solid #ffb3b3;
+    }
+
+    /* ===== BOTÓN VOLVER ===== */
+    .btn-outline-secondary {
+        border-color: #435563;
+        color: #435563;
+        border-radius: 0.6rem;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #FF8200;
+            color: #fff;
+            border-color: #FF8200;
+        }
+
+    /* ===== TABLA ===== */
+    .table thead th {
+        color: #435563;
+        font-weight: 700;
+        border-bottom: 2px solid #FF8200;
+    }
+
+    .table tbody tr:hover {
+        background: #fff9f3;
+    }
+
+    /* ===== SEPARADORES ===== */
+    hr {
+        border: none;
+        border-top: 2px dashed #e9ecef;
+        margin: 1.5rem 0;
+    }
+
+    strong {
+        color: #435563;
+    }
+
+    /* ===== TEXTO ===== */
+    p {
+        font-size: 0.95rem;
+        color: #4c4c4c;
+        line-height: 1.6;
+    }
+
+    /* ===== ICONOS ===== */
+    .bi-check-circle {
+        color: #28a745;
+    }
+
+    .bi-x-octagon {
+        color: #b00020;
+    }
+</style>
+
+<div class="wrap container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="title"><i class="bi bi-briefcase"></i> @Model.Titulo</h2>
+        <a class="btn btn-outline-secondary" asp-action="Index">
+            <i class="bi bi-arrow-left"></i> Volver al dashboard
+        </a>
+    </div>
+
+    <!-- Información de la plaza -->
+    <div class="card mb-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="pill mb-2">
+                    <i class="bi bi-building"></i> @Model.Departamento
+                </div><br />
+                <div><strong>Tipo:</strong> @Model.TipoConcurso Nº @Model.NumeroConcurso</div>
+                <div><strong>Horario:</strong> @Model.Horario</div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div><strong>Fecha límite:</strong> @Model.FechaLimite.ToString("dd/MM/yyyy") — @Model.FechaLimite.ToString("hh:mm tt")</div>
+                <div class="mt-2">
+                    <span class="pill @(cerrada ? "badge-closed" : "")">
+                        <i class="bi @(cerrada ? "bi-x-octagon" : "bi-check-circle")"></i>
+                        @(cerrada ? "Cerrada" : "Abierta")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="mb-2"><strong>Requisitos</strong></div>
+        <p>@Model.Requisitos</p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Observaciones))
+        {
+            <div class="mb-2"><strong>Observaciones</strong></div>
+            <p>@Model.Observaciones</p>
+        }
+    </div>
+
+    <!-- Listado de postulantes -->
+    <div class="card">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="m-0" style="color:#435563;">
+                <i class="bi bi-people"></i> Postulantes (@postulantes.Count)
+            </h5>
+        </div>
+
+        @if (postulantes.Count == 0)
+        {
+            <p class="text-muted fst-italic">Aún no hay postulantes para esta plaza.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Actualización</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in postulantes)
+                        {
+                            <tr>
+                                <td>@p.NombreCompleto</td>
+                                <td>@p.Cedula</td>
+                                <td>@p.Correo</td>
+                                <td>@p.Telefono</td>
+                                <td>@p.EstadoProceso</td>
+                                <td>@p.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

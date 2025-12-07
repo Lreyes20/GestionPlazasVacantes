@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Gestión de Plazas Vacantes</title>
+
+    <!-- Bootstrap & Fuentes institucionales -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GestionPlazasVacantes.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Biryani:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+</head>
+
+<body>
+    <!-- ===== SIDEBAR ===== -->
+    <nav class="sidebar" id="sidebar">
+        <div class="brand">
+            <i class="bi bi-briefcase-fill me-2"></i>
+            <span class="brand-text">Plazas Vacantes</span>
+        </div>
+
+        <div class="nav flex-column mt-3">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+               asp-controller="Home" asp-action="Index">
+                <i class="bi bi-house-door-fill"></i> <span>Inicio</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+               asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Plazas" &&
+                                              ViewContext.RouteData.Values["action"]?.ToString() == "Crear" ? "active" : "")"
+               asp-controller="Plazas" asp-action="Crear">
+                <i class="bi bi-file-earmark-plus"></i> <span>Crear Plaza Vacante</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Plazas" &&
+                                              ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+               asp-controller="Plazas" asp-action="Index">
+                <i class="bi bi-briefcase"></i> <span>Listado de Plazas</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Seguimiento" ? "active" : "")"
+               asp-controller="Seguimiento" asp-action="Index">
+                <i class="bi bi-people-fill"></i> <span>Seguimiento de Postulantes</span>
+            </a>
+
+            @* Enlace de Asignaciones - Solo visible para Jefe de RRHH *@
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                var username = User.Identity.Name;
+                var context = Context.RequestServices.GetRequiredService<GestionPlazasVacantes.Data.AppDbContext>();
+                var usuario = context.Usuarios.FirstOrDefault(u => u.Username == username);
+                
+                if (usuario?.Rol == GestionPlazasVacantes.Models.RolUsuario.Jefe)
+                {
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Asignaciones" ? "active" : "")"
+                       asp-controller="Asignaciones" asp-action="Index">
+                        <i class="bi bi-person-check"></i> <span>Asignaciones</span>
+                    </a>
+                }
+            }
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reportes" ? "active" : "")"
+               asp-controller="Reportes" asp-action="Index">
+                <i class="bi bi-file-earmark-bar-graph"></i> <span>Reportes</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" ? "active" : "")"
+               asp-controller="Account" asp-action="Logout">
+                <i class="bi bi-box-arrow-right"></i> <span>Salir</span>
+            </a>
+
+            <hr class="mx-3" />
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Postulacion" ? "active" : "")"
+               asp-controller="Postulacion" asp-action="Index">
+                <i class="bi bi-megaphone"></i> <span>Plazas Públicas</span>
+            </a>
+
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "PlazasInternas" ? "active" : "")"
+               asp-controller="PlazasInternas" asp-action="Index">
+                <i class="bi bi-building-lock"></i> <span>Plazas Internas</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ===== CONTENIDO ===== -->
+    <div class="content flex-grow-1">
+        <div class="navbar-top shadow-sm d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <img src="~/images/curridabat-logo.jpg" alt="Curridabat Ciudad Dulce" class="logo-curridabat">
+                <span class="fs-6 fw-semibold">Municipalidad de Curridabat</span>
+            </div>
+
+            <!-- 👇 Nuevo bloque de saludo -->
+            <div class="user-info">
+                <i class="bi bi-person-circle"></i>
+                <div>
+                    <small>Bienvenido/a</small>
+                    <span>@User.Identity?.Name</span>
+                </div>
+            </div>
+        </div>
+
+        <main class="mt-4">
+            @RenderBody()
+        </main>
+
+        <footer class="border-top mt-4">
+            © @DateTime.Now.Year - Municipalidad de Curridabat
+        </footer>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

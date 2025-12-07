@@ -1,0 +1,229 @@
+﻿@model GestionPlazasVacantes.Models.Postulante
+@{
+    ViewData["Title"] = "Formulario de Postulación";
+    var plaza = ViewBag.Plaza as GestionPlazasVacantes.Models.PlazaVacante;
+}
+
+<style>
+    /* ===== CONTENEDOR PRINCIPAL ===== */
+    .formulario-postulacion {
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+        max-width: 900px;
+        margin: 2rem auto;
+        border-top: 6px solid #FF8200;
+        animation: fadeIn 0.4s ease-in-out;
+        font-family: 'Biryani', Verdana, sans-serif;
+        color: #435563;
+    }
+
+        .formulario-postulacion h4 {
+            color: #435563;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .formulario-postulacion p.subtitle {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+    /* ===== ETIQUETAS ===== */
+    label {
+        font-weight: 600;
+        color: #435563;
+        margin-top: 1rem;
+        font-size: 0.95rem;
+    }
+
+    /* ===== CAMPOS ===== */
+    input, textarea, select {
+        border: 1px solid #cfd8dc;
+        border-radius: 0.5rem;
+        padding: 0.6rem 0.75rem;
+        width: 100%;
+        font-size: 1rem;
+        transition: border 0.2s ease;
+        color: #435563;
+    }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #FF8200;
+            box-shadow: 0 0 0 0.15rem rgba(255, 130, 0, 0.25);
+            outline: none;
+        }
+
+    /* ===== SECCIONES ===== */
+    .seccion {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.8rem;
+        margin-bottom: 2rem;
+        border: 1px solid #dee2e6;
+    }
+
+        .seccion h5 {
+            color: #FF8200;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #FF8200;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            font-size: 1.05rem;
+        }
+
+    /* ===== BOTONES ===== */
+    .botones-formulario {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-guardar, .btn-pdf {
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.7rem 1.3rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
+        color: white;
+        letter-spacing: 0.3px;
+    }
+
+        .btn-guardar:hover {
+            transform: scale(1.04);
+            background: linear-gradient(90deg, #E66F00 0%, #CC5F00 100%);
+        }
+
+    .btn-pdf {
+        background: linear-gradient(90deg, #218838 0%, #28a745 100%);
+        color: white;
+    }
+
+        .btn-pdf:hover {
+            transform: scale(1.04);
+            background: linear-gradient(90deg, #1c7430 0%, #218838 100%);
+        }
+
+    /* ===== DECLARACIÓN BAJO JURAMENTO ===== */
+    .declaracion {
+        background-color: #fff5eb;
+        border: 1px solid #FFD8A8;
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        color: #435563;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+        .declaracion input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+    /* ===== ANIMACIÓN ===== */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="formulario-postulacion">
+    <h4><i class="bi bi-person-badge me-2"></i>Formulario de Postulación</h4>
+    <p class="subtitle">Postulación para la plaza: <strong>@plaza?.Titulo</strong></p>
+
+    <form asp-action="Aplicar" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="PlazaVacanteId" />
+
+        <!-- 🧾 DATOS PERSONALES -->
+        <div class="seccion">
+            <h5>1️⃣ Datos Personales</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="NombreCompleto"></label>
+                    <input asp-for="NombreCompleto" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Cedula"></label>
+                    <input asp-for="Cedula" class="form-control" required />
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <label asp-for="Correo"></label>
+                    <input asp-for="Correo" type="email" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Telefono"></label>
+                    <input asp-for="Telefono" class="form-control" />
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <label asp-for="Direccion"></label>
+                    <input asp-for="Direccion" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <!-- 💼 SECCIONES DEL CV -->
+        <div class="seccion"><h5>2️⃣ Perfil Profesional</h5><textarea asp-for="PerfilProfesional" class="form-control" rows="3"></textarea></div>
+        <div class="seccion"><h5>3️⃣ Experiencia Laboral</h5><textarea asp-for="ExperienciaLaboral" class="form-control" rows="4"></textarea></div>
+        <div class="seccion"><h5>4️⃣ Formación Académica</h5><textarea asp-for="FormacionAcademica" class="form-control" rows="3"></textarea></div>
+        <div class="seccion"><h5>5️⃣ Habilidades</h5><textarea asp-for="Habilidades" class="form-control" rows="3"></textarea></div>
+        <div class="seccion"><h5>6️⃣ Idiomas</h5><textarea asp-for="Idiomas" class="form-control" rows="2"></textarea></div>
+        <div class="seccion"><h5>7️⃣ Formación Complementaria</h5><textarea asp-for="FormacionComplementaria" class="form-control" rows="3"></textarea></div>
+        <div class="seccion"><h5>8️⃣ Otros Datos</h5><textarea asp-for="OtrosDatos" class="form-control" rows="2"></textarea></div>
+
+        <!-- 📎 ADJUNTAR CV -->
+        <div class="seccion">
+            <h5>📎 Adjuntar CV (opcional)</h5>
+            <input type="file" name="archivoCV" accept=".pdf,.doc,.docx" class="form-control" />
+        </div>
+
+        <!-- 🧾 DECLARACIÓN BAJO JURAMENTO -->
+        <div class="seccion declaracion mt-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-shield-check"></i> Declaración bajo juramento</h6>
+            <div class="form-check">
+                <input class="form-check-input me-2" type="checkbox" id="declaracionJurada" required />
+                <label class="form-check-label" for="declaracionJurada">
+                    Declaro bajo juramento que la información brindada en este formulario y los documentos adjuntos es veraz,
+                    completa y corresponde a mi persona. Entiendo que cualquier falsedad podrá ser motivo de
+                    descalificación o anulación de mi postulación.
+                </label>
+            </div>
+        </div>
+
+        <!-- 🔘 BOTONES -->
+        <div class="botones-formulario mt-4">
+            <button type="submit" class="btn-pdf" formaction="/Postulacion/GenerarCV">
+                <i class="bi bi-file-earmark-pdf"></i> Generar CV en PDF
+            </button>
+
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-send-check"></i> Enviar Postulación
+            </button>
+        </div>
+    </form>
+</div>

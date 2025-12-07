@@ -1,0 +1,88 @@
+﻿@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+
+
+@{
+    ViewData["Title"] = "Listado de Plazas Vacantes";
+    var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
+}
+
+
+
+<div class="container-fluid px-4">
+    <h2 class="titulo-pagina">📋 Listado de Plazas Vacantes Vigentes</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="text-end my-3">
+        <a asp-action="Crear" class="btn btn-nueva-plaza">
+            <i class="bi bi-plus-circle"></i> Nueva Plaza
+        </a>
+    </div>
+
+    @if (!plazasVigentes.Any())
+    {
+        <p class="no-plazas">🚫 No hay plazas disponibles en este momento.</p>
+    }
+    else
+    {
+        <div class="plaza-grid">
+            @foreach (var plaza in plazasVigentes)
+            {
+                <div class="plaza-card">
+                    <div>
+                        <h5>@plaza.Titulo</h5>
+                        <p class="subtitulo">
+                            <i class="bi bi-briefcase"></i> @plaza.TipoConcurso Nº @plaza.NumeroConcurso
+                        </p>
+
+                        <p><strong>Depto.:</strong> @plaza.Departamento</p>
+                        <p><strong>Horario:</strong> @plaza.Horario</p>
+
+                        <div class="bloque">
+                            <strong>Requisitos:</strong>
+                            <p>@plaza.Requisitos</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(plaza.Observaciones))
+                        {
+                            <div class="bloque">
+                                <strong>Observaciones:</strong>
+                                <p>@plaza.Observaciones</p>
+                            </div>
+                        }
+
+                        <div class="bloque">
+                            <strong>Salario:</strong>
+                            <p>Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
+                            <p>Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
+                        </div>
+
+                        <div class="bloque">
+                            <strong>Fecha y hora límite:</strong>
+                            <p>📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
+                            <p>🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
+                        </div>
+
+                        <p class="text-muted mt-2">
+                            <small>📅 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy") a las @plaza.FechaCreacion.ToString("hh:mm tt")</small>
+                        </p>
+                    </div>
+
+                    <div class="acciones">
+                        <a asp-action="Editar" asp-route-id="@plaza.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <form asp-action="Eliminar" asp-route-id="@plaza.Id" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta plaza?')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

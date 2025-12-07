@@ -1,0 +1,185 @@
+@model GestionPlazasVacantes.Controllers.ReporteViewModel
+
+@{
+    ViewData["Title"] = "Reportes de Plazas";
+}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3 report-header">
+                <i class="bi bi-file-earmark-bar-graph text-orange"></i> Reportes y Estadísticas
+            </h2>
+            <p class="text-muted">
+                Busca una plaza por su número de concurso para ver las estadísticas del proceso de selección.
+            </p>
+        </div>
+    </div>
+
+    <!-- 🔍 Buscador -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="numeroConcurso" class="form-label fw-bold">Número de Concurso</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="numeroConcurso" name="numeroConcurso" 
+                               placeholder="Ej: INT-2024-001" value="@Context.Request.Query["numeroConcurso"]" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 btn-orange">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 📋 Listado de todos los concursos -->
+    @if (Model != null && Model.PlazasDisponibles.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Historial de Concursos</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Concurso</th>
+                                <th>Título</th>
+                                <th>Departamento</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model.PlazasDisponibles)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@p.NumeroConcurso</td>
+                                    <td>@p.Titulo</td>
+                                    <td>@p.Departamento</td>
+                                    <td>
+                                        @if (p.EstadoFinal == "Finalizada")
+                                        {
+                                            <span class="badge bg-secondary">Finalizada</span>
+                                        }
+                                        else if (p.Activa)
+                                        {
+                                            <span class="badge bg-success">Activa</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">@p.EstadoFinal</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Index", new { numeroConcurso = p.NumeroConcurso })" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Ver Reporte
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            <pre style="white-space: pre-wrap;">@ViewBag.Error</pre>
+        </div>
+    }
+
+    @if (Model != null)
+    {
+    @if (Model.Plaza != null)
+    {
+        <!-- 📊 Resultados -->
+        <div class="card shadow-sm border-top-0 border-start-0 border-end-0 border-bottom-0 card-top-border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 text-dark">
+                    Resultados para: <strong>@Model.Plaza.NumeroConcurso</strong> - @Model.Plaza.Titulo
+                </h5>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("ExportarPDF", new { plazaId = Model.Plaza.Id })" class="btn btn-danger btn-sm">
+                        <i class="bi bi-file-pdf"></i> Exportar PDF
+                    </a>
+                    <a href="@Url.Action("ExportarExcel", new { plazaId = Model.Plaza.Id })" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-excel"></i> Exportar Excel
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-4 text-center">
+                    <!-- Tarjetas de Estadísticas -->
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-primary fw-bold">@Model.TotalParticipantes</h3>
+                            <p class="mb-0 text-muted small">Total Participantes</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-success fw-bold">@Model.DocumentacionCompleta</h3>
+                            <p class="mb-0 text-muted small">Documentación Completa</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-warning fw-bold">@Model.DocumentacionIncompleta</h3>
+                            <p class="mb-0 text-muted small">Documentación Incompleta</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-info fw-bold">@Model.CandidatosElegibles</h3>
+                            <p class="mb-0 text-muted small">Candidatos Elegibles</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Detalle de Pruebas</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Aprobaron Pruebas Técnicas (≥ 70)
+                                <span class="badge bg-primary rounded-pill">@Model.AprobaronTecnica</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Aprobaron Psicométricas (≥ 70)
+                                <span class="badge bg-info rounded-pill">@Model.AprobaronPsicometrica</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Pasaron Entrevista
+                                <span class="badge bg-success rounded-pill">@Model.AprobaronEntrevista</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Resultado Final</h6>
+                        <div class="alert alert-success d-flex align-items-center">
+                            <i class="bi bi-trophy fs-4 me-3"></i>
+                            <div>
+                                <h5 class="alert-heading mb-0">@Model.Seleccionados</h5>
+                                <p class="mb-0">Candidato(s) Seleccionado(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    }
+</div>
