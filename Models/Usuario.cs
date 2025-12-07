@@ -26,9 +26,25 @@ namespace GestionPlazasVacantes.Models
         [Required, StringLength(150)]
         public string Email { get; set; } = null!;
 
-        // 🔹 Contraseña en texto plano (simple por ahora)
-        [Required, StringLength(100)]
-        public string Password { get; set; } = null!;
+        // 🔒 Hash de contraseña (BCrypt) - NUNCA almacenar en texto plano
+        [Required, StringLength(250)]
+        public string PasswordHash { get; set; } = null!;
+
+        /// <summary>
+        /// Establece la contraseña hasheándola con BCrypt
+        /// </summary>
+        public void SetPassword(string password)
+        {
+            PasswordHash = Services.PasswordHasher.HashPassword(password);
+        }
+
+        /// <summary>
+        /// Verifica si la contraseña proporcionada es correcta
+        /// </summary>
+        public bool VerifyPassword(string password)
+        {
+            return Services.PasswordHasher.VerifyPassword(password, PasswordHash);
+        }
 
         [Required]
         public RolUsuario Rol { get; set; } = RolUsuario.Colaborador;

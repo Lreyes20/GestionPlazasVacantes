@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestionPlazasVacantes.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Jefe")]
     public class AsignacionesController : Controller
     {
         private readonly AppDbContext _context;

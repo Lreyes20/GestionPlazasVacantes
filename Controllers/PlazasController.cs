@@ -5,6 +5,7 @@ using GestionPlazasVacantes.Data;
 
 namespace GestionPlazasVacantes.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize] // Todos los usuarios autenticados pueden crear plazas
     public class PlazasController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,7 +18,9 @@ namespace GestionPlazasVacantes.Controllers
         // GET: Plazas
         public async Task<IActionResult> Index()
         {
+            // Usamos DateTime.Today para incluir las plazas que vencen hoy hasta el final del día
             var plazas = await _context.PlazasVacantes
+                .Where(p => p.Activa && p.FechaLimite >= DateTime.Today && (p.EstadoFinal == "Abierta" || p.EstadoFinal == null))
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 

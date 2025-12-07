@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GestionPlazasVacantes.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class DashboardController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,7 +18,6 @@ namespace GestionPlazasVacantes.Controllers
         // /Dashboard/Counts?groupBy=plaza   (default)
         // /Dashboard/Counts?groupBy=departamento
         [HttpGet]
-        [AllowAnonymous]   // 👈 este es el cambio
         public async Task<IActionResult> Counts(string groupBy = "plaza")
         {
             var ahora = DateTime.Now;

@@ -1,0 +1,199 @@
+@model GestionPlazasVacantes.Controllers.ReporteViewModel
+
+@{
+    ViewData["Title"] = "Detalle de Reporte";
+}
+
+<div class="container py-4">
+    <!-- 🏠 Navegación -->
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Regresar al Historial
+        </a>
+    </div>
+
+    @if (Model != null && Model.Plaza != null)
+    {
+        <!-- 📊 Encabezado y Estadísticas -->
+        <div class="card shadow-sm mb-4 card-top-border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 text-dark">
+                    Reporte para: <strong>@Model.Plaza.NumeroConcurso</strong> - @Model.Plaza.Titulo
+                </h5>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("ExportarPDF", new { plazaId = Model.Plaza.Id })" class="btn btn-danger btn-sm">
+                        <i class="bi bi-file-pdf"></i> Exportar PDF
+                    </a>
+                    <a href="@Url.Action("ExportarExcel", new { plazaId = Model.Plaza.Id })" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-excel"></i> Exportar Excel
+                    </a>
+                    <a href="@Url.Action("ExportarWord", new { plazaId = Model.Plaza.Id })" class="btn btn-primary btn-sm">
+                        <i class="bi bi-file-word"></i> Exportar Word
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Estadísticas Globales -->
+                <div class="row g-4 text-center mb-4">
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-primary fw-bold">@Model.TotalParticipantes</h3>
+                            <p class="mb-0 text-muted small">Total Participantes</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-success fw-bold">@Model.DocumentacionCompleta</h3>
+                            <p class="mb-0 text-muted small">Documentación Completa</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-info fw-bold">@Model.CandidatosElegibles</h3>
+                            <p class="mb-0 text-muted small">Candidatos Elegibles</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <h3 class="text-success fw-bold">@Model.Seleccionados</h3>
+                            <p class="mb-0 text-muted small">Seleccionados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                   <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Detalle de Pruebas</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Aprobaron Pruebas Técnicas (≥ 70)
+                                <span class="badge bg-primary rounded-pill">@Model.AprobaronTecnica</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Aprobaron Psicométricas (≥ 70)
+                                <span class="badge bg-info rounded-pill">@Model.AprobaronPsicometrica</span>
+                            </li>
+                              <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Pasaron Entrevista
+                                <span class="badge bg-success rounded-pill">@Model.AprobaronEntrevista</span>
+                            </li>
+                        </ul>
+                    </div>
+                     <div class="col-md-6">
+                         <div class="alert alert-light border">
+                             <h6 class="fw-bold"><i class="bi bi-info-circle"></i> Información General</h6>
+                             <p class="mb-1"><small><strong>Departamento:</strong> @Model.Plaza.Departamento</small></p>
+                             <p class="mb-1"><small><strong>Analista:</strong> @(Model.Plaza.UsuarioAsignado?.FullName ?? "Sin asignar")</small></p>
+                             <p class="mb-0"><small><strong>Fecha Cierre:</strong> @(Model.Plaza.FechaCierre?.ToString("dd/MM/yyyy") ?? "N/A")</small></p>
+                         </div>
+                     </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 🕵️ Detalle de Candidatos (Tabla) -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Detalle de Postulantes</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Postulante</th>
+                                <th>Cédula</th>
+                                <th>Notas (Téc. | Psic.)</th>
+                                <th>Cumple Req.</th>
+                                <th>Etapa Final</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Seguimientos != null && Model.Seguimientos.Any())
+                            {
+                                @foreach (var s in Model.Seguimientos)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">@s.Postulante.NombreCompleto</div>
+                                            <small class="text-muted">@s.Postulante.Correo</small>
+                                        </td>
+                                        <td>@s.Postulante.Cedula</td>
+                                        <td>
+                                            @if (s.NotaPruebaTecnica.HasValue)
+                                            {
+                                                <span class="badge bg-light text-dark border">T: @s.NotaPruebaTecnica</span>
+                                            }
+                                            else
+                                            {
+                                                 <span class="badge bg-light text-muted border">-</span>
+                                            }
+                                            
+                                            @if (s.NotaPsicometrica.HasValue)
+                                            {
+                                                <span class="badge bg-light text-dark border">P: @s.NotaPsicometrica</span>
+                                            }
+                                             else
+                                            {
+                                                 <span class="badge bg-light text-muted border">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (s.CumpleRequisitos)
+                                            {
+                                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Sí</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger"><i class="bi bi-x-circle-fill"></i> No</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @s.EtapaActual
+                                        </td>
+                                        <td>
+                                            @if (s.Postulante.EstadoProceso == "Contratado" || s.Aprobado)
+                                            {
+                                                <span class="badge bg-success">Seleccionado</span>
+                                            }
+                                            else if (s.Postulante.EstadoProceso == "Descartado" || !s.Activo)
+                                            {
+                                                 // Mostrar motivo explícito
+                                                 if (!string.IsNullOrEmpty(s.MotivoDescarte))
+                                                 {
+                                                     <span class="badge bg-danger">@s.MotivoDescarte</span>
+                                                 }
+                                                 else
+                                                 {
+                                                     <span class="badge bg-danger">Descartado</span>
+                                                 }
+                                            }
+                                            else
+                                            {
+                                                 <span class="badge bg-secondary">En proceso</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="text-muted">No hay postulantes registrados en esta plaza.</div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">No se encontró información para el reporte solicitado.</div>
+    }
+</div>

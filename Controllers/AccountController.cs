@@ -29,13 +29,12 @@ namespace GestionPlazasVacantes.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
-            // 🔹 Búsqueda directa por usuario y contraseña
+            // 🔒 Búsqueda por usuario activo
             var user = await _db.Usuarios.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Username == vm.Username
-                                          && u.Password == vm.Password
-                                          && u.Activo);
+                .FirstOrDefaultAsync(u => u.Username == vm.Username && u.Activo);
 
-            if (user is null)
+            // Verificar que el usuario existe y la contraseña es correcta
+            if (user is null || !user.VerifyPassword(vm.Password))
             {
                 ModelState.AddModelError(string.Empty, "Usuario o contraseña inválidos.");
                 return View(vm);

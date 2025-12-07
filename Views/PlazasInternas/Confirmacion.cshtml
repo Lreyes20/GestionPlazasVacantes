@@ -3,59 +3,60 @@
 }
 
 <style>
-    /* ===== CONTENEDOR ===== */
+    /* ===== CONTENEDOR PRINCIPAL ===== */
     .confirmacion-container {
         max-width: 650px;
-        margin: 5rem auto;
+        margin: 6rem auto;
         background: #ffffff;
         border-radius: 1rem;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-        padding: 2.5rem;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+        padding: 3rem 2.5rem;
         text-align: center;
         animation: fadeIn 0.6s ease-in-out;
         font-family: 'Biryani', Verdana, sans-serif;
-        color: #435563; /* Gris urbano institucional */
+        color: #435563;
+        border-top: 6px solid #FF8200;
     }
 
-        /* ===== TÍTULO ===== */
+        /* ===== ICONO DE ÉXITO ===== */
+        .confirmacion-container .icono-exito {
+            font-size: 4.5rem;
+            color: #28a745;
+            margin-bottom: 1.2rem;
+            animation: pop 0.4s ease-in-out;
+        }
+
+        /* ===== TITULO ===== */
         .confirmacion-container h2 {
             color: #435563;
             font-weight: 700;
             margin-bottom: 1rem;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
+            letter-spacing: 0.5px;
         }
 
         /* ===== PÁRRAFO ===== */
         .confirmacion-container p {
-            color: #435563;
+            color: #5a5a5a;
             font-size: 1.05rem;
-            margin-bottom: 1.8rem;
+            margin-bottom: 2rem;
             line-height: 1.6;
-        }
-
-        /* ===== ÍCONO DE ÉXITO ===== */
-        .confirmacion-container .icono-exito {
-            font-size: 4rem;
-            color: #28a745; /* Verde éxito */
-            margin-bottom: 1rem;
-            animation: popIn 0.7s ease-in-out;
         }
 
         /* ===== BOTÓN VOLVER ===== */
         .confirmacion-container a.btn-volver {
-            background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%); /* Naranja institucional */
-            color: white;
+            background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
+            color: #fff;
             border: none;
             border-radius: 0.6rem;
-            padding: 0.7rem 1.3rem;
+            padding: 0.8rem 1.6rem;
             text-decoration: none;
             font-weight: 700;
-            transition: all 0.25s ease;
             font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
             letter-spacing: 0.3px;
         }
 
@@ -77,38 +78,70 @@
         }
     }
 
-    @@keyframes popIn {
+    @@keyframes pop {
         0% {
-            transform: scale(0.5);
+            transform: scale(0.8);
             opacity: 0;
-        }
-
-        80% {
-            transform: scale(1.1);
-            opacity: 1;
         }
 
         100% {
             transform: scale(1);
+            opacity: 1;
         }
+    }
+
+    /* ===== TEXTO DE ÉNFASIS ===== */
+    .mensaje-final {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-top: 2.5rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 576px) {
+        .confirmacion-container {
+            margin: 4rem 1rem;
+            padding: 2rem 1.5rem;
+        }
+
+            .confirmacion-container h2 {
+                font-size: 1.5rem;
+            }
+
+            .confirmacion-container p {
+                font-size: 1rem;
+            }
     }
 </style>
 
 <div class="confirmacion-container">
-    <div class="icono-exito">
-        <i class="bi bi-check-circle-fill"></i>
-    </div>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="icono-exito" style="color:#dc3545;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h2>Hubo un problema con tu postulación</h2>
+        <p>@TempData["ErrorMessage"]</p>
+    }
+    else
+    {
+        <div class="icono-exito">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2>¡Tu postulación fue enviada con éxito!</h2>
+        <p>
+            Gracias por aplicar a una de nuestras plazas.
+            Tu solicitud ha sido registrada correctamente y será revisada por nuestro equipo de Recursos Humanos.
+            En caso de avanzar a la siguiente etapa, te estaremos contactando por los medios que indicaste. ✨
+        </p>
+    }
 
-    <h2>¡Tu postulación fue enviada con éxito!</h2>
-
-    <p>
-        Gracias por aplicar a una de nuestras plazas.
-        Nuestro equipo revisará tu información y se pondrá en contacto contigo si avanzas en el proceso. 🚀
-    </p>
-
-    <br /><br />
 
     <a asp-controller="Postulacion" asp-action="Index" class="btn-volver">
         <i class="bi bi-arrow-left-circle"></i> Volver al listado de plazas
     </a>
+
+    <p class="mensaje-final">
+        Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025
+    </p>
 </div>

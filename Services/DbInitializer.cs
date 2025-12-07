@@ -24,7 +24,7 @@ namespace GestionPlazasVacantes.Services
                     Username = "lreyes",
                     FullName = "Luis Reyes",
                     Email = "lreyes@example.com",
-                    Password = "lreyes1234",
+                    PasswordHash = Services.PasswordHasher.HashPassword("lreyes1234"),
                     Rol = RolUsuario.Jefe,
                     Activo = true,
                     CreadoUtc = DateTime.UtcNow
@@ -34,7 +34,7 @@ namespace GestionPlazasVacantes.Services
                     Username = "gluna",
                     FullName = "Gerardo Luna",
                     Email = "gluna@example.com",
-                    Password = "gluna1234",
+                    PasswordHash = Services.PasswordHasher.HashPassword("gluna1234"),
                     Rol = RolUsuario.Colaborador,
                     Activo = true,
                     CreadoUtc = DateTime.UtcNow
@@ -44,7 +44,7 @@ namespace GestionPlazasVacantes.Services
                     Username = "jodio",
                     FullName = "John Odio",
                     Email = "jodio@example.com",
-                    Password = "jodio1234",
+                    PasswordHash = Services.PasswordHasher.HashPassword("jodio1234"),
                     Rol = RolUsuario.Colaborador,
                     Activo = true,
                     CreadoUtc = DateTime.UtcNow

@@ -365,23 +365,22 @@
             });
         })();
 
-        // Redirección según tipo de concurso
-        document.getElementById("TipoConcurso").addEventListener("change", function () {
-            const tipo = this.value;
+        // Mostrar/ocultar opciones de documentos según checkboxes
+        document.getElementById('chkColegiado').addEventListener('change', function() {
+            document.getElementById('obliCole').classList.toggle('d-none', !this.checked);
+        });
 
-            if (tipo === "Interno") {
-                Swal.fire({
-                    title: "Concurso interno",
-                    text: "Según la normativa, los concursos internos deben gestionarse en una vista separada.",
-                    icon: "info",
-                    confirmButtonText: "Ir a gestión interna",
-                    confirmButtonColor: "#FF8200"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/PlazasInternas/Crear';
-                    }
-                });
-            }
+        document.getElementById('chkLicencia').addEventListener('change', function() {
+            document.getElementById('obliLic').classList.toggle('d-none', !this.checked);
+        });
+
+        document.getElementById('chkArmas').addEventListener('change', function() {
+            document.getElementById('obliArmas').classList.toggle('d-none', !this.checked);
+        });
+
+        document.getElementById('chkTitulos').addEventListener('change', function() {
+            document.getElementById('obliTit').classList.toggle('d-none', !this.checked);
+            document.getElementById('divTitulos').classList.toggle('d-none', !this.checked);
         });
     </script>
 }

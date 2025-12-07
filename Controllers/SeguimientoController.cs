@@ -39,6 +39,8 @@ namespace GestionPlazasVacantes.Controllers
 
             var plazasConPostulantes = await query
                 .Where(p => p.Postulantes.Any())   // Solo plazas que tengan postulantes
+                // Plazas cuya fecha límite ya pasó (ayer o antes) o están cerradas manualmente
+                .Where(p => p.FechaLimite < DateTime.Today || p.EstadoFinal == "Cerrada" || p.EstadoFinal == "Evaluación") 
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 
@@ -53,14 +55,18 @@ namespace GestionPlazasVacantes.Controllers
             var plaza = await _context.PlazasVacantes.FirstOrDefaultAsync(p => p.Id == plazaId);
             if (plaza == null) return NotFound();
 
-            // 🔹 Solo postulantes activos (no descartados)
-            var postulantes = await _context.Postulantes
-                .Include(p => p.PlazaVacante)
-                .Where(p => p.PlazaVacanteId == plazaId)
-                .ToListAsync();
-
+            // 🔹 Solo seguimientos ACTIVOS (no descartados)
             var seguimientos = await _context.SeguimientosPostulantes
                 .Where(s => s.PlazaVacanteId == plazaId && s.Activo)
+                .ToListAsync();
+
+            // Obtener IDs de postulantes activos
+            var postulanteIds = seguimientos.Select(s => s.PostulanteId).ToList();
+
+            // Solo mostrar postulantes que tienen seguimiento activo
+            var postulantes = await _context.Postulantes
+                .Include(p => p.PlazaVacante)
+                .Where(p => p.PlazaVacanteId == plazaId && postulanteIds.Contains(p.Id))
                 .ToListAsync();
 
             ViewBag.Plaza = plaza;

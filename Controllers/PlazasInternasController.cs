@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using GestionPlazasVacantes.Data;
 using GestionPlazasVacantes.Models;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace GestionPlazasVacantes.Controllers
 {
@@ -17,6 +14,8 @@ namespace GestionPlazasVacantes.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private static readonly string[] ExtImgs = new[] { ".jpg", ".jpeg", ".png" };
+        private static readonly string[] ExtPdf = new[] { ".pdf" };
 
         public PlazasInternasController(AppDbContext context, IWebHostEnvironment env)
         {
@@ -24,149 +23,163 @@ namespace GestionPlazasVacantes.Controllers
             _env = env;
         }
 
-        // GET: PlazasInternas
+        // 🏢 Vista principal de plazas INTERNAS disponibles
         public async Task<IActionResult> Index()
         {
             var ahora = DateTime.Now;
-
-            var internasVigentes = await _context.PlazasVacantes
-                .Where(p => p.TipoConcurso == "Interno" && p.FechaLimite > ahora)
+            var plazasInternas = await _context.PlazasVacantes
+                .Where(p => p.TipoConcurso == "Interno" && p.FechaLimite > ahora && p.Activa)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 
-            return View(internasVigentes);
+            return View(plazasInternas);
         }
 
-        // 🧾 Formulario de aplicación
+        // 🧾 Mostrar formulario de aplicación
         public async Task<IActionResult> Aplicar(int id)
         {
             var plaza = await _context.PlazasVacantes.FindAsync(id);
-            if (plaza == null) return NotFound();
+            if (plaza == null || plaza.TipoConcurso != "Interno") 
+                return NotFound("Esta plaza no está disponible para postulación interna.");
 
             ViewBag.Plaza = plaza;
             return View(new Postulante { PlazaVacanteId = id });
         }
 
-        // 💾 Guardar postulación completa
+        // 💾 Guardar postulación
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Aplicar(Postulante postulante, IFormFile? archivoCV)
+        public async Task<IActionResult> Aplicar(Postulante model, IFormFile? curriculum, IFormFile? fotoTitulo, IFormFile? fotoColegiatura, IFormFile? fotoLicencia, IFormFile? fotoPermisoArmas)
         {
-            var plaza = await _context.PlazasVacantes.FindAsync(postulante.PlazaVacanteId);
-            if (plaza == null) return NotFound();
+            var plaza = await _context.PlazasVacantes.FindAsync(model.PlazaVacanteId);
+            if (plaza == null || plaza.TipoConcurso != "Interno") 
+                return NotFound();
 
-            bool duplicado = await _context.Postulantes.AnyAsync(p =>
-                p.PlazaVacanteId == postulante.PlazaVacanteId && p.Cedula == postulante.Cedula);
+            ViewBag.Plaza = plaza;
 
-            if (duplicado)
+            // Validaciones básicas
+            if (string.IsNullOrWhiteSpace(model.NombreCompleto) ||
+                string.IsNullOrWhiteSpace(model.Cedula) ||
+                string.IsNullOrWhiteSpace(model.Correo))
             {
-                TempData["ErrorMessage"] = "Ya te has postulado a esta plaza.";
-                return RedirectToAction(nameof(Aplicar), new { id = postulante.PlazaVacanteId });
+                ModelState.AddModelError("", "⚠️ Debe completar todos los campos obligatorios.");
+                return View(model);
             }
 
-            if (archivoCV != null && archivoCV.Length > 0)
+            // Validar curriculum (obligatorio)
+            if (curriculum == null || curriculum.Length == 0)
             {
-                var uploads = Path.Combine(_env.WebRootPath ?? "", "curriculums");
-                if (!Directory.Exists(uploads))
-                    Directory.CreateDirectory(uploads);
-
-                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(archivoCV.FileName)}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    await archivoCV.CopyToAsync(stream);
-
-                postulante.CurriculumPath = $"/curriculums/{fileName}";
+                ModelState.AddModelError("", "⚠️ Debe adjuntar su currículum vitae en formato PDF.");
+                return View(model);
             }
 
-            postulante.FechaActualizacion = DateTime.Now;
-            postulante.EstadoProceso = "En revisión";
-            postulante.Id = 0;
-
-            _context.Postulantes.Add(postulante);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "✅ Postulación enviada con éxito.";
-            TempData["CVId"] = postulante.Id;
-
-            return RedirectToAction(nameof(Confirmacion));
-        }
-
-        // 🧾 Generar CV en PDF (QuestPDF)
-        [HttpPost]
-        public IActionResult GenerarCV(Postulante postulante)
-        {
-            var pdfBytes = Document.Create(doc =>
+            try
             {
-                doc.Page(page =>
+                var uploadsPath = Path.Combine(_env.WebRootPath, "uploads", "postulantes");
+                if (!Directory.Exists(uploadsPath))
+                    Directory.CreateDirectory(uploadsPath);
+
+                // Guardar curriculum
+                if (curriculum != null && curriculum.Length > 0)
                 {
-                    page.Margin(50);
-                    page.Size(PageSizes.A4);
-                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily("Helvetica"));
-
-                    page.Header().Element(h =>
+                    if (!ValidarExtension(curriculum.FileName, ExtPdf))
                     {
-                        h.PaddingBottom(20)
-                         .AlignCenter()
-                         .Text("Currículum Vitae")
-                         .FontSize(20)
-                         .Bold()
-                         .FontColor(Colors.Blue.Medium);
-                    });
+                        ModelState.AddModelError("", "⚠️ El currículum debe ser un archivo PDF.");
+                        return View(model);
+                    }
 
-                    page.Content().Column(col =>
+                    var curriculumFileName = $"{Guid.NewGuid()}_{SanitizarNombre(curriculum.FileName)}";
+                    var curriculumPath = Path.Combine(uploadsPath, curriculumFileName);
+                    using (var stream = new FileStream(curriculumPath, FileMode.Create))
                     {
-                        void AddSection(string titulo, string? contenido)
-                        {
-                            if (!string.IsNullOrWhiteSpace(contenido))
-                            {
-                                col.Item().Text(titulo)
-                                    .Bold()
-                                    .FontSize(14)
-                                    .FontColor(Colors.Orange.Medium);
+                        await curriculum.CopyToAsync(stream);
+                    }
+                    model.CurriculumPath = $"/uploads/postulantes/{curriculumFileName}";
+                }
 
-                                col.Item().Element(e =>
-                                {
-                                    e.PaddingBottom(10)
-                                     .Text(contenido)
-                                     .FontSize(12)
-                                     .FontColor(Colors.Grey.Darken3);
-                                });
-                            }
-                        }
-
-                        AddSection("🧍 Datos Personales",
-                            $"Nombre: {postulante.NombreCompleto}\n" +
-                            $"Cédula: {postulante.Cedula}\n" +
-                            $"Correo: {postulante.Correo}\n" +
-                            $"Teléfono: {postulante.Telefono}\n" +
-                            $"Dirección: {postulante.Direccion}");
-
-                        AddSection("💼 Perfil Profesional", postulante.PerfilProfesional);
-                        AddSection("🏢 Experiencia Laboral", postulante.ExperienciaLaboral);
-                        AddSection("🎓 Formación Académica", postulante.FormacionAcademica);
-                        AddSection("⚙️ Habilidades", postulante.Habilidades);
-                        AddSection("🌍 Idiomas", postulante.Idiomas);
-                        AddSection("📚 Formación Complementaria", postulante.FormacionComplementaria);
-                        AddSection("⭐ Otros Datos", postulante.OtrosDatos);
-                    });
-
-                    page.Footer().AlignCenter().Text(t =>
+                // Guardar documentos opcionales
+                if (fotoTitulo != null && fotoTitulo.Length > 0 && plaza.SolicitarTitulos)
+                {
+                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoTitulo.FileName)}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        t.Span("Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025")
-                         .FontSize(10)
-                         .FontColor(Colors.Grey.Darken1);
-                    });
-                });
-            }).GeneratePdf();
+                        await fotoTitulo.CopyToAsync(stream);
+                    }
+                    model.FotoTituloPath = $"/uploads/postulantes/{fileName}";
+                }
 
-            return File(pdfBytes, "application/pdf", $"CV_{postulante.NombreCompleto.Replace(" ", "_")}.pdf");
+                if (fotoColegiatura != null && fotoColegiatura.Length > 0 && plaza.SolicitarColegiatura)
+                {
+                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoColegiatura.FileName)}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await fotoColegiatura.CopyToAsync(stream);
+                    }
+                    model.FotoColegiaturaPath = $"/uploads/postulantes/{fileName}";
+                }
+
+                if (fotoLicencia != null && fotoLicencia.Length > 0 && plaza.SolicitarLicencia)
+                {
+                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoLicencia.FileName)}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await fotoLicencia.CopyToAsync(stream);
+                    }
+                    model.FotoLicenciaPath = $"/uploads/postulantes/{fileName}";
+                }
+
+                if (fotoPermisoArmas != null && fotoPermisoArmas.Length > 0 && plaza.SolicitarPermisoArmas)
+                {
+                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoPermisoArmas.FileName)}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await fotoPermisoArmas.CopyToAsync(stream);
+                    }
+                    model.FotoPermisoArmasPath = $"/uploads/postulantes/{fileName}";
+                }
+
+                // Guardar en base de datos
+                model.EstadoProceso = "Recibido";
+                model.FechaActualizacion = DateTime.Now;
+
+                _context.Postulantes.Add(model);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "✅ Su postulación ha sido recibida exitosamente.";
+                return RedirectToAction("Confirmacion", new { id = model.Id });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                ModelState.AddModelError("", "⚠️ Ocurrió un error al procesar su postulación.");
+                return View(model);
+            }
         }
 
-        // 🎉 Confirmación
-        public IActionResult Confirmacion()
+        // ✅ Confirmación
+        public async Task<IActionResult> Confirmacion(int id)
         {
-            return View();
+            var postulante = await _context.Postulantes
+                .Include(p => p.PlazaVacante)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (postulante == null) return NotFound();
+            return View(postulante);
+        }
+
+        private bool ValidarExtension(string fileName, string[] extensionesPermitidas)
+        {
+            var ext = Path.GetExtension(fileName).ToLowerInvariant();
+            return extensionesPermitidas.Contains(ext);
+        }
+
+        private string SanitizarNombre(string fileName)
+        {
+            return Path.GetFileName(fileName).Replace(" ", "_");
         }
     }
 }

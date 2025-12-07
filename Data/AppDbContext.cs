@@ -21,7 +21,7 @@ namespace GestionPlazasVacantes.Data
                 e.Property(x => x.Username).HasMaxLength(50).IsRequired();
                 e.Property(x => x.FullName).HasMaxLength(150).IsRequired();
                 e.Property(x => x.Email).HasMaxLength(150).IsRequired();
-                e.Property(x => x.Password).HasMaxLength(100).IsRequired();
+                e.Property(x => x.PasswordHash).HasMaxLength(250).IsRequired();
                 e.Property(x => x.Activo).IsRequired();
                 e.Property(x => x.Rol).IsRequired().HasConversion<string>();
 

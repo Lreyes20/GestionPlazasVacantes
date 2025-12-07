@@ -200,35 +200,35 @@
 
                 @if (plaza.SolicitarColegiatura)
                 {
-                    <label>Número de colegiatura</label>
-                    <input asp-for="NumeroColegiatura" class="form-control" />
-                    <label>Foto del carné del colegio profesional</label>
-                    <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                    <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                    <label class="mt-2">Foto del carné del colegio profesional</label>
+                    <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
                 }
 
                 @if (plaza.SolicitarLicencia)
                 {
-                    <label>Tipo de licencia</label>
-                    <input asp-for="TipoLicencia" class="form-control" />
-                    <label>Foto de la licencia</label>
-                    <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                    <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
+                    <label class="mt-2">Foto de la licencia</label>
+                    <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
                 }
 
                 @if (plaza.SolicitarPermisoArmas)
                 {
-                    <label>Número de permiso de portación de armas</label>
-                    <input asp-for="NumeroPermisoArmas" class="form-control" />
-                    <label>Foto del permiso</label>
-                    <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                    <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
+                    <label class="mt-2">Foto del permiso</label>
+                    <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
                 }
 
                 @if (plaza.SolicitarTitulos)
                 {
-                    <label>Adjuntar títulos o certificaciones</label>
-                    <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                    <label class="mt-3">Adjuntar títulos o certificaciones @(plaza.TitulosObligatorios ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
 
                     <label class="mt-2">Foto del título principal</label>
-                    <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                    <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
                 }
 
             </div>

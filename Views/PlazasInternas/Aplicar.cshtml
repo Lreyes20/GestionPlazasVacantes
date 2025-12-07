@@ -1,11 +1,11 @@
 ﻿@model GestionPlazasVacantes.Models.Postulante
 @{
-    ViewData["Title"] = "Formulario de Postulación";
+    ViewData["Title"] = "Formulario de Postulación Interna";
     var plaza = ViewBag.Plaza as GestionPlazasVacantes.Models.PlazaVacante;
+    Layout = "_Layout";
 }
 
 <style>
-    /* ===== CONTENEDOR PRINCIPAL ===== */
     .formulario-postulacion {
         background-color: #fff;
         border-radius: 1rem;
@@ -14,26 +14,17 @@
         max-width: 900px;
         margin: 2rem auto;
         border-top: 6px solid #FF8200;
-        animation: fadeIn 0.4s ease-in-out;
         font-family: 'Biryani', Verdana, sans-serif;
         color: #435563;
     }
 
-        .formulario-postulacion h4 {
-            color: #435563;
-            font-weight: 700;
-            text-align: center;
-            font-size: 1.5rem;
-        }
+    h4 {
+        color: #435563;
+        font-weight: 700;
+        text-align: center;
+        font-size: 1.5rem;
+    }
 
-        .formulario-postulacion p.subtitle {
-            color: #6c757d;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.05rem;
-        }
-
-    /* ===== ETIQUETAS ===== */
     label {
         font-weight: 600;
         color: #435563;
@@ -41,24 +32,6 @@
         font-size: 0.95rem;
     }
 
-    /* ===== CAMPOS ===== */
-    input, textarea, select {
-        border: 1px solid #cfd8dc;
-        border-radius: 0.5rem;
-        padding: 0.6rem 0.75rem;
-        width: 100%;
-        font-size: 1rem;
-        transition: border 0.2s ease;
-        color: #435563;
-    }
-
-        input:focus, textarea:focus, select:focus {
-            border-color: #FF8200;
-            box-shadow: 0 0 0 0.15rem rgba(255, 130, 0, 0.25);
-            outline: none;
-        }
-
-    /* ===== SECCIONES ===== */
     .seccion {
         background: #f8f9fa;
         padding: 1.5rem;
@@ -67,17 +40,6 @@
         border: 1px solid #dee2e6;
     }
 
-        .seccion h5 {
-            color: #FF8200;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #FF8200;
-            display: inline-block;
-            padding-bottom: 0.25rem;
-            font-size: 1.05rem;
-        }
-
-    /* ===== BOTONES ===== */
     .botones-formulario {
         display: flex;
         justify-content: flex-end;
@@ -99,12 +61,10 @@
     .btn-guardar {
         background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
         color: white;
-        letter-spacing: 0.3px;
     }
 
         .btn-guardar:hover {
             transform: scale(1.04);
-            background: linear-gradient(90deg, #E66F00 0%, #CC5F00 100%);
         }
 
     .btn-pdf {
@@ -114,10 +74,8 @@
 
         .btn-pdf:hover {
             transform: scale(1.04);
-            background: linear-gradient(90deg, #1c7430 0%, #218838 100%);
         }
 
-    /* ===== DECLARACIÓN BAJO JURAMENTO ===== */
     .declaracion {
         background-color: #fff5eb;
         border: 1px solid #FFD8A8;
@@ -133,30 +91,32 @@
             margin-right: 0.5rem;
             cursor: pointer;
         }
-
-    /* ===== ANIMACIÓN ===== */
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 </style>
 
 <div class="formulario-postulacion">
     <h4><i class="bi bi-person-badge me-2"></i>Formulario de Postulación</h4>
-    <p class="subtitle">Postulación para la plaza: <strong>@plaza?.Titulo</strong></p>
+    <p class="subtitle text-center mb-4">Plaza: <strong>@plaza?.Titulo</strong></p>
 
-    <form asp-action="Aplicar" method="post" enctype="multipart/form-data">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger text-center fw-semibold">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center fw-semibold">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form id="formPostulacion" asp-action="Aplicar" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
         @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="PlazaVacanteId" />
 
-        <!-- 🧾 DATOS PERSONALES -->
+        <!-- 🔹 Datos personales -->
         <div class="seccion">
             <h5>1️⃣ Datos Personales</h5>
             <div class="row">
@@ -182,28 +142,100 @@
             <div class="row mt-2">
                 <div class="col-12">
                     <label asp-for="Direccion"></label>
-                    <input asp-for="Direccion" class="form-control" />
+                    <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- 💼 SECCIONES DEL CV -->
-        <div class="seccion"><h5>2️⃣ Perfil Profesional</h5><textarea asp-for="PerfilProfesional" class="form-control" rows="3"></textarea></div>
-        <div class="seccion"><h5>3️⃣ Experiencia Laboral</h5><textarea asp-for="ExperienciaLaboral" class="form-control" rows="4"></textarea></div>
-        <div class="seccion"><h5>4️⃣ Formación Académica</h5><textarea asp-for="FormacionAcademica" class="form-control" rows="3"></textarea></div>
-        <div class="seccion"><h5>5️⃣ Habilidades</h5><textarea asp-for="Habilidades" class="form-control" rows="3"></textarea></div>
-        <div class="seccion"><h5>6️⃣ Idiomas</h5><textarea asp-for="Idiomas" class="form-control" rows="2"></textarea></div>
-        <div class="seccion"><h5>7️⃣ Formación Complementaria</h5><textarea asp-for="FormacionComplementaria" class="form-control" rows="3"></textarea></div>
-        <div class="seccion"><h5>8️⃣ Otros Datos</h5><textarea asp-for="OtrosDatos" class="form-control" rows="2"></textarea></div>
-
-        <!-- 📎 ADJUNTAR CV -->
+        <!-- 🔹 Información Curricular -->
         <div class="seccion">
-            <h5>📎 Adjuntar CV (opcional)</h5>
-            <input type="file" name="archivoCV" accept=".pdf,.doc,.docx" class="form-control" />
+            <h5>📄 Información Curricular</h5>
+
+            <label asp-for="PerfilProfesional"></label>
+            <textarea asp-for="PerfilProfesional" class="form-control" rows="3" placeholder="Describe brevemente tu perfil profesional..."></textarea>
+
+            <label asp-for="ExperienciaLaboral"></label>
+            <textarea asp-for="ExperienciaLaboral" class="form-control" rows="3" placeholder="Describe tus experiencias laborales más relevantes..."></textarea>
+
+            <label asp-for="FormacionAcademica"></label>
+            <textarea asp-for="FormacionAcademica" class="form-control" rows="3" placeholder="Incluye tus títulos o grados académicos..."></textarea>
+
+            <label asp-for="Habilidades"></label>
+            <textarea asp-for="Habilidades" class="form-control" rows="2" placeholder="Ejemplo: liderazgo, programación, redacción técnica..."></textarea>
+
+            <label asp-for="Idiomas"></label>
+            <textarea asp-for="Idiomas" class="form-control" rows="2" placeholder="Ejemplo: Español (nativo), Inglés (B2)..."></textarea>
+
+            <label asp-for="FormacionComplementaria"></label>
+            <textarea asp-for="FormacionComplementaria" class="form-control" rows="2" placeholder="Cursos, certificaciones, talleres..."></textarea>
+
+            <label asp-for="OtrosDatos"></label>
+            <textarea asp-for="OtrosDatos" class="form-control" rows="2" placeholder="Cualquier otra información que consideres relevante..."></textarea>
         </div>
 
-        <!-- 🧾 DECLARACIÓN BAJO JURAMENTO -->
-        <div class="seccion declaracion mt-4">
+        <div class="seccion">
+            <h5>📎 Currículum Vitae</h5>
+            <p class="text-muted">Podés subir tu currículum o generarlo automáticamente con los datos del formulario.</p>
+
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <label for="archivoCV" class="form-label fw-semibold">Adjuntar CV (PDF o DOCX)</label>
+                    <input type="file" name="archivoCV" id="archivoCV" accept=".pdf,.doc,.docx" class="form-control mb-2" />
+                </div>
+
+                <div class="col-md-4 d-flex justify-content-end mt-3 mt-md-0">
+                    <button type="submit" formaction="/Postulacion/GenerarCVPrevia" class="btn btn-danger" formtarget="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> Generar CV Automático
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 🔹 Documentos requeridos -->
+        @if (plaza != null && (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos))
+        {
+            <div class="seccion mt-4">
+                <h5>📚 Documentos Requeridos por la Plaza</h5>
+
+                @if (plaza.SolicitarColegiatura)
+                {
+                    <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                    <label class="mt-2">Foto del carné del colegio profesional</label>
+                    <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                }
+
+                @if (plaza.SolicitarLicencia)
+                {
+                    <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
+                    <label class="mt-2">Foto de la licencia</label>
+                    <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
+                }
+
+                @if (plaza.SolicitarPermisoArmas)
+                {
+                    <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input asp-for="NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
+                    <label class="mt-2">Foto del permiso</label>
+                    <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
+                }
+
+                @if (plaza.SolicitarTitulos)
+                {
+                    <label class="mt-3">Adjuntar títulos o certificaciones @(plaza.TitulosObligatorios ? "(Obligatorio)" : "(Opcional)")</label>
+                    <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
+
+                    <label class="mt-2">Foto del título principal</label>
+                    <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
+                }
+
+            </div>
+        }
+
+        <!-- 🔹 Declaración bajo juramento -->
+        <div class="seccion mt-4 declaracion">
             <h6 class="fw-bold mb-3"><i class="bi bi-shield-check"></i> Declaración bajo juramento</h6>
             <div class="form-check">
                 <input class="form-check-input me-2" type="checkbox" id="declaracionJurada" required />
@@ -215,15 +247,36 @@
             </div>
         </div>
 
-        <!-- 🔘 BOTONES -->
+        <!-- 🔘 Botones -->
         <div class="botones-formulario mt-4">
-            <button type="submit" class="btn-pdf" formaction="/Postulacion/GenerarCV">
-                <i class="bi bi-file-earmark-pdf"></i> Generar CV en PDF
-            </button>
-
-            <button type="submit" class="btn-guardar">
+            
+            <button type="submit" id="btnEnviar" class="btn-guardar">
                 <i class="bi bi-send-check"></i> Enviar Postulación
             </button>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnEnviar = document.getElementById("btnEnviar");
+        btnEnviar.addEventListener("click", (e) => {
+            const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
+            const cedula = document.querySelector('[name="Cedula"]').value.trim();
+            const correo = document.querySelector('[name="Correo"]').value.trim();
+            const check = document.getElementById("declaracionJurada");
+
+            if (!nombre || !cedula || !correo) {
+                e.preventDefault();
+                alert("⚠️ Por favor completa los campos obligatorios antes de enviar la postulación.");
+                return false;
+            }
+
+            if (!check.checked) {
+                e.preventDefault();
+                alert("⚠️ Debes aceptar la declaración bajo juramento para continuar.");
+                return false;
+            }
+        });
+    });
+</script>
