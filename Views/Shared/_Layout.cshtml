@@ -95,8 +95,13 @@
     <div class="content flex-grow-1">
         <div class="navbar-top shadow-sm d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
+                <!-- 🍔 Botón Hamburguesa (Solo Móvil) -->
+                <button class="btn btn-link text-dark d-lg-none me-2" id="sidebarToggle">
+                    <i class="bi bi-list fs-1"></i>
+                </button>
+
                 <img src="~/images/curridabat-logo.jpg" alt="Curridabat Ciudad Dulce" class="logo-curridabat">
-                <span class="fs-6 fw-semibold">Municipalidad de Curridabat</span>
+                <span class="fs-6 fw-semibold d-none d-sm-inline">Municipalidad de Curridabat</span>
             </div>
 
             <!-- 👇 Nuevo bloque de saludo -->
@@ -113,10 +118,15 @@
             @RenderBody()
         </main>
 
+        </main>
+
         <footer class="border-top mt-4">
             © @DateTime.Now.Year - Municipalidad de Curridabat
         </footer>
     </div>
+    
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     @RenderSection("Scripts", required: false)
 </body>
