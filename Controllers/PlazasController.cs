@@ -18,9 +18,10 @@ namespace GestionPlazasVacantes.Controllers
         // GET: Plazas
         public async Task<IActionResult> Index()
         {
-            // Usamos DateTime.Today para incluir las plazas que vencen hoy hasta el final del día
+            // Mostrar TODAS las plazas activas (no cerradas) para permitir edición
+            // Cuando una plaza se cierra (Activa = false), desaparece del listado
             var plazas = await _context.PlazasVacantes
-                .Where(p => p.Activa && p.FechaLimite >= DateTime.Today && (p.EstadoFinal == "Abierta" || p.EstadoFinal == null))
+                .Where(p => p.Activa) // Solo plazas activas (no cerradas manualmente)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 

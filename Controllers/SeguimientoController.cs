@@ -38,9 +38,6 @@ namespace GestionPlazasVacantes.Controllers
             // Si es Jefe, ve todas las plazas activas
 
             var plazasConPostulantes = await query
-                .Where(p => p.Postulantes.Any())   // Solo plazas que tengan postulantes
-                // Plazas cuya fecha límite ya pasó (ayer o antes) o están cerradas manualmente
-                .Where(p => p.FechaLimite < DateTime.Today || p.EstadoFinal == "Cerrada" || p.EstadoFinal == "Evaluación") 
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 

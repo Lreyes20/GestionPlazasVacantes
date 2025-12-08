@@ -47,7 +47,7 @@
                                     <i class="bi bi-building"></i> @p.Departamento
                                 </p>
                                 <p>
-                                    <i class="bi bi-calendar-x"></i> Cerró:
+                                    <i class="bi bi-calendar-check"></i> Fecha límite:
                                     <strong>@p.FechaLimite.ToString("dd/MM/yyyy HH:mm")</strong>
                                 </p>
                                 <p>
@@ -78,12 +78,12 @@
                                     <i class="bi bi-people"></i> Ver postulantes
                                 </a>
 
-                                <form asp-action="EliminarPlaza" asp-controller="Seguimiento" method="post" class="mt-2"
-                                      onsubmit="return confirm('⚠️ ¿Seguro que deseas eliminar esta plaza? Esta acción no se puede deshacer.');">
+                                <form asp-action="FinalizarPlaza" asp-controller="Seguimiento" method="post" class="mt-2"
+                                      onsubmit="return confirm('⚠️ ¿Seguro que deseas finalizar esta plaza? Esta acción marcará el proceso como completado.');">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="plazaId" value="@p.Id" />
-                                    <button type="submit" class="btn btn-danger w-100">
-                                        <i class="bi bi-trash"></i> Eliminar plaza
+                                    <button type="submit" class="btn btn-warning w-100">
+                                        <i class="bi bi-check-circle"></i> Finalizar proceso
                                     </button>
                                 </form>
                             </div>
