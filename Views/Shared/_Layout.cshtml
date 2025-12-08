@@ -118,7 +118,7 @@
             @RenderBody()
         </main>
 
-        </main>
+
 
         <footer class="border-top mt-4">
             © @DateTime.Now.Year - Municipalidad de Curridabat
@@ -128,6 +128,9 @@
     <!-- Overlay para cerrar sidebar en móvil -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
