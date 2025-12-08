@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
@@ -28,25 +29,37 @@ namespace GestionPlazasVacantes.Controllers
         {
             var ahora = DateTime.Now;
             var plazasInternas = await _context.PlazasVacantes
-                .Where(p => p.TipoConcurso == "Interno" && p.FechaLimite > ahora && p.Activa)
+                .Where(p => p.TipoConcurso == "Interno" && p.FechaLimite >= DateTime.Today && p.Activa)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 
             return View(plazasInternas);
         }
 
-        // 🧾 Mostrar formulario de aplicación
+        // 🧾 Mostrar formulario de aplicación (GET) - Con Pre-llenado
         public async Task<IActionResult> Aplicar(int id)
         {
             var plaza = await _context.PlazasVacantes.FindAsync(id);
             if (plaza == null || plaza.TipoConcurso != "Interno") 
                 return NotFound("Esta plaza no está disponible para postulación interna.");
 
+            // Pre-llenar datos del usuario logueado
+            var username = User.Identity?.Name;
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
+
+            var postulante = new Postulante 
+            { 
+                PlazaVacanteId = id,
+                NombreCompleto = usuario?.FullName ?? "",
+                Correo = usuario?.Email ?? "",
+                Cedula = "" 
+            };
+
             ViewBag.Plaza = plaza;
-            return View(new Postulante { PlazaVacanteId = id });
+            return View(postulante);
         }
 
-        // 💾 Guardar postulación
+        // 💾 Guardar postulación (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Aplicar(Postulante model, IFormFile? curriculum, IFormFile? fotoTitulo, IFormFile? fotoColegiatura, IFormFile? fotoLicencia, IFormFile? fotoPermisoArmas)
@@ -63,6 +76,16 @@ namespace GestionPlazasVacantes.Controllers
                 string.IsNullOrWhiteSpace(model.Correo))
             {
                 ModelState.AddModelError("", "⚠️ Debe completar todos los campos obligatorios.");
+                return View(model);
+            }
+
+            // Validar unicidad de la postulación
+            var existe = await _context.Postulantes
+                .AnyAsync(p => p.PlazaVacanteId == model.PlazaVacanteId && p.Cedula == model.Cedula);
+
+            if (existe)
+            {
+                ModelState.AddModelError("", $"⚠️ Ya existe una postulación registrada con esta cédula para la plaza '{plaza.Titulo}'.");
                 return View(model);
             }
 
@@ -149,7 +172,7 @@ namespace GestionPlazasVacantes.Controllers
                 _context.Postulantes.Add(model);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "✅ Su postulación ha sido recibida exitosamente.";
+                TempData["SuccessMessage"] = "Su postulación ha sido recibida exitosamente.";
                 return RedirectToAction("Confirmacion", new { id = model.Id });
             }
             catch (Exception ex)
@@ -173,12 +196,14 @@ namespace GestionPlazasVacantes.Controllers
 
         private bool ValidarExtension(string fileName, string[] extensionesPermitidas)
         {
+            if (string.IsNullOrEmpty(fileName)) return false;
             var ext = Path.GetExtension(fileName).ToLowerInvariant();
             return extensionesPermitidas.Contains(ext);
         }
 
         private string SanitizarNombre(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName)) return "archivo";
             return Path.GetFileName(fileName).Replace(" ", "_");
         }
     }

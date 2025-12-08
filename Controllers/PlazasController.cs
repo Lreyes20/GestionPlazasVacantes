@@ -41,26 +41,18 @@ namespace GestionPlazasVacantes.Controllers
             if (ModelState.IsValid)
             {
                 plaza.FechaCreacion = DateTime.Now;
+                plaza.Activa = true;
+                plaza.Estado = "Abierta";
+                plaza.EstadoFinal = "Abierta"; // Para que aparezca en el filtro del Index
                 _context.Add(plaza);
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = " Plaza vacante creada correctamente.";
 
-                //  Nueva lógica de flujo:
-                // Si la plaza es de concurso interno, redirige a la vista de plazas internas
-                if (plaza.TipoConcurso == "Interno")
-                {
-                    // Esto manda al nuevo controlador PlazasInternas (que crearemos)
-                    return RedirectToAction("Index", "PlazasInternas");
-                }
-                else
-                {
-                    // Si es externo, sigue el flujo normal al listado público
-                    return RedirectToAction("Index", "Plazas");
-                }
+                return RedirectToAction("Index", "Dashboard");
             }
-
-            TempData["ErrorMessage"] = " Hubo un error al guardar la plaza.";
+            
+            TempData["ErrorMessage"] = " Hubo un error al guardar la plaza. Verifique los campos.";
             return View(plaza);
         }
 

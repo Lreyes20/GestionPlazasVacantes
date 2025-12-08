@@ -19,6 +19,7 @@ namespace GestionPlazasVacantes.Controllers
         private readonly IWebHostEnvironment _env;
         private static readonly string[] ExtImgs = new[] { ".jpg", ".jpeg", ".png" };
         private static readonly string[] ExtPdf = new[] { ".pdf" };
+        private static readonly string[] ExtWord = new[] { ".doc", ".docx" };
 
         public PostulacionController(AppDbContext context, IWebHostEnvironment env)
         {
@@ -31,7 +32,7 @@ namespace GestionPlazasVacantes.Controllers
         {
             var ahora = DateTime.Now;
             var plazasExternas = await _context.PlazasVacantes
-                .Where(p => p.TipoConcurso == "Externo" && p.FechaLimite > ahora && p.Activa)
+                .Where(p => p.TipoConcurso == "Externo" && p.FechaLimite >= DateTime.Today && p.Activa)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 
@@ -87,8 +88,8 @@ namespace GestionPlazasVacantes.Controllers
 
             try
             {
-                // CV → /curriculums
-                postulante.CurriculumPath = await GuardarArchivo(archivoCV, "curriculums", ExtPdf.Concat(ExtImgs).ToArray());
+                // CV → /curriculums (solo PDF)
+                postulante.CurriculumPath = await GuardarArchivo(archivoCV, "curriculums", ExtPdf);
                 // Fotos/Docs → /uploads_postulantes
                 postulante.FotoTituloPath = await GuardarArchivo(FotoTitulo, "uploads_postulantes", ExtImgs.Concat(ExtPdf).ToArray());
                 postulante.FotoColegiaturaPath = await GuardarArchivo(FotoColegiatura, "uploads_postulantes", ExtImgs.Concat(ExtPdf).ToArray());
@@ -136,7 +137,10 @@ namespace GestionPlazasVacantes.Controllers
         // ✅ Confirmación de postulación
         public async Task<IActionResult> Confirmacion(int id)
         {
-            var postulante = await _context.Postulantes.FirstOrDefaultAsync(p => p.Id == id);
+            var postulante = await _context.Postulantes
+                .Include(p => p.PlazaVacante)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (postulante == null)
             {
                 TempData["ErrorMessage"] = "⚠️ No se encontró la postulación.";

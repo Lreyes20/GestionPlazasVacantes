@@ -793,3 +793,696 @@ footer {
 .escudo-muni:hover {
     transform: scale(1.05);
 }
+
+/* ==================================================================
+   ESTILOS GENERALES (MIGRADOS Y UNIFICADOS)
+   ================================================================== */
+
+/* TÍTULOS */
+h2 {
+    color: #435563;
+    font-weight: 800;
+    border-left: 6px solid #FF8200;
+    padding-left: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+}
+
+h2 i {
+    color: #FF8200;
+    font-size: 1.6rem;
+}
+
+/* BADGES */
+.badge {
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.badge.bg-primary-subtle {
+    background: #fff4eb !important;
+    color: #FF8200 !important;
+}
+
+.badge.bg-info {
+    background: #e3f2fd;
+    color: #0d6efd;
+}
+
+.badge.bg-secondary {
+    background: #f0f0f0;
+    color: #435563;
+}
+
+.badge.bg-success {
+    background: #e7f8ee;
+    color: #28a745;
+    border: 1px solid #c3e6cb;
+}
+
+.badge.bg-danger {
+    background: #ffe6e6;
+    color: #b00020;
+    border: 1px solid #ffb3b3;
+}
+
+.badge.bg-warning {
+    background: #fff4eb;
+    color: #FF8200;
+    border: 1px solid #ffd4a5;
+}
+
+/* BOTONES */
+.btn-success {
+    background: linear-gradient(90deg, #28a745 0%, #4cb64f 100%);
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.25s ease;
+}
+
+.btn-success:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #1f8f39 0%, #28a745 100%);
+}
+
+.btn-outline-primary {
+    border-color: #FF8200;
+    color: #FF8200;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease;
+}
+
+.btn-outline-primary:hover {
+    background: #FF8200;
+    color: #fff;
+    border-color: #FF8200;
+}
+
+.btn-outline-success {
+    border-color: #28a745;
+    color: #28a745;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease;
+}
+
+.btn-outline-success:hover {
+    background: #28a745;
+    color: #fff;
+}
+
+/* ALERTA */
+.alert-warning {
+    background: #fff4eb;
+    border-left: 6px solid #FF8200;
+    color: #435563;
+    font-weight: 600;
+}
+
+/* TABLA ESTILIZADA */
+.table-styled {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.table-styled thead {
+    background: #FF8200;
+    color: #fff;
+}
+
+.table-styled th {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.8rem;
+}
+
+.table-styled td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0.75rem;
+}
+
+.table-styled tbody tr:hover {
+    background: #fff9f3;
+}
+
+/* UTILIDADES */
+.text-pre-wrap {
+    white-space: pre-wrap;
+}
+
+/* ==================================================================
+   ESTILOS MIGRADOS (LOTE 2)
+   ================================================================== */
+
+/* BOTONES GLOBALES MEJORADOS */
+.btn-primary {
+    background: linear-gradient(90deg, #FF8200 0%, #ff9a3c 100%);
+    border: none;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #e56f00 0%, #ff8200 100%);
+    color: #fff;
+}
+
+.btn-danger {
+    background: linear-gradient(90deg, #b00020 0%, #d33a4f 100%);
+    border: none;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.25s ease;
+}
+
+.btn-danger:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #8e0018 0%, #b00020 100%);
+    color: #fff;
+}
+
+/* CARDS PERSONALIZADAS */
+/* Se usa .card-custom para no romper todas las cards de bootstrap si no se desea */
+.card-custom,
+.plaza-card,
+.formulario-postulacion,
+.confirmacion-container {
+    background: #fff;
+    border: none;
+    border-top: 6px solid #FF8200;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease-in-out;
+}
+
+.card-custom:hover,
+.plaza-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* FORMULARIOS */
+.seccion {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    margin-bottom: 2rem;
+    border: 1px solid #dee2e6;
+}
+
+.declaracion {
+    background-color: #fff5eb;
+    border: 1px solid #FFD8A8;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    color: #435563;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.declaracion input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+/* GRIDS */
+.plaza-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    justify-items: start;
+    margin: 2rem 0;
+}
+
+.documentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.confirmacion-container {
+    max-width: 650px;
+    margin: 6rem auto;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+.confirmacion-container .icono-exito {
+    font-size: 4.5rem;
+    color: #28a745;
+    margin-bottom: 1.2rem;
+    animation: pop 0.4s ease-in-out;
+}
+
+/* UTILIDADES EXTRAS */
+.img-thumbnail-custom {
+    max-height: 250px;
+    border-radius: 0.8rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bloque-info {
+    background-color: #f8f9fa;
+    padding: 0.7rem 1rem;
+    border-radius: 0.6rem;
+    margin-top: 0.8rem;
+    font-size: 0.88rem;
+    border: 1px solid #e6e6e6;
+}
+
+.bloque-info strong {
+    display: block;
+    color: #435563;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+@media (min-width: 1200px) {
+    .plaza-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .plaza-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+
+.table-styled th {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.8rem;
+}
+
+.table-styled td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0.75rem;
+}
+
+.table-styled tbody tr:hover {
+    background: #fff9f3;
+}
+
+/* UTILIDADES */
+.text-pre-wrap {
+    white-space: pre-wrap;
+}
+
+/* ==================================================================
+   ESTILOS MIGRADOS (LOTE 2)
+   ================================================================== */
+
+/* BOTONES GLOBALES MEJORADOS */
+.btn-primary {
+    background: linear-gradient(90deg, #FF8200 0%, #ff9a3c 100%);
+    border: none;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #e56f00 0%, #ff8200 100%);
+    color: #fff;
+}
+
+.btn-danger {
+    background: linear-gradient(90deg, #b00020 0%, #d33a4f 100%);
+    border: none;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.25s ease;
+}
+
+.btn-danger:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #8e0018 0%, #b00020 100%);
+    color: #fff;
+}
+
+/* CARDS PERSONALIZADAS */
+/* Se usa .card-custom para no romper todas las cards de bootstrap si no se desea */
+.card-custom,
+.plaza-card,
+.formulario-postulacion,
+.formulario-plaza,
+.confirmacion-container {
+    background: #fff;
+    border: none;
+    border-top: 6px solid #FF8200;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease-in-out;
+}
+
+.card-custom:hover,
+.plaza-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.formulario-postulacion {
+    padding: 2.5rem;
+    max-width: 900px;
+    margin: 2rem auto;
+}
+
+/* FORMULARIOS */
+.seccion {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    margin-bottom: 2rem;
+    border: 1px solid #dee2e6;
+}
+
+.declaracion {
+    background-color: #fff5eb;
+    border: 1px solid #FFD8A8;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    color: #435563;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.declaracion input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+/* GRIDS */
+.plaza-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    justify-items: start;
+    margin: 2rem 0;
+}
+
+.documentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.confirmacion-container {
+    max-width: 650px;
+    margin: 6rem auto;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+.confirmacion-container .icono-exito {
+    font-size: 4.5rem;
+    color: #28a745;
+    margin-bottom: 1.2rem;
+    animation: pop 0.4s ease-in-out;
+}
+
+/* UTILIDADES EXTRAS */
+.img-thumbnail-custom {
+    max-height: 250px;
+    border-radius: 0.8rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bloque-info {
+    background-color: #f8f9fa;
+    padding: 0.7rem 1rem;
+    border-radius: 0.6rem;
+    margin-top: 0.8rem;
+    font-size: 0.88rem;
+    border: 1px solid #e6e6e6;
+}
+
+.bloque-info strong {
+    display: block;
+    color: #435563;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+@media (min-width: 1200px) {
+    .plaza-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .plaza-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .plaza-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .titulo-pagina {
+        text-align: center;
+    }
+}
+
+/* AJUSTES CONFIRMACIÓN */
+.confirmacion-container h2 {
+    border-left: none;
+    display: block;
+    margin-bottom: 1rem;
+    padding-left: 0;
+}
+
+.confirmacion-container p {
+    color: #5a5a5a;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* TYPOGRAPHY FORMS */
+h4 {
+    color: #435563;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+label {
+    font-weight: 600;
+    color: #435563;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    display: inline-block;
+}
+
+/* ==================================================================
+   ESTILOS DE GESTIÓN (Plazas/Dashboard/Asignaciones)
+   ================================================================== */
+
+.formulario-plaza {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+    max-width: 900px;
+    margin: 2rem auto;
+    border-top: 6px solid #FF8200;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.encabezado-concurso {
+    background: #F3F4F6;
+    border: 1px solid #d0d7dc;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.encabezado-concurso h5 {
+    color: #435563;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+/* BOTONES GESTIÓN */
+.btn-limpiar {
+    border: 1px solid #FF8200;
+    color: #FF8200;
+    border-radius: 0.6rem;
+    padding: 0.65rem 1.3rem;
+    background: transparent;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.btn-limpiar:hover {
+    background: #FF8200;
+    color: white;
+}
+
+.btn-cancelar {
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    border-radius: 0.6rem;
+    padding: 0.65rem 1.3rem;
+    background: transparent;
+    transition: all 0.2s ease;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-cancelar:hover {
+    background: #6c757d;
+    color: white;
+}
+
+/* DASHBOARD */
+.wrap {
+    padding: 2.5rem 2rem;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.pill {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    background: #fff4eb;
+    color: #FF8200;
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.badge-closed {
+    background: #ffe6e6;
+    color: #b00020;
+    border: 1px solid #ffb3b3;
+}
+
+/* ASIGNACIONES (Detalles específicos) */
+.card-header.bg-primary {
+    background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%) !important;
+    border: none;
+    border-radius: 0.8rem 0.8rem 0 0 !important;
+}
+
+.card.border-primary {
+    border-top: 5px solid #FF8200 !important;
+}
+
+.card.border-success {
+    border-top: 5px solid #28a745 !important;
+}
+
+.card.border-warning {
+    border-top: 5px solid #ffc107 !important;
+}
+
+.card.border-info {
+    border-top: 5px solid #FF8200 !important;
+    background-color: #fff4eb;
+}
+
+.card-title.text-primary,
+.card-title.text-info {
+    color: #FF8200 !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%) !important;
+    color: #fff;
+}
+
+/* TABLAS DARK HEADER */
+.table thead.table-dark {
+    background: linear-gradient(90deg, #435563 0%, #5a6c7d 100%);
+    border: none;
+    color: #fff;
+}

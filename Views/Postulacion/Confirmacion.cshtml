@@ -1,4 +1,5 @@
-﻿@{
+﻿@model GestionPlazasVacantes.Models.Postulante
+@{
     ViewData["Title"] = "Confirmación de Postulación";
 }
 
@@ -125,23 +126,49 @@
     }
     else
     {
-        <div class="icono-exito">
+        <div class="icono-exito d-print-none">
             <i class="bi bi-check-circle-fill"></i>
         </div>
-        <h2>¡Tu postulación fue enviada con éxito!</h2>
-        <p>
-            Gracias por aplicar a una de nuestras plazas.
-            Tu solicitud ha sido registrada correctamente y será revisada por nuestro equipo de Recursos Humanos.
-            En caso de avanzar a la siguiente etapa, te estaremos contactando por los medios que indicaste. ✨
+        <h2 class="d-print-none">¡Tu postulación fue enviada con éxito!</h2>
+        
+        <!-- COMPROBANTE DE RECIBIDO (Visible en Pantalla e Impresión) -->
+        <div class="text-start mt-4 border p-4 rounded bg-light" id="comprobante-detalles">
+            <div class="text-center mb-4">
+               <h4 style="color:#FF8200; font-weight:700;">COMPROBANTE DE POSTULACIÓN</h4>
+               <p class="text-muted small">Municipalidad de Curridabat</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-6 mb-2"><strong>Fecha:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")</div>
+                <div class="col-6 mb-2"><strong>Cédula:</strong> @Model.Cedula</div>
+                <div class="col-12 mb-2"><strong>Postulante:</strong> @Model.NombreCompleto</div>
+                <div class="col-12 mb-2"><strong>Plaza:</strong> @(Model.PlazaVacante?.Titulo ?? "Plaza Vacante")</div>
+                <div class="col-12 mb-2"><strong>Estado:</strong> <span class="badge bg-success">Recibido</span></div>
+            </div>
+            
+            <div class="mt-4 text-center border-top pt-3 d-none d-print-block">
+                <p class="small text-muted">Este documento sirve como comprobante de que su solicitud fue ingresada al sistema.</p>
+            </div>
+        </div>
+
+        <p class="d-print-none mt-3">
+            Gracias por aplicar. Tu solicitud ha sido registrada correctamente.
+            Conserve este comprobante para sus registros.
         </p>
+        
+        <div class="d-flex justify-content-center gap-3 mt-4 d-print-none">
+            <button onclick="window.print()" class="btn btn-outline-secondary">
+                <i class="bi bi-printer"></i> Imprimir Comprobante
+            </button>
+        </div>
     }
 
 
-    <a asp-controller="Postulacion" asp-action="Index" class="btn-volver">
+    <a asp-controller="Postulacion" asp-action="Index" class="btn btn-primary">
         <i class="bi bi-arrow-left-circle"></i> Volver al listado de plazas
     </a>
 
-    <p class="mensaje-final">
+    <p class="text-muted small mt-4">
         Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025
     </p>
 </div>

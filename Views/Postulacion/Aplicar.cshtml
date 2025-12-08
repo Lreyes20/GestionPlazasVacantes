@@ -5,93 +5,7 @@
     Layout = "_Layout";
 }
 
-<style>
-    .formulario-postulacion {
-        background-color: #fff;
-        border-radius: 1rem;
-        padding: 2.5rem;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
-        max-width: 900px;
-        margin: 2rem auto;
-        border-top: 6px solid #FF8200;
-        font-family: 'Biryani', Verdana, sans-serif;
-        color: #435563;
-    }
 
-    h4 {
-        color: #435563;
-        font-weight: 700;
-        text-align: center;
-        font-size: 1.5rem;
-    }
-
-    label {
-        font-weight: 600;
-        color: #435563;
-        margin-top: 1rem;
-        font-size: 0.95rem;
-    }
-
-    .seccion {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 0.8rem;
-        margin-bottom: 2rem;
-        border: 1px solid #dee2e6;
-    }
-
-    .botones-formulario {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-    }
-
-    .btn-guardar, .btn-pdf {
-        border: none;
-        border-radius: 0.5rem;
-        padding: 0.7rem 1.3rem;
-        font-weight: 700;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    .btn-guardar {
-        background: linear-gradient(90deg, #FF8200 0%, #E66F00 100%);
-        color: white;
-    }
-
-        .btn-guardar:hover {
-            transform: scale(1.04);
-        }
-
-    .btn-pdf {
-        background: linear-gradient(90deg, #218838 0%, #28a745 100%);
-        color: white;
-    }
-
-        .btn-pdf:hover {
-            transform: scale(1.04);
-        }
-
-    .declaracion {
-        background-color: #fff5eb;
-        border: 1px solid #FFD8A8;
-        padding: 1.25rem;
-        border-radius: 0.75rem;
-        color: #435563;
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-    }
-
-        .declaracion input[type="checkbox"] {
-            transform: scale(1.2);
-            margin-right: 0.5rem;
-            cursor: pointer;
-        }
-</style>
 
 <div class="formulario-postulacion">
     <h4><i class="bi bi-person-badge me-2"></i>Formulario de Postulación</h4>
@@ -175,22 +89,23 @@
 
         <div class="seccion">
             <h5>📎 Currículum Vitae</h5>
-            <p class="text-muted">Podés subir tu currículum o generarlo automáticamente con los datos del formulario.</p>
+            <p class="text-muted">Podés subir tu currículum en PDF o generarlo automáticamente con los datos del formulario.</p>
 
             <div class="row align-items-center">
-                <div class="col-md-8">
-                    <label for="archivoCV" class="form-label fw-semibold">Adjuntar CV (PDF o DOCX)</label>
-                    <input type="file" name="archivoCV" id="archivoCV" accept=".pdf,.doc,.docx" class="form-control mb-2" />
+                <div class="col-md-6">
+                    <label for="archivoCV" class="form-label">📄 Subir tu currículum (solo PDF)</label>
+                    <input type="file" name="archivoCV" id="archivoCV" accept=".pdf" class="form-control" />
+                    <small class="text-muted">Tamaño máximo: 10 MB</small>
                 </div>
-
-                <div class="col-md-4 d-flex justify-content-end mt-3 mt-md-0">
-                    <button type="submit" formaction="/Postulacion/GenerarCVPrevia" class="btn btn-danger" formtarget="_blank">
+                <div class="col-md-6 text-center">
+                    <p class="mb-2"><strong>O bien</strong></p>
+                    <button type="button" id="btnGenerarCV" class="btn btn-outline-primary">
                         <i class="bi bi-file-earmark-pdf"></i> Generar CV Automático
                     </button>
+                    <small class="d-block text-muted mt-1">Se generará un PDF con los datos ingresados</small>
                 </div>
             </div>
         </div>
-
 
         <!-- 🔹 Documentos requeridos -->
         @if (plaza != null && (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos))
@@ -250,7 +165,7 @@
         <!-- 🔘 Botones -->
         <div class="botones-formulario mt-4">
             
-            <button type="submit" id="btnEnviar" class="btn-guardar">
+            <button type="submit" id="btnEnviar" class="btn btn-primary">
                 <i class="bi bi-send-check"></i> Enviar Postulación
             </button>
         </div>
@@ -260,6 +175,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const btnEnviar = document.getElementById("btnEnviar");
+        const btnGenerarCV = document.getElementById("btnGenerarCV");
+
+        // Validación del formulario principal
         btnEnviar.addEventListener("click", (e) => {
             const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
             const cedula = document.querySelector('[name="Cedula"]').value.trim();
@@ -277,6 +195,53 @@
                 alert("⚠️ Debes aceptar la declaración bajo juramento para continuar.");
                 return false;
             }
+        });
+
+        // Generar CV en PDF
+        btnGenerarCV.addEventListener("click", () => {
+            const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
+            const cedula = document.querySelector('[name="Cedula"]').value.trim();
+
+            if (!nombre || !cedula) {
+                alert("⚠️ Debes completar al menos tu nombre y cédula antes de generar el CV.");
+                return;
+            }
+
+            // Crear formulario temporal para enviar datos a GenerarCVPrevia
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("GenerarCVPrevia", "Postulacion")';
+            form.target = '_blank';
+
+            // Copiar todos los campos del formulario principal
+            const campos = ['NombreCompleto', 'Cedula', 'Correo', 'Telefono', 'Direccion', 
+                           'PerfilProfesional', 'ExperienciaLaboral', 'FormacionAcademica', 
+                           'Habilidades', 'Idiomas', 'FormacionComplementaria', 'OtrosDatos'];
+
+            campos.forEach(campo => {
+                const input = document.querySelector(`[name="${campo}"]`);
+                if (input && input.value) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = campo;
+                    hidden.value = input.value;
+                    form.appendChild(hidden);
+                }
+            });
+
+            // Agregar token antiforgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) {
+                const hiddenToken = document.createElement('input');
+                hiddenToken.type = 'hidden';
+                hiddenToken.name = '__RequestVerificationToken';
+                hiddenToken.value = token.value;
+                form.appendChild(hiddenToken);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
         });
     });
 </script>
