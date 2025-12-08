@@ -6,6 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GestionPlazasVacantes.csproj" />
+    <ProjectReference Include="..\GestionPlazasVacantes.csproj" />
   </ItemGroup>
 </Project>
