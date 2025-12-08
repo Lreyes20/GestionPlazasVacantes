@@ -34,7 +34,7 @@ foreach (var user in nuevosUsuarios)
 Console.WriteLine("\n=== Insertando usuarios en la base de datos ===\n");
 
 var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=GestionPlazasVacantesDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
+optionsBuilder.UseSqlServer("Server=localhost;Database=GestionPlazasVacantesDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
 
 using (var context = new AppDbContext(optionsBuilder.Options))
 {
