@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using GestionPlazasVacantes.Data;
 using GestionPlazasVacantes.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace GestionPlazasVacantes.Controllers
 {
@@ -166,6 +169,7 @@ namespace GestionPlazasVacantes.Controllers
                 }
 
                 // Guardar en base de datos
+                model.Id = 0; // Asegurar que Entity Framework genere el ID automáticamente
                 model.EstadoProceso = "Recibido";
                 model.FechaActualizacion = DateTime.Now;
 
@@ -177,8 +181,16 @@ namespace GestionPlazasVacantes.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                ModelState.AddModelError("", "⚠️ Ocurrió un error al procesar su postulación.");
+                // Log detallado del error
+                var errorMsg = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errorMsg += $" | Inner: {ex.InnerException.Message}";
+                }
+                Console.WriteLine($"❌ Error al guardar postulación: {errorMsg}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                
+                ModelState.AddModelError("", $"⚠️ Ocurrió un error al procesar su postulación: {errorMsg}");
                 return View(model);
             }
         }
@@ -193,6 +205,155 @@ namespace GestionPlazasVacantes.Controllers
             if (postulante == null) return NotFound();
             return View(postulante);
         }
+
+        // 🧾 Generar CV en PDF
+        [HttpPost]
+        public IActionResult GenerarCVPrevia(Postulante postulante)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            if (string.IsNullOrWhiteSpace(postulante.NombreCompleto) || string.IsNullOrWhiteSpace(postulante.Cedula))
+            {
+                TempData["ErrorMessage"] = "⚠️ Debes completar al menos tu nombre y cédula antes de generar el CV.";
+                return RedirectToAction("Index");
+            }
+
+            var pdfBytes = Document.Create(doc =>
+            {
+                doc.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(50);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily("Helvetica"));
+
+                    page.Header().Element(h =>
+                    {
+                        h.PaddingBottom(20)
+                         .AlignCenter()
+                         .Text("Currículum Vitae")
+                         .FontSize(20)
+                         .Bold()
+                         .FontColor(Colors.Blue.Medium);
+                    });
+
+                    page.Content().Column(col =>
+                    {
+                        void AddSection(string titulo, string? contenido)
+                        {
+                            if (!string.IsNullOrWhiteSpace(contenido))
+                            {
+                                col.Item().Text(titulo)
+                                    .Bold()
+                                    .FontSize(14)
+                                    .FontColor(Colors.Orange.Medium);
+
+                                col.Item().Element(e =>
+                                {
+                                    e.PaddingBottom(10)
+                                     .Text(contenido)
+                                     .FontSize(12)
+                                     .FontColor(Colors.Grey.Darken3);
+                                });
+                            }
+                        }
+
+                        AddSection("🧍 Datos Personales",
+                            $"Nombre: {postulante.NombreCompleto}\n" +
+                            $"Cédula: {postulante.Cedula}\n" +
+                            $"Correo: {postulante.Correo}\n" +
+                            $"Teléfono: {postulante.Telefono}\n" +
+                            $"Dirección: {postulante.Direccion}");
+
+                        AddSection("💼 Perfil Profesional", postulante.PerfilProfesional);
+                        AddSection("🏢 Experiencia Laboral", postulante.ExperienciaLaboral);
+                        AddSection("🎓 Formación Académica", postulante.FormacionAcademica);
+                        AddSection("⚙️ Habilidades", postulante.Habilidades);
+                        AddSection("🌍 Idiomas", postulante.Idiomas);
+                        AddSection("📚 Formación Complementaria", postulante.FormacionComplementaria);
+                        AddSection("⭐ Otros Datos", postulante.OtrosDatos);
+                    });
+
+                    page.Footer().AlignCenter().Text(t =>
+                    {
+                        t.Span("Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025")
+                         .FontSize(10)
+                         .FontColor(Colors.Grey.Darken1);
+                    });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", $"CV_{postulante.NombreCompleto.Replace(" ", "_")}.pdf");
+        }
+
+        /* TEMPORALMENTE DESHABILITADO - PROBLEMA DE COMPILACIÓN
+        // 📄 Descargar comprobante en PDF
+        public async Task<IActionResult> DescargarComprobante(int id)
+        {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+            var postulante = await _context.Postulantes
+                .Include(p => p.PlazaVacante)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (postulante == null)
+                return NotFound();
+
+            var pdfBytes = QuestPDF.Fluent.Document.Create(doc =>
+            {
+                doc.Page(page =>
+                {
+                    page.Size(QuestPDF.Infrastructure.PageSizes.A4);
+                    page.Margin(50);
+                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Helvetica"));
+
+                    // Header
+                    page.Header().Column(col =>
+                    {
+                        col.Item().AlignCenter().Text("COMPROBANTE DE POSTULACIÓN INTERNA")
+                            .FontSize(18).Bold().FontColor(QuestPDF.Helpers.Colors.Orange.Medium);
+                        col.Item().AlignCenter().Text("Municipalidad de Curridabat")
+                            .FontSize(12).FontColor(QuestPDF.Helpers.Colors.Grey.Darken2);
+                        col.Item().PaddingTop(5).LineHorizontal(2).LineColor(QuestPDF.Helpers.Colors.Orange.Medium);
+                    });
+
+                    // Content
+                    page.Content().PaddingVertical(20).Column(col =>
+                    {
+                        col.Spacing(10);
+
+                        col.Item().Text($"Fecha: {postulante.FechaActualizacion:dd/MM/yyyy HH:mm}").FontSize(10);
+                        
+                        col.Item().PaddingTop(10).Text("Datos del Postulante").Bold().FontSize(14).FontColor(QuestPDF.Helpers.Colors.Orange.Medium);
+                        col.Item().Text($"Nombre: {postulante.NombreCompleto}");
+                        col.Item().Text($"Cédula: {postulante.Cedula}");
+                        col.Item().Text($"Correo: {postulante.Correo}");
+                        col.Item().Text($"Teléfono: {postulante.Telefono}");
+
+                        col.Item().PaddingTop(10).Text("Datos de la Plaza").Bold().FontSize(14).FontColor(QuestPDF.Helpers.Colors.Orange.Medium);
+                        col.Item().Text($"Título: {postulante.PlazaVacante?.Titulo ?? "N/A"}");
+                        col.Item().Text($"Departamento: {postulante.PlazaVacante?.Departamento ?? "N/A"}");
+                        col.Item().Text($"Número de Concurso: {postulante.PlazaVacante?.NumeroConcurso ?? "N/A"}");
+
+                        col.Item().PaddingTop(10).Text("Estado").Bold().FontSize(14).FontColor(QuestPDF.Helpers.Colors.Orange.Medium);
+                        col.Item().Text($"Estado: {postulante.EstadoProceso}").FontColor(QuestPDF.Helpers.Colors.Green.Darken2);
+
+                        col.Item().PaddingTop(20).BorderTop(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).PaddingTop(10)
+                            .Text("Este documento sirve como comprobante de que su solicitud fue ingresada al sistema.")
+                            .FontSize(9).Italic().FontColor(QuestPDF.Helpers.Colors.Grey.Darken1);
+                    });
+
+                    // Footer
+                    page.Footer().AlignCenter().Text(t =>
+                    {
+                        t.Span("Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025")
+                            .FontSize(9).FontColor(QuestPDF.Helpers.Colors.Grey.Darken1);
+                    });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", $"Comprobante_{postulante.Cedula}.pdf");
+        }
+        */
 
         private bool ValidarExtension(string fileName, string[] extensionesPermitidas)
         {

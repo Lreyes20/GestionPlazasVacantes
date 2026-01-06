@@ -15,14 +15,16 @@ using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
 
 namespace GestionPlazasVacantes.Controllers
 {
-    [Microsoft.AspNetCore.Authorization.Authorize] // Todos pueden ver reportes (filtrado por asignación)
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class ReportesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<ReportesController> _logger;
 
-        public ReportesController(AppDbContext context)
+        public ReportesController(AppDbContext context, ILogger<ReportesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Reportes
@@ -48,7 +50,7 @@ namespace GestionPlazasVacantes.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] ReportesController.Index: {ex.Message}");
+                _logger.LogError(ex, "Error al cargar índice de reportes");
                 return View(new ReporteViewModel());
             }
         }
@@ -89,6 +91,9 @@ namespace GestionPlazasVacantes.Controllers
 
         public async Task<IActionResult> ExportarPDF(int plazaId)
         {
+            // Configurar licencia de QuestPDF (requerido)
+            QuestPDF.Settings.License = LicenseType.Community;
+            
             try
             {
                 var plaza = await _context.PlazasVacantes
@@ -196,11 +201,12 @@ namespace GestionPlazasVacantes.Controllers
                 string safeConcurso = plaza.NumeroConcurso.Trim().Replace("/", "-").Replace("\\", "-");
                 string fileName = $"Reporte_{safeConcurso}.pdf";
                 
+                Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName}\"");
                 return File(stream, "application/pdf", fileName);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] ExportarPDF: {ex.Message}");
+                _logger.LogError(ex, "Error al exportar PDF para plaza {PlazaId}", plazaId);
                 return BadRequest("Ocurrió un error al generar el PDF.");
             }
         }
@@ -300,13 +306,14 @@ namespace GestionPlazasVacantes.Controllers
                         string safeConcurso = plaza.NumeroConcurso.Trim().Replace("/", "-").Replace("\\", "-");
                         string fileName = $"Reporte_{safeConcurso}.xlsx";
                         
+                        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName}\"");
                         return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] ExportarExcel: {ex.Message}");
+                _logger.LogError(ex, "Error al exportar Excel para plaza {PlazaId}", plazaId);
                 return BadRequest("Ocurrió un error al generar el Excel.");
             }
         }
@@ -413,12 +420,13 @@ namespace GestionPlazasVacantes.Controllers
                     string safeConcurso = plaza.NumeroConcurso.Trim().Replace("/", "-").Replace("\\", "-");
                     string fileName = $"Reporte_{safeConcurso}.docx";
                     
+                    Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName}\"");
                     return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] ExportarWord: {ex.Message}");
+                _logger.LogError(ex, "Error al exportar Word para plaza {PlazaId}", plazaId);
                 return BadRequest("Ocurrió un error al generar el documento Word.");
             }
         }

@@ -228,6 +228,74 @@ namespace GestionPlazasVacantes.Controllers
 
             return File(pdfBytes, "application/pdf", $"CV_{postulante.NombreCompleto.Replace(" ", "_")}.pdf");
         }
+
+        // 📄 Descargar comprobante en PDF
+        public async Task<IActionResult> DescargarComprobante(int id)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var postulante = await _context.Postulantes
+                .Include(p => p.PlazaVacante)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (postulante == null)
+                return NotFound();
+
+            var pdfBytes = Document.Create(doc =>
+            {
+                doc.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(50);
+                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Helvetica"));
+
+                    // Header
+                    page.Header().Column(col =>
+                    {
+                        col.Item().AlignCenter().Text("COMPROBANTE DE POSTULACIÓN")
+                            .FontSize(18).Bold().FontColor(Colors.Orange.Medium);
+                        col.Item().AlignCenter().Text("Municipalidad de Curridabat")
+                            .FontSize(12).FontColor(Colors.Grey.Darken2);
+                        col.Item().PaddingTop(5).LineHorizontal(2).LineColor(Colors.Orange.Medium);
+                    });
+
+                    // Content
+                    page.Content().PaddingVertical(20).Column(col =>
+                    {
+                        col.Spacing(10);
+
+                        col.Item().Text($"Fecha: {postulante.FechaActualizacion:dd/MM/yyyy HH:mm}").FontSize(10);
+                        
+                        col.Item().PaddingTop(10).Text("Datos del Postulante").Bold().FontSize(14).FontColor(Colors.Orange.Medium);
+                        col.Item().Text($"Nombre: {postulante.NombreCompleto}");
+                        col.Item().Text($"Cédula: {postulante.Cedula}");
+                        col.Item().Text($"Correo: {postulante.Correo}");
+                        col.Item().Text($"Teléfono: {postulante.Telefono}");
+
+                        col.Item().PaddingTop(10).Text("Datos de la Plaza").Bold().FontSize(14).FontColor(Colors.Orange.Medium);
+                        col.Item().Text($"Título: {postulante.PlazaVacante?.Titulo ?? "N/A"}");
+                        col.Item().Text($"Departamento: {postulante.PlazaVacante?.Departamento ?? "N/A"}");
+                        col.Item().Text($"Número de Concurso: {postulante.PlazaVacante?.NumeroConcurso ?? "N/A"}");
+
+                        col.Item().PaddingTop(10).Text("Estado").Bold().FontSize(14).FontColor(Colors.Orange.Medium);
+                        col.Item().Text($"Estado: {postulante.EstadoProceso}").FontColor(Colors.Green.Darken2);
+
+                        col.Item().PaddingTop(20).BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(10)
+                            .Text("Este documento sirve como comprobante de que su solicitud fue ingresada al sistema.")
+                            .FontSize(9).Italic().FontColor(Colors.Grey.Darken1);
+                    });
+
+                    // Footer
+                    page.Footer().AlignCenter().Text(t =>
+                    {
+                        t.Span("Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025")
+                            .FontSize(9).FontColor(Colors.Grey.Darken1);
+                    });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", $"Comprobante_{postulante.Cedula}.pdf");
+        }
        
 
         private async Task<string?> GuardarArchivo(

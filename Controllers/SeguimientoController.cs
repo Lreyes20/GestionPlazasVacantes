@@ -38,6 +38,7 @@ namespace GestionPlazasVacantes.Controllers
             // Si es Jefe, ve todas las plazas activas
 
             var plazasConPostulantes = await query
+                .AsNoTracking() // Optimización: No trackear cambios
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 
@@ -47,30 +48,52 @@ namespace GestionPlazasVacantes.Controllers
 
 
         // 👀 Seguimiento por plaza
-        public async Task<IActionResult> PorPlaza(int plazaId)
+    public async Task<IActionResult> PorPlaza(int plazaId)
+    {
+        var plaza = await _context.PlazasVacantes.FirstOrDefaultAsync(p => p.Id == plazaId);
+        if (plaza == null) return NotFound();
+
+        // 🔹 Obtener TODOS los postulantes de la plaza
+        var postulantes = await _context.Postulantes
+            .Include(p => p.PlazaVacante)
+            .Where(p => p.PlazaVacanteId == plazaId)
+            .OrderByDescending(p => p.FechaActualizacion)
+            .ToListAsync();
+
+        // 🔹 Obtener seguimientos existentes (solo activos)
+        var seguimientos = await _context.SeguimientosPostulantes
+            .AsNoTracking()
+            .Where(s => s.PlazaVacanteId == plazaId && s.Activo)
+            .ToListAsync();
+
+        // 🔹 Crear seguimientos automáticamente para postulantes que no tienen
+        var postulanteIdsConSeguimiento = seguimientos.Select(s => s.PostulanteId).ToHashSet();
+        var postulantesNuevos = postulantes.Where(p => !postulanteIdsConSeguimiento.Contains(p.Id)).ToList();
+
+        if (postulantesNuevos.Any())
         {
-            var plaza = await _context.PlazasVacantes.FirstOrDefaultAsync(p => p.Id == plazaId);
-            if (plaza == null) return NotFound();
-
-            // 🔹 Solo seguimientos ACTIVOS (no descartados)
-            var seguimientos = await _context.SeguimientosPostulantes
-                .Where(s => s.PlazaVacanteId == plazaId && s.Activo)
-                .ToListAsync();
-
-            // Obtener IDs de postulantes activos
-            var postulanteIds = seguimientos.Select(s => s.PostulanteId).ToList();
-
-            // Solo mostrar postulantes que tienen seguimiento activo
-            var postulantes = await _context.Postulantes
-                .Include(p => p.PlazaVacante)
-                .Where(p => p.PlazaVacanteId == plazaId && postulanteIds.Contains(p.Id))
-                .ToListAsync();
-
-            ViewBag.Plaza = plaza;
-            ViewBag.Seguimientos = seguimientos;
-
-            return View(postulantes);
+            foreach (var postulante in postulantesNuevos)
+            {
+                var nuevoSeguimiento = new SeguimientoPostulante
+                {
+                    PostulanteId = postulante.Id,
+                    PlazaVacanteId = plazaId,
+                    EtapaActual = "Revisión documental",
+                    CumpleRequisitos = true,
+                    Activo = true,
+                    Aprobado = false
+                };
+                _context.SeguimientosPostulantes.Add(nuevoSeguimiento);
+                seguimientos.Add(nuevoSeguimiento);
+            }
+            await _context.SaveChangesAsync();
         }
+
+        ViewBag.Plaza = plaza;
+        ViewBag.Seguimientos = seguimientos;
+
+        return View(postulantes);
+    }
 
         // 🧾 Detalle individual de un postulante
         public async Task<IActionResult> Detalle(int id)

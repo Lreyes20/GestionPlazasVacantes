@@ -160,6 +160,9 @@
             <button onclick="window.print()" class="btn btn-outline-secondary">
                 <i class="bi bi-printer"></i> Imprimir Comprobante
             </button>
+            <a asp-action="DescargarComprobante" asp-route-id="@Model.Id" class="btn btn-danger">
+                <i class="bi bi-file-pdf"></i> Descargar PDF
+            </a>
         </div>
     }
 

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using GestionPlazasVacantes.Models;
 using GestionPlazasVacantes.Data;
+using System.Linq;
 
 namespace GestionPlazasVacantes.Controllers
 {
@@ -21,6 +22,7 @@ namespace GestionPlazasVacantes.Controllers
             // Mostrar TODAS las plazas activas (no cerradas) para permitir edición
             // Cuando una plaza se cierra (Activa = false), desaparece del listado
             var plazas = await _context.PlazasVacantes
+                .AsNoTracking() // Optimización: No trackear cambios para consultas de solo lectura
                 .Where(p => p.Activa) // Solo plazas activas (no cerradas manualmente)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
@@ -41,19 +43,38 @@ namespace GestionPlazasVacantes.Controllers
         {
             if (ModelState.IsValid)
             {
-                plaza.FechaCreacion = DateTime.Now;
-                plaza.Activa = true;
-                plaza.Estado = "Abierta";
-                plaza.EstadoFinal = "Abierta"; // Para que aparezca en el filtro del Index
-                _context.Add(plaza);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    plaza.Id = 0; // Asegurar que Entity Framework genere el ID automáticamente
+                    plaza.FechaCreacion = DateTime.Now;
+                    plaza.Activa = true;
+                    plaza.Estado = "Abierta";
+                    plaza.EstadoFinal = "Abierta"; // Para que aparezca en el filtro del Index
+                    _context.Add(plaza);
+                    await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = " Plaza vacante creada correctamente.";
-
-                return RedirectToAction("Index", "Dashboard");
+                    TempData["SuccessMessage"] = "✅ Plaza vacante creada correctamente.";
+                    return RedirectToAction("Index", "Dashboard");
+                }
+                catch (Exception ex)
+                {
+                    var errorMsg = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        errorMsg += $" | Inner: {ex.InnerException.Message}";
+                    }
+                    Console.WriteLine($"❌ Error al crear plaza: {errorMsg}");
+                    TempData["ErrorMessage"] = $"❌ Error al guardar la plaza: {errorMsg}";
+                    return View(plaza);
+                }
             }
             
-            TempData["ErrorMessage"] = " Hubo un error al guardar la plaza. Verifique los campos.";
+            // Mostrar errores de validación
+            var errors = string.Join("; ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+            
+            TempData["ErrorMessage"] = $"⚠️ Errores de validación: {errors}";
             return View(plaza);
         }
 

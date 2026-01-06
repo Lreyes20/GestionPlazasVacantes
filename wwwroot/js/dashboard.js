@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="badge-soft">
                             <i class="bi bi-bullseye"></i> ${fmt(x.plazasActivas)} plaza(s)
                         </span>
-                        <!-- Por ahora sin botón de Ver/Postulantes para evitar más variables -->
+                        ${x.plazaId ? `<a href="/Dashboard/Plaza/${x.plazaId}" class="btn btn-sm btn-outline-primary"><i class="bi bi-people"></i> Ver postulantes</a>` : ''}
                     </div>
                 `;
                 cards.appendChild(el);
