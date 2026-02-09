@@ -1,19 +1,22 @@
-﻿using GestionPlazasVacantes.Data;
+﻿using GestionPlazasVacantes.DTOs;
 using GestionPlazasVacantes.Models;
-using GestionPlazasVacantes.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Json;
 using System.Security.Claims;
 
 namespace GestionPlazasVacantes.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AppDbContext _db;
-        public AccountController(AppDbContext db) => _db = db;
+        private readonly HttpClient _api;
+
+        public AccountController(IHttpClientFactory factory)
+        {
+            _api = factory.CreateClient("Api");
+        }
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -27,36 +30,42 @@ namespace GestionPlazasVacantes.Controllers
         [EnableRateLimiting("login")]
         public async Task<IActionResult> Login(LoginVM vm, string? returnUrl = null)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+                return View(vm);
 
-            // 🔒 Búsqueda por usuario activo
-            var user = await _db.Usuarios.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Username == vm.Username && u.Activo);
+            // LLAMADA AL API
+            var response = await _api.PostAsJsonAsync(
+                "api/auth/login",
+                new { vm.Username, vm.Password });
 
-            // Verificar que el usuario existe y la contraseña es correcta
-            if (user is null || !user.VerifyPassword(vm.Password))
+            if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError(string.Empty, "Usuario o contraseña inválidos.");
                 return View(vm);
             }
 
+            var user = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.GivenName, user.FullName),
-        new Claim(ClaimTypes.Role, user.Rol.ToString())
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.GivenName, user.FullName),
+                new Claim(ClaimTypes.Role, user.Rol)
+            };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(identity),
-                new AuthenticationProperties { IsPersistent = vm.RememberMe, AllowRefresh = true });
-
-            // 🔹 Registrar último acceso
-            var tracked = await _db.Usuarios.FirstAsync(u => u.Id == user.Id);
-            tracked.UltimoAccesoUtc = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+                new AuthenticationProperties
+                {
+                    IsPersistent = vm.RememberMe,
+                    AllowRefresh = true
+                });
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
@@ -66,7 +75,9 @@ namespace GestionPlazasVacantes.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
             return RedirectToAction(nameof(Login));
         }
 

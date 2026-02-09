@@ -92,7 +92,17 @@ builder.Services.AddControllersWithViews();
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+});
+
+
 var app = builder.Build();
+
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine("CONNECTION STRING = " + (cs ?? "NULL"));
+
 
 // Inicializar datos de prueba
 using (var scope = app.Services.CreateScope())
