@@ -1,0 +1,454 @@
+2026-01-21 15:10:55.661 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-01-21 15:11:03.824 -06:00 [INF] Executed DbCommand (27ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-01-21 15:11:03.921 -06:00 [INF] Executed DbCommand (79ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-01-21 15:11:04.259 -06:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-01-21 15:11:04.278 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-01-21 15:11:04.579 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-01-21 15:11:04.956 -06:00 [INF] Now listening on: https://localhost:7021
+2026-01-21 15:11:04.961 -06:00 [INF] Now listening on: http://localhost:5196
+2026-01-21 15:11:05.076 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-21 15:11:05.110 -06:00 [INF] Hosting environment: Development
+2026-01-21 15:11:05.126 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
+2026-01-21 15:11:10.253 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/ - null null
+2026-01-21 15:11:12.820 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-01-21 15:11:12.980 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login(System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-01-21 15:11:13.305 -06:00 [INF] Executing ViewResult, running view Login.
+2026-01-21 15:11:14.101 -06:00 [INF] Executed ViewResult - view Login executed in 810.2149ms.
+2026-01-21 15:11:14.150 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 1004.1705ms
+2026-01-21 15:11:14.189 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-01-21 15:11:14.277 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:11:14.336 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:11:14.373 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/ - 200 null text/html; charset=utf-8 4183.8312ms
+2026-01-21 15:11:14.587 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/css/login.css?v=D-fhBloQYNBZ31r48wjwA7nRzXlfJEGmiqtufdPuDl0 - null null
+2026-01-21 15:11:14.650 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/images/banner-curridabat.png - null null
+2026-01-21 15:11:14.667 -06:00 [INF] Sending file. Request path: '/css/login.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\css\login.css'
+2026-01-21 15:11:14.694 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/css/login.css?v=D-fhBloQYNBZ31r48wjwA7nRzXlfJEGmiqtufdPuDl0 - 200 null text/css 106.472ms
+2026-01-21 15:11:14.773 -06:00 [INF] Sending file. Request path: '/images/banner-curridabat.png'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\banner-curridabat.png'
+2026-01-21 15:11:14.776 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/images/banner-curridabat.png - 200 107745 image/png 125.9481ms
+2026-01-21 15:11:16.070 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/favicon.ico - null null
+2026-01-21 15:11:16.148 -06:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\favicon.ico'
+2026-01-21 15:11:16.241 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/favicon.ico - 200 5430 image/x-icon 171.3717ms
+2026-01-21 15:11:58.564 -06:00 [INF] Request starting HTTP/2 POST https://localhost:7021/ - application/x-www-form-urlencoded 218
+2026-01-21 15:11:58.674 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-01-21 15:11:58.704 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-01-21 15:11:59.377 -06:00 [INF] Executed DbCommand (247ms) [Parameters=[@__vm_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__vm_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-01-21 15:12:00.088 -06:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-01-21 15:12:00.105 -06:00 [INF] Executed DbCommand (6ms) [Parameters=[@__user_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Id] = @__user_Id_0
+2026-01-21 15:12:00.366 -06:00 [INF] Executed DbCommand (91ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [auth].[Usuarios] SET [UltimoAccesoUtc] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2026-01-21 15:12:00.387 -06:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-01-21 15:12:00.389 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 1683.3361ms
+2026-01-21 15:12:00.391 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-01-21 15:12:00.397 -06:00 [INF] Request finished HTTP/2 POST https://localhost:7021/ - 302 null null 1832.2573ms
+2026-01-21 15:12:00.398 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Home/Index - null null
+2026-01-21 15:12:00.414 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:00.416 -06:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.HomeController (GestionPlazasVacantes).
+2026-01-21 15:12:00.421 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:00.525 -06:00 [INF] Executed DbCommand (5ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:00.542 -06:00 [INF] Executed ViewResult - view Index executed in 121.9047ms.
+2026-01-21 15:12:00.575 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-01-21 15:12:00.576 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes) in 156.5614ms
+2026-01-21 15:12:00.579 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:00.580 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:00.581 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:00.582 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Home/Index - 200 null text/html; charset=utf-8 184.2117ms
+2026-01-21 15:12:00.644 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - null null
+2026-01-21 15:12:00.644 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - null null
+2026-01-21 15:12:00.647 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/images/escudo-curridabat.png - null null
+2026-01-21 15:12:00.653 -06:00 [INF] Sending file. Request path: '/css/site.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\css\site.css'
+2026-01-21 15:12:00.647 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/images/curridabat-logo.jpg - null null
+2026-01-21 15:12:00.657 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - 200 null text/css 13.6716ms
+2026-01-21 15:12:00.704 -06:00 [INF] Sending file. Request path: '/GestionPlazasVacantes.styles.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\obj\Debug\net8.0\scopedcss\bundle\GestionPlazasVacantes.styles.css'
+2026-01-21 15:12:00.712 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/lib/jquery/dist/jquery.min.js - null null
+2026-01-21 15:12:00.716 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-01-21 15:12:00.718 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - 200 null text/css 73.6904ms
+2026-01-21 15:12:00.717 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - null null
+2026-01-21 15:12:00.727 -06:00 [INF] Sending file. Request path: '/images/curridabat-logo.jpg'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\curridabat-logo.jpg'
+2026-01-21 15:12:00.736 -06:00 [INF] Sending file. Request path: '/js/site.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\site.js'
+2026-01-21 15:12:00.737 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/images/curridabat-logo.jpg - 200 23077 image/jpeg 90.6606ms
+2026-01-21 15:12:00.741 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - 200 null text/javascript 24.1218ms
+2026-01-21 15:12:00.747 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css'
+2026-01-21 15:12:00.724 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - null null
+2026-01-21 15:12:00.749 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js'
+2026-01-21 15:12:00.751 -06:00 [INF] Sending file. Request path: '/lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery\dist\jquery.min.js'
+2026-01-21 15:12:00.752 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/lib/bootstrap/dist/css/bootstrap.min.css - 200 null text/css 177.2737ms
+2026-01-21 15:12:00.755 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 null text/javascript 38.47ms
+2026-01-21 15:12:00.756 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/lib/jquery/dist/jquery.min.js - 200 null text/javascript 43.4013ms
+2026-01-21 15:12:00.755 -06:00 [INF] Sending file. Request path: '/js/session-timeout.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\session-timeout.js'
+2026-01-21 15:12:00.789 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - 200 null text/javascript 65.1518ms
+2026-01-21 15:12:01.082 -06:00 [INF] Sending file. Request path: '/images/escudo-curridabat.png'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\escudo-curridabat.png'
+2026-01-21 15:12:01.083 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/images/escudo-curridabat.png - 200 342113 image/png 436.4287ms
+2026-01-21 15:12:15.633 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Dashboard/Index - null null
+2026-01-21 15:12:15.649 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:15.652 -06:00 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-01-21 15:12:15.657 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:15.674 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:15.685 -06:00 [INF] Executed ViewResult - view Index executed in 28.2155ms.
+2026-01-21 15:12:15.687 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes) in 32.8962ms
+2026-01-21 15:12:15.695 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/js/dashboard.js?v=dVn0f8NCxdZYMkYuRGQWoGF996Q6sISNqj68HoIhq1o - null null
+2026-01-21 15:12:15.753 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:15.762 -06:00 [INF] Sending file. Request path: '/js/dashboard.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\dashboard.js'
+2026-01-21 15:12:15.767 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/js/dashboard.js?v=dVn0f8NCxdZYMkYuRGQWoGF996Q6sISNqj68HoIhq1o - 200 null text/javascript 71.5721ms
+2026-01-21 15:12:15.766 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:15.846 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:15.847 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Dashboard/Index - 200 null text/html; charset=utf-8 214.4755ms
+2026-01-21 15:12:15.869 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Dashboard/Counts?groupBy=plaza - null null
+2026-01-21 15:12:15.874 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-01-21 15:12:15.878 -06:00 [INF] Route matched with {action = "Counts", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Counts(System.String) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-01-21 15:12:16.079 -06:00 [INF] Executed DbCommand (140ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit) AND [p].[Estado] = N'Abierta'
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:16.151 -06:00 [INF] Executed DbCommand (7ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-01-21 15:12:16.154 -06:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.List`1[[GestionPlazasVacantes.Controllers.DashboardController+CountItem, GestionPlazasVacantes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-01-21 15:12:16.178 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes) in 298.2864ms
+2026-01-21 15:12:16.181 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-01-21 15:12:16.182 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Dashboard/Counts?groupBy=plaza - 200 null application/json; charset=utf-8 313.1307ms
+2026-01-21 15:12:20.791 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Plazas/Crear - null null
+2026-01-21 15:12:20.804 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-01-21 15:12:20.811 -06:00 [INF] Route matched with {action = "Crear", controller = "Plazas"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Crear() on controller GestionPlazasVacantes.Controllers.PlazasController (GestionPlazasVacantes).
+2026-01-21 15:12:20.856 -06:00 [INF] Executing ViewResult, running view Crear.
+2026-01-21 15:12:20.939 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:20.949 -06:00 [INF] Executed ViewResult - view Crear executed in 94.0169ms.
+2026-01-21 15:12:20.950 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes) in 96.4833ms
+2026-01-21 15:12:20.968 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/lib/jquery-validation/dist/jquery.validate.min.js - null null
+2026-01-21 15:12:20.970 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-01-21 15:12:20.970 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-01-21 15:12:20.993 -06:00 [INF] Sending file. Request path: '/lib/jquery-validation/dist/jquery.validate.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js'
+2026-01-21 15:12:20.996 -06:00 [INF] Sending file. Request path: '/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js'
+2026-01-21 15:12:20.998 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:21.000 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/lib/jquery-validation/dist/jquery.validate.min.js - 200 null text/javascript 32.4673ms
+2026-01-21 15:12:21.003 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 200 null text/javascript 32.9405ms
+2026-01-21 15:12:21.023 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:21.042 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Plazas/Crear - 200 null text/html; charset=utf-8 250.9298ms
+2026-01-21 15:12:22.877 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Plazas/Index - null null
+2026-01-21 15:12:22.915 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:22.920 -06:00 [INF] Route matched with {action = "Index", controller = "Plazas"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PlazasController (GestionPlazasVacantes).
+2026-01-21 15:12:22.950 -06:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:22.953 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:22.966 -06:00 [INF] Executed DbCommand (4ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:23.014 -06:00 [INF] Executed ViewResult - view Index executed in 61.3602ms.
+2026-01-21 15:12:23.016 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes) in 92.5355ms
+2026-01-21 15:12:23.041 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:23.042 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:23.044 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:23.045 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Plazas/Index - 200 null text/html; charset=utf-8 168.0359ms
+2026-01-21 15:12:25.782 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Seguimiento/Index - null null
+2026-01-21 15:12:25.855 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:25.940 -06:00 [INF] Route matched with {action = "Index", controller = "Seguimiento"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.SeguimientoController (GestionPlazasVacantes).
+2026-01-21 15:12:25.977 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:26.097 -06:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p].[Id] = [p0].[PlazaVacanteId]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC, [p].[Id], [u].[Id]
+2026-01-21 15:12:26.146 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:26.165 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:26.167 -06:00 [INF] Executed ViewResult - view Index executed in 21.7166ms.
+2026-01-21 15:12:26.190 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes) in 242.9137ms
+2026-01-21 15:12:26.191 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:26.192 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:26.193 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:26.207 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Seguimiento/Index - 200 null text/html; charset=utf-8 425.1936ms
+2026-01-21 15:12:28.481 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Asignaciones/Index - null null
+2026-01-21 15:12:28.523 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:28.526 -06:00 [INF] Route matched with {action = "Index", controller = "Asignaciones"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.AsignacionesController (GestionPlazasVacantes).
+2026-01-21 15:12:28.533 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:28.588 -06:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p].[Id] = [p0].[PlazaVacanteId]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC, [p].[Id], [u].[Id]
+2026-01-21 15:12:28.722 -06:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Activo] = CAST(1 AS bit) AND [u].[Rol] = N'Colaborador'
+ORDER BY [u].[FullName]
+2026-01-21 15:12:28.730 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:28.744 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:28.746 -06:00 [INF] Executed ViewResult - view Index executed in 17.2287ms.
+2026-01-21 15:12:28.797 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes) in 268.6873ms
+2026-01-21 15:12:28.804 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:28.805 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:28.807 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:28.809 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Asignaciones/Index - 200 null text/html; charset=utf-8 327.8848ms
+2026-01-21 15:12:31.786 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Reportes/Index - null null
+2026-01-21 15:12:31.805 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:31.880 -06:00 [INF] Route matched with {action = "Index", controller = "Reportes"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String) on controller GestionPlazasVacantes.Controllers.ReportesController (GestionPlazasVacantes).
+2026-01-21 15:12:31.930 -06:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:31.936 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:31.994 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:31.997 -06:00 [INF] Executed ViewResult - view Index executed in 60.8859ms.
+2026-01-21 15:12:32.025 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes) in 126.9245ms
+2026-01-21 15:12:32.058 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:32.062 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:32.072 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:32.074 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Reportes/Index - 200 null text/html; charset=utf-8 287.5219ms
+2026-01-21 15:12:34.702 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Postulacion/Index - null null
+2026-01-21 15:12:34.757 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:34.760 -06:00 [INF] Route matched with {action = "Index", controller = "Postulacion"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PostulacionController (GestionPlazasVacantes).
+2026-01-21 15:12:34.794 -06:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[TipoConcurso] = N'Externo' AND [p].[FechaLimite] >= CONVERT(date, GETDATE()) AND [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:34.797 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:34.804 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:34.806 -06:00 [INF] Executed ViewResult - view Index executed in 10.0887ms.
+2026-01-21 15:12:34.808 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes) in 45.7111ms
+2026-01-21 15:12:34.815 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:34.853 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:34.899 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:34.901 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Postulacion/Index - 200 null text/html; charset=utf-8 199.0339ms
+2026-01-21 15:12:36.322 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/PlazasInternas/Index - null null
+2026-01-21 15:12:36.358 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:36.393 -06:00 [INF] Route matched with {action = "Index", controller = "PlazasInternas"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PlazasInternasController (GestionPlazasVacantes).
+2026-01-21 15:12:36.436 -06:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[TipoConcurso] = N'Interno' AND [p].[FechaLimite] >= CONVERT(date, GETDATE()) AND [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:36.440 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:36.446 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:36.448 -06:00 [INF] Executed ViewResult - view Index executed in 8.7289ms.
+2026-01-21 15:12:36.495 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes) in 73.1798ms
+2026-01-21 15:12:36.498 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:36.500 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:36.502 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:36.507 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/PlazasInternas/Index - 200 null text/html; charset=utf-8 185.1424ms
+2026-01-21 15:12:40.521 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Plazas/Crear - null null
+2026-01-21 15:12:40.529 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-01-21 15:12:40.581 -06:00 [INF] Route matched with {action = "Crear", controller = "Plazas"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Crear() on controller GestionPlazasVacantes.Controllers.PlazasController (GestionPlazasVacantes).
+2026-01-21 15:12:40.590 -06:00 [INF] Executing ViewResult, running view Crear.
+2026-01-21 15:12:40.594 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:40.675 -06:00 [INF] Executed ViewResult - view Crear executed in 85.7197ms.
+2026-01-21 15:12:40.709 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes) in 119.5755ms
+2026-01-21 15:12:40.710 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-01-21 15:12:40.711 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:40.713 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:40.714 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Plazas/Crear - 200 null text/html; charset=utf-8 192.9507ms
+2026-01-21 15:12:41.992 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Dashboard/Index - null null
+2026-01-21 15:12:42.017 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:42.037 -06:00 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-01-21 15:12:42.040 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:42.042 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:42.044 -06:00 [INF] Executed ViewResult - view Index executed in 4.1896ms.
+2026-01-21 15:12:42.046 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes) in 6.683ms
+2026-01-21 15:12:42.128 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:42.129 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:42.130 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:42.131 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Dashboard/Index - 200 null text/html; charset=utf-8 138.1493ms
+2026-01-21 15:12:42.134 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Dashboard/Counts?groupBy=plaza - null null
+2026-01-21 15:12:42.139 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-01-21 15:12:42.139 -06:00 [INF] Route matched with {action = "Counts", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Counts(System.String) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-01-21 15:12:42.262 -06:00 [INF] Executed DbCommand (119ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit) AND [p].[Estado] = N'Abierta'
+ORDER BY [p].[FechaCreacion] DESC
+2026-01-21 15:12:42.292 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-01-21 15:12:42.297 -06:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.List`1[[GestionPlazasVacantes.Controllers.DashboardController+CountItem, GestionPlazasVacantes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-01-21 15:12:42.313 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes) in 172.1429ms
+2026-01-21 15:12:42.350 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-01-21 15:12:42.351 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Dashboard/Counts?groupBy=plaza - 200 null application/json; charset=utf-8 217.2018ms
+2026-01-21 15:12:45.480 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Dashboard/Plaza/1 - null null
+2026-01-21 15:12:45.543 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Plaza (GestionPlazasVacantes)'
+2026-01-21 15:12:45.548 -06:00 [INF] Route matched with {action = "Plaza", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Plaza(Int32) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-01-21 15:12:45.630 -06:00 [INF] Executed DbCommand (25ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [p1].[Id], [p1].[Activa], [p1].[ArmasObligatorio], [p1].[ColegiaturaObligatoria], [p1].[Departamento], [p1].[Estado], [p1].[EstadoFinal], [p1].[FechaCierre], [p1].[FechaCreacion], [p1].[FechaLimite], [p1].[Horario], [p1].[LicenciaObligatoria], [p1].[NumeroConcurso], [p1].[Observaciones], [p1].[Requisitos], [p1].[SalarioCompuesto], [p1].[SalarioGlobal], [p1].[SolicitarColegiatura], [p1].[SolicitarLicencia], [p1].[SolicitarPermisoArmas], [p1].[SolicitarTitulos], [p1].[TipoConcurso], [p1].[Titulo], [p1].[TitulosObligatorios], [p1].[UsuarioAsignadoId], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia]
+FROM (
+    SELECT TOP(1) [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+    FROM [gestion].[PlazasVacantes] AS [p]
+    WHERE [p].[Id] = @__id_0
+) AS [p1]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p1].[Id] = [p0].[PlazaVacanteId]
+ORDER BY [p1].[Id]
+2026-01-21 15:12:45.639 -06:00 [INF] Executing ViewResult, running view Plaza.
+2026-01-21 15:12:45.658 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:45.660 -06:00 [INF] Executed ViewResult - view Plaza executed in 21.7408ms.
+2026-01-21 15:12:45.663 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Plaza (GestionPlazasVacantes) in 113.6775ms
+2026-01-21 15:12:45.761 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Plaza (GestionPlazasVacantes)'
+2026-01-21 15:12:45.762 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:45.763 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:45.764 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Dashboard/Plaza/1 - 200 null text/html; charset=utf-8 284.4685ms
+2026-01-21 15:12:54.929 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Seguimiento/Index - null null
+2026-01-21 15:12:54.940 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:54.944 -06:00 [INF] Route matched with {action = "Index", controller = "Seguimiento"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.SeguimientoController (GestionPlazasVacantes).
+2026-01-21 15:12:54.950 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:54.956 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p].[Id] = [p0].[PlazaVacanteId]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC, [p].[Id], [u].[Id]
+2026-01-21 15:12:55.002 -06:00 [INF] Executing ViewResult, running view Index.
+2026-01-21 15:12:55.006 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:12:55.008 -06:00 [INF] Executed ViewResult - view Index executed in 5.675ms.
+2026-01-21 15:12:55.010 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes) in 63.9993ms
+2026-01-21 15:12:55.078 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-01-21 15:12:55.079 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:55.080 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:12:55.094 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Seguimiento/Index - 200 null text/html; charset=utf-8 164.0829ms
+2026-01-21 15:13:00.230 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Seguimiento/PorPlaza?plazaId=1 - null null
+2026-01-21 15:13:00.237 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.PorPlaza (GestionPlazasVacantes)'
+2026-01-21 15:13:00.276 -06:00 [INF] Route matched with {action = "PorPlaza", controller = "Seguimiento"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] PorPlaza(Int32) on controller GestionPlazasVacantes.Controllers.SeguimientoController (GestionPlazasVacantes).
+2026-01-21 15:13:00.306 -06:00 [INF] Executed DbCommand (4ms) [Parameters=[@__plazaId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Id] = @__plazaId_0
+2026-01-21 15:13:00.415 -06:00 [INF] Executed DbCommand (38ms) [Parameters=[@__plazaId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[ArchivoTitulosPath], [p].[Cedula], [p].[Correo], [p].[CurriculumPath], [p].[Direccion], [p].[EstadoProceso], [p].[ExperienciaLaboral], [p].[FechaActualizacion], [p].[FormacionAcademica], [p].[FormacionComplementaria], [p].[FotoColegiaturaPath], [p].[FotoLicenciaPath], [p].[FotoPermisoArmasPath], [p].[FotoTituloPath], [p].[Habilidades], [p].[Idiomas], [p].[NombreCompleto], [p].[NumeroColegiatura], [p].[NumeroPermisoArmas], [p].[OtrosDatos], [p].[PerfilProfesional], [p].[PlazaVacanteId], [p].[Telefono], [p].[TipoLicencia], [p0].[Id], [p0].[Activa], [p0].[ArmasObligatorio], [p0].[ColegiaturaObligatoria], [p0].[Departamento], [p0].[Estado], [p0].[EstadoFinal], [p0].[FechaCierre], [p0].[FechaCreacion], [p0].[FechaLimite], [p0].[Horario], [p0].[LicenciaObligatoria], [p0].[NumeroConcurso], [p0].[Observaciones], [p0].[Requisitos], [p0].[SalarioCompuesto], [p0].[SalarioGlobal], [p0].[SolicitarColegiatura], [p0].[SolicitarLicencia], [p0].[SolicitarPermisoArmas], [p0].[SolicitarTitulos], [p0].[TipoConcurso], [p0].[Titulo], [p0].[TitulosObligatorios], [p0].[UsuarioAsignadoId]
+FROM [gestion].[Postulantes] AS [p]
+INNER JOIN [gestion].[PlazasVacantes] AS [p0] ON [p].[PlazaVacanteId] = [p0].[Id]
+WHERE [p].[PlazaVacanteId] = @__plazaId_0
+ORDER BY [p].[FechaActualizacion] DESC
+2026-01-21 15:13:00.463 -06:00 [INF] Executed DbCommand (24ms) [Parameters=[@__plazaId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[Activo], [s].[Aprobado], [s].[CumpleRequisitos], [s].[EtapaActual], [s].[FechaActualizacion], [s].[MotivoDescarte], [s].[NotaPruebaTecnica], [s].[NotaPsicometrica], [s].[Observaciones], [s].[PlazaVacanteId], [s].[PostulanteId]
+FROM [gestion].[SeguimientosPostulantes] AS [s]
+WHERE [s].[PlazaVacanteId] = @__plazaId_0 AND [s].[Activo] = CAST(1 AS bit)
+2026-01-21 15:13:00.471 -06:00 [INF] Executing ViewResult, running view PorPlaza.
+2026-01-21 15:13:00.496 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:13:00.498 -06:00 [INF] Executed ViewResult - view PorPlaza executed in 27.7033ms.
+2026-01-21 15:13:00.499 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.SeguimientoController.PorPlaza (GestionPlazasVacantes) in 222.5986ms
+2026-01-21 15:13:00.501 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.PorPlaza (GestionPlazasVacantes)'
+2026-01-21 15:13:00.504 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:13:00.508 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:13:00.518 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Seguimiento/PorPlaza?plazaId=1 - 200 null text/html; charset=utf-8 288.452ms
+2026-01-21 15:13:06.539 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/Seguimiento/Detalle/7 - null null
+2026-01-21 15:13:06.554 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Detalle (GestionPlazasVacantes)'
+2026-01-21 15:13:06.560 -06:00 [INF] Route matched with {action = "Detalle", controller = "Seguimiento"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Detalle(Int32) on controller GestionPlazasVacantes.Controllers.SeguimientoController (GestionPlazasVacantes).
+2026-01-21 15:13:06.599 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[Id], [p].[ArchivoTitulosPath], [p].[Cedula], [p].[Correo], [p].[CurriculumPath], [p].[Direccion], [p].[EstadoProceso], [p].[ExperienciaLaboral], [p].[FechaActualizacion], [p].[FormacionAcademica], [p].[FormacionComplementaria], [p].[FotoColegiaturaPath], [p].[FotoLicenciaPath], [p].[FotoPermisoArmasPath], [p].[FotoTituloPath], [p].[Habilidades], [p].[Idiomas], [p].[NombreCompleto], [p].[NumeroColegiatura], [p].[NumeroPermisoArmas], [p].[OtrosDatos], [p].[PerfilProfesional], [p].[PlazaVacanteId], [p].[Telefono], [p].[TipoLicencia], [p0].[Id], [p0].[Activa], [p0].[ArmasObligatorio], [p0].[ColegiaturaObligatoria], [p0].[Departamento], [p0].[Estado], [p0].[EstadoFinal], [p0].[FechaCierre], [p0].[FechaCreacion], [p0].[FechaLimite], [p0].[Horario], [p0].[LicenciaObligatoria], [p0].[NumeroConcurso], [p0].[Observaciones], [p0].[Requisitos], [p0].[SalarioCompuesto], [p0].[SalarioGlobal], [p0].[SolicitarColegiatura], [p0].[SolicitarLicencia], [p0].[SolicitarPermisoArmas], [p0].[SolicitarTitulos], [p0].[TipoConcurso], [p0].[Titulo], [p0].[TitulosObligatorios], [p0].[UsuarioAsignadoId]
+FROM [gestion].[Postulantes] AS [p]
+INNER JOIN [gestion].[PlazasVacantes] AS [p0] ON [p].[PlazaVacanteId] = [p0].[Id]
+WHERE [p].[Id] = @__id_0
+2026-01-21 15:13:06.675 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [s].[Id], [s].[Activo], [s].[Aprobado], [s].[CumpleRequisitos], [s].[EtapaActual], [s].[FechaActualizacion], [s].[MotivoDescarte], [s].[NotaPruebaTecnica], [s].[NotaPsicometrica], [s].[Observaciones], [s].[PlazaVacanteId], [s].[PostulanteId]
+FROM [gestion].[SeguimientosPostulantes] AS [s]
+WHERE [s].[PostulanteId] = @__id_0
+2026-01-21 15:13:06.764 -06:00 [INF] Executing ViewResult, running view Detalle.
+2026-01-21 15:13:06.837 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-01-21 15:13:06.842 -06:00 [INF] Executed ViewResult - view Detalle executed in 77.8823ms.
+2026-01-21 15:13:06.850 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.SeguimientoController.Detalle (GestionPlazasVacantes) in 286.6005ms
+2026-01-21 15:13:06.851 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Detalle (GestionPlazasVacantes)'
+2026-01-21 15:13:06.874 -06:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:13:06.876 -06:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-01-21 15:13:06.878 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/Seguimiento/Detalle/7 - 200 null text/html; charset=utf-8 339.2504ms
+2026-01-21 15:13:10.083 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/uploads/postulantes/011cff8e-b7bf-4bcd-9592-1c1ce47e09ee_dummy.pdf - null null
+2026-01-21 15:13:10.109 -06:00 [INF] Sending file. Request path: '/uploads/postulantes/011cff8e-b7bf-4bcd-9592-1c1ce47e09ee_dummy.pdf'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\uploads\postulantes\011cff8e-b7bf-4bcd-9592-1c1ce47e09ee_dummy.pdf'
+2026-01-21 15:13:10.112 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/uploads/postulantes/011cff8e-b7bf-4bcd-9592-1c1ce47e09ee_dummy.pdf - 200 317 application/pdf 28.8764ms
+2026-01-21 15:13:22.748 -06:00 [INF] Request starting HTTP/2 GET https://localhost:7021/uploads/postulantes/fb92d5d4-533b-47c3-ab3c-1a696680863e_dummy.pdf - null null
+2026-01-21 15:13:22.772 -06:00 [INF] Sending file. Request path: '/uploads/postulantes/fb92d5d4-533b-47c3-ab3c-1a696680863e_dummy.pdf'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\uploads\postulantes\fb92d5d4-533b-47c3-ab3c-1a696680863e_dummy.pdf'
+2026-01-21 15:13:22.773 -06:00 [INF] Request finished HTTP/2 GET https://localhost:7021/uploads/postulantes/fb92d5d4-533b-47c3-ab3c-1a696680863e_dummy.pdf - 200 317 application/pdf 25.4031ms

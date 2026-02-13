@@ -13,6 +13,17 @@ namespace GestionPlazasVacantes.Services
             // Asegurar que la base de datos está creada
             context.Database.EnsureCreated();
 
+            // ===== SIEMPRE ASEGURAR CREDENCIALES DE DEMO =====
+            var lreyes = context.Usuarios.FirstOrDefault(u => u.Username == "lreyes");
+            if (lreyes != null)
+            {
+                // Forzar actualización a la contraseña solicitada
+                lreyes.PasswordHash = Services.PasswordHasher.HashPassword("lreyes123");
+                lreyes.Activo = true;
+                lreyes.Rol = RolUsuario.Jefe; // Asegurar rol
+                context.SaveChanges();
+            }
+
             bool existenUsuarios = context.Usuarios.Any();
             bool existenPlazas = context.PlazasVacantes.Any();
 
@@ -33,7 +44,7 @@ namespace GestionPlazasVacantes.Services
                         Username = "lreyes",
                         FullName = "Luis Reyes",
                         Email = "lreyes@example.com",
-                        PasswordHash = Services.PasswordHasher.HashPassword("lreyes1234"),
+                        PasswordHash = Services.PasswordHasher.HashPassword("lreyes123"),
                         Rol = RolUsuario.Jefe,
                         Activo = true,
                         CreadoUtc = DateTime.UtcNow
@@ -65,8 +76,9 @@ namespace GestionPlazasVacantes.Services
             }
             else
             {
-                usuarios = context.Usuarios.ToList();
+                 usuarios = context.Usuarios.ToList();
             }
+
 
             // ===== CREAR PLAZAS VACANTES (si no existen) =====
             List<PlazaVacante> plazas;

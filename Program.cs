@@ -94,7 +94,7 @@ QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 builder.Services.AddHttpClient("Api", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:44330/");
+    client.BaseAddress = new Uri("http://localhost:5196/");
 });
 
 

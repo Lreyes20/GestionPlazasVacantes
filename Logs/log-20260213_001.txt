@@ -1,0 +1,946 @@
+2026-02-13 08:35:05.106 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 08:35:06.779 -06:00 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 08:35:06.837 -06:00 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 08:35:07.573 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:35:07.593 -06:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:35:07.810 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 08:35:07.992 -06:00 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5196: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+ ---> System.Net.Sockets.SocketException (10048): Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(ListenOptions[] listenOptions, AddressBindContext context, Func`2 useHttps, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2026-02-13 08:35:08.026 -06:00 [FTL] La aplicación falló al iniciar
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5196: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+ ---> System.Net.Sockets.SocketException (10048): Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(ListenOptions[] listenOptions, AddressBindContext context, Func`2 useHttps, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at Program.<Main>$(String[] args) in C:\Users\lvdan\OneDrive\Escritorio\Plazas\Program.cs:line 161
+2026-02-13 08:36:26.006 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 08:36:27.264 -06:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 08:36:27.323 -06:00 [INF] Executed DbCommand (43ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 08:36:27.838 -06:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:36:27.871 -06:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:36:28.078 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 08:36:28.213 -06:00 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5196: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+ ---> System.Net.Sockets.SocketException (10048): Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(ListenOptions[] listenOptions, AddressBindContext context, Func`2 useHttps, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2026-02-13 08:36:28.222 -06:00 [FTL] La aplicación falló al iniciar
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5196: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+ ---> System.Net.Sockets.SocketException (10048): Solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(ListenOptions[] listenOptions, AddressBindContext context, Func`2 useHttps, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at Program.<Main>$(String[] args) in C:\Users\lvdan\OneDrive\Escritorio\Plazas\Program.cs:line 161
+2026-02-13 08:37:42.596 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 08:37:43.621 -06:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 08:37:43.708 -06:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 08:37:44.234 -06:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:37:44.249 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:37:44.410 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 08:37:44.576 -06:00 [INF] Now listening on: http://localhost:5196
+2026-02-13 08:37:44.579 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-13 08:37:44.580 -06:00 [INF] Hosting environment: Development
+2026-02-13 08:37:44.580 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
+2026-02-13 09:12:05.442 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 09:12:07.572 -06:00 [INF] Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 09:12:07.732 -06:00 [INF] Executed DbCommand (147ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 09:12:08.043 -06:00 [INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 09:12:08.054 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 09:12:08.230 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 09:12:08.353 -06:00 [INF] Now listening on: http://localhost:5196
+2026-02-13 09:12:08.355 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-13 09:12:08.356 -06:00 [INF] Hosting environment: Development
+2026-02-13 09:12:08.356 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
+2026-02-13 09:12:51.355 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/ - null null
+2026-02-13 09:12:51.371 -06:00 [WRN] Failed to determine the https port for redirect.
+2026-02-13 09:12:51.440 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:12:51.468 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login(System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:12:51.535 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:12:51.696 -06:00 [INF] Executed ViewResult - view Login executed in 159.2286ms.
+2026-02-13 09:12:51.702 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 232.4847ms
+2026-02-13 09:12:51.702 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:12:51.720 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/ - 200 null text/html; charset=utf-8 370.8304ms
+2026-02-13 09:13:07.616 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:13:07.629 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:07.641 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:07.810 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:07.812 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:07.963 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:13:07.967 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:07.972 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:13:08.286 -06:00 [INF] Executed DbCommand (126ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:13:08.988 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:13:08.993 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 1021.0725ms
+2026-02-13 09:13:08.993 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:08.999 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 1035.8552ms
+2026-02-13 09:13:09.001 -06:00 [INF] Received HTTP response headers after 1185.9566ms - 401
+2026-02-13 09:13:09.001 -06:00 [INF] End processing HTTP request after 1211.8091ms - 401
+2026-02-13 09:13:09.004 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:09.010 -06:00 [INF] Executed ViewResult - view Login executed in 6.3468ms.
+2026-02-13 09:13:09.010 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 1368.9107ms
+2026-02-13 09:13:09.010 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:09.012 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 1395.572ms
+2026-02-13 09:13:17.282 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 218
+2026-02-13 09:13:17.283 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:17.283 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:17.285 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:17.285 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:17.288 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:13:17.290 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:17.290 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:13:17.399 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:13:17.780 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:13:17.780 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 489.6389ms
+2026-02-13 09:13:17.780 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:17.780 -06:00 [INF] Received HTTP response headers after 495.0346ms - 401
+2026-02-13 09:13:17.780 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 492.3544ms
+2026-02-13 09:13:17.780 -06:00 [INF] End processing HTTP request after 495.3884ms - 401
+2026-02-13 09:13:17.781 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:17.783 -06:00 [INF] Executed ViewResult - view Login executed in 2.3484ms.
+2026-02-13 09:13:17.783 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 499.8232ms
+2026-02-13 09:13:17.783 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:17.783 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 501.0074ms
+2026-02-13 09:13:27.186 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/ - null null
+2026-02-13 09:13:27.187 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:27.187 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login(System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:27.187 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:27.188 -06:00 [INF] Executed ViewResult - view Login executed in 1.358ms.
+2026-02-13 09:13:27.188 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 1.6798ms
+2026-02-13 09:13:27.189 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:27.189 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/ - 200 null text/html; charset=utf-8 2.3459ms
+2026-02-13 09:13:27.240 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/ - null null
+2026-02-13 09:13:27.240 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:27.240 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login(System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:27.240 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:27.242 -06:00 [INF] Executed ViewResult - view Login executed in 1.2062ms.
+2026-02-13 09:13:27.242 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 1.4681ms
+2026-02-13 09:13:27.242 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:27.242 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/ - 200 null text/html; charset=utf-8 2.0948ms
+2026-02-13 09:13:27.353 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/images/banner-curridabat.png - null null
+2026-02-13 09:13:27.374 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/css/login.css?v=D-fhBloQYNBZ31r48wjwA7nRzXlfJEGmiqtufdPuDl0 - null null
+2026-02-13 09:13:27.480 -06:00 [INF] Sending file. Request path: '/css/login.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\css\login.css'
+2026-02-13 09:13:27.480 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/css/login.css?v=D-fhBloQYNBZ31r48wjwA7nRzXlfJEGmiqtufdPuDl0 - 200 null text/css 106.7668ms
+2026-02-13 09:13:27.517 -06:00 [INF] Sending file. Request path: '/images/banner-curridabat.png'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\banner-curridabat.png'
+2026-02-13 09:13:27.517 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/images/banner-curridabat.png - 200 107745 image/png 164.4392ms
+2026-02-13 09:13:28.363 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/favicon.ico - null null
+2026-02-13 09:13:28.375 -06:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\favicon.ico'
+2026-02-13 09:13:28.376 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/favicon.ico - 200 5430 image/x-icon 12.3734ms
+2026-02-13 09:13:39.253 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 218
+2026-02-13 09:13:39.254 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:39.254 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:39.255 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:39.255 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:39.256 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:13:39.256 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:39.256 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:13:39.259 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:13:39.579 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:13:39.580 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 323.2472ms
+2026-02-13 09:13:39.580 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:39.580 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 323.9326ms
+2026-02-13 09:13:39.580 -06:00 [INF] Received HTTP response headers after 325.17ms - 401
+2026-02-13 09:13:39.581 -06:00 [INF] End processing HTTP request after 325.4364ms - 401
+2026-02-13 09:13:39.581 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:39.582 -06:00 [INF] Executed ViewResult - view Login executed in 1.1794ms.
+2026-02-13 09:13:39.582 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 327.5942ms
+2026-02-13 09:13:39.582 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:39.582 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 328.651ms
+2026-02-13 09:13:46.226 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:13:46.227 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:46.227 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:46.228 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:46.228 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:46.229 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:13:46.229 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:46.229 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:13:46.231 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:13:46.552 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:13:46.552 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 323.5738ms
+2026-02-13 09:13:46.553 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:46.553 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 324.8148ms
+2026-02-13 09:13:46.554 -06:00 [INF] Received HTTP response headers after 325.5925ms - 401
+2026-02-13 09:13:46.554 -06:00 [INF] End processing HTTP request after 325.8284ms - 401
+2026-02-13 09:13:46.554 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:46.555 -06:00 [INF] Executed ViewResult - view Login executed in 1.0404ms.
+2026-02-13 09:13:46.555 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 327.8064ms
+2026-02-13 09:13:46.555 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:46.555 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 329.1824ms
+2026-02-13 09:13:56.465 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:13:56.465 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:56.465 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:13:56.466 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:56.466 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:13:56.467 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:13:56.467 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:56.467 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:13:56.474 -06:00 [INF] Executed DbCommand (5ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:13:56.897 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:13:56.897 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 429.9913ms
+2026-02-13 09:13:56.897 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:56.898 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 430.5194ms
+2026-02-13 09:13:56.898 -06:00 [INF] Received HTTP response headers after 431.9927ms - 401
+2026-02-13 09:13:56.898 -06:00 [INF] End processing HTTP request after 432.1682ms - 401
+2026-02-13 09:13:56.898 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:13:56.899 -06:00 [INF] Executed ViewResult - view Login executed in 0.8396ms.
+2026-02-13 09:13:56.899 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 433.6502ms
+2026-02-13 09:13:56.899 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:13:56.899 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 434.1977ms
+2026-02-13 09:14:03.894 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 218
+2026-02-13 09:14:03.894 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:03.894 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:14:03.896 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:14:03.896 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:14:03.896 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:14:03.897 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:03.897 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:14:03.918 -06:00 [INF] Executed DbCommand (19ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:14:04.240 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:14:04.240 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 343.3093ms
+2026-02-13 09:14:04.240 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:04.241 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 344.0034ms
+2026-02-13 09:14:04.241 -06:00 [INF] Received HTTP response headers after 344.7204ms - 401
+2026-02-13 09:14:04.241 -06:00 [INF] End processing HTTP request after 344.9289ms - 401
+2026-02-13 09:14:04.241 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:14:04.242 -06:00 [INF] Executed ViewResult - view Login executed in 0.9282ms.
+2026-02-13 09:14:04.242 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 347.1894ms
+2026-02-13 09:14:04.242 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:04.242 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 348.577ms
+2026-02-13 09:14:22.711 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:14:22.712 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:22.712 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:14:22.712 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:14:22.713 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:14:22.713 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:14:22.713 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:22.713 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:14:22.717 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:14:23.075 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:14:23.076 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 362.4714ms
+2026-02-13 09:14:23.076 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:23.076 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 362.8664ms
+2026-02-13 09:14:23.076 -06:00 [INF] Received HTTP response headers after 363.2099ms - 401
+2026-02-13 09:14:23.076 -06:00 [INF] End processing HTTP request after 363.3567ms - 401
+2026-02-13 09:14:23.076 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:14:23.077 -06:00 [INF] Executed ViewResult - view Login executed in 0.8065ms.
+2026-02-13 09:14:23.077 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 364.8861ms
+2026-02-13 09:14:23.077 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:14:23.077 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 365.4894ms
+2026-02-13 09:16:48.871 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 09:16:49.880 -06:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 09:16:49.949 -06:00 [INF] Executed DbCommand (57ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 09:16:50.453 -06:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = N'lreyes'
+2026-02-13 09:16:51.192 -06:00 [INF] Executed DbCommand (76ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (Size = 250)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [auth].[Usuarios] SET [PasswordHash] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2026-02-13 09:16:51.239 -06:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 09:16:51.251 -06:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 09:16:51.385 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 09:16:51.451 -06:00 [INF] Now listening on: http://localhost:5196
+2026-02-13 09:16:51.453 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-13 09:16:51.454 -06:00 [INF] Hosting environment: Development
+2026-02-13 09:16:51.454 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
+2026-02-13 09:17:32.076 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/ - null null
+2026-02-13 09:17:32.094 -06:00 [WRN] Failed to determine the https port for redirect.
+2026-02-13 09:17:32.235 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:32.293 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login(System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:17:32.374 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:17:32.748 -06:00 [INF] Executed ViewResult - view Login executed in 386.2798ms.
+2026-02-13 09:17:32.790 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 496.4511ms
+2026-02-13 09:17:32.791 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:32.796 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/ - 200 null text/html; charset=utf-8 726.8056ms
+2026-02-13 09:17:42.991 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:17:43.000 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:43.009 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:17:43.096 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:17:43.099 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:17:43.175 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:17:43.184 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:43.188 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:17:43.318 -06:00 [INF] Executed DbCommand (32ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:17:43.698 -06:00 [INF] Executing OkObjectResult, writing value of type 'GestionPlazasVacantes.DTOs.LoginResponseDto'.
+2026-02-13 09:17:43.705 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 517.1161ms
+2026-02-13 09:17:43.705 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:43.711 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 200 null application/json; charset=utf-8 535.2593ms
+2026-02-13 09:17:43.711 -06:00 [INF] Received HTTP response headers after 606.6335ms - 200
+2026-02-13 09:17:43.712 -06:00 [INF] End processing HTTP request after 620.7884ms - 200
+2026-02-13 09:17:43.722 -06:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-02-13 09:17:43.726 -06:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-02-13 09:17:43.726 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 716.5861ms
+2026-02-13 09:17:43.726 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:17:43.729 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 302 0 null 737.8619ms
+2026-02-13 09:17:43.733 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Home/Index - null null
+2026-02-13 09:17:43.736 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-02-13 09:17:43.737 -06:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.HomeController (GestionPlazasVacantes).
+2026-02-13 09:17:43.738 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:17:43.984 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:17:43.993 -06:00 [INF] Executed ViewResult - view Index executed in 255.4373ms.
+2026-02-13 09:17:43.993 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes) in 256.127ms
+2026-02-13 09:17:43.993 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-02-13 09:17:43.993 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Home/Index - 200 null text/html; charset=utf-8 260.8014ms
+2026-02-13 09:17:44.006 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-02-13 09:17:44.008 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - null null
+2026-02-13 09:17:44.009 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - null null
+2026-02-13 09:17:44.010 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/images/curridabat-logo.jpg - null null
+2026-02-13 09:17:44.015 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/images/escudo-curridabat.png - null null
+2026-02-13 09:17:44.017 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/jquery/dist/jquery.min.js - null null
+2026-02-13 09:17:44.019 -06:00 [INF] Sending file. Request path: '/GestionPlazasVacantes.styles.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\obj\Debug\net8.0\scopedcss\bundle\GestionPlazasVacantes.styles.css'
+2026-02-13 09:17:44.020 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - 200 null text/css 10.796ms
+2026-02-13 09:17:44.020 -06:00 [INF] Sending file. Request path: '/css/site.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\css\site.css'
+2026-02-13 09:17:44.020 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - 200 null text/css 12.2716ms
+2026-02-13 09:17:44.020 -06:00 [INF] Sending file. Request path: '/images/curridabat-logo.jpg'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\curridabat-logo.jpg'
+2026-02-13 09:17:44.020 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/images/curridabat-logo.jpg - 200 23077 image/jpeg 10.6612ms
+2026-02-13 09:17:44.024 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-02-13 09:17:44.028 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - null null
+2026-02-13 09:17:44.029 -06:00 [INF] Sending file. Request path: '/js/site.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\site.js'
+2026-02-13 09:17:44.029 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - null null
+2026-02-13 09:17:44.029 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - 200 null text/javascript 0.8862ms
+2026-02-13 09:17:44.031 -06:00 [INF] Sending file. Request path: '/lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery\dist\jquery.min.js'
+2026-02-13 09:17:44.033 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/jquery/dist/jquery.min.js - 200 null text/javascript 15.503ms
+2026-02-13 09:17:44.036 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css'
+2026-02-13 09:17:44.036 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/css/bootstrap.min.css - 200 null text/css 29.726ms
+2026-02-13 09:17:44.036 -06:00 [INF] Sending file. Request path: '/js/session-timeout.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\session-timeout.js'
+2026-02-13 09:17:44.037 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - 200 null text/javascript 7.2216ms
+2026-02-13 09:17:44.042 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js'
+2026-02-13 09:17:44.043 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 null text/javascript 18.5001ms
+2026-02-13 09:17:44.056 -06:00 [INF] Sending file. Request path: '/images/escudo-curridabat.png'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\escudo-curridabat.png'
+2026-02-13 09:17:44.056 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/images/escudo-curridabat.png - 200 342113 image/png 41.2461ms
+2026-02-13 09:17:58.345 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Dashboard/Index - null null
+2026-02-13 09:17:58.349 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-02-13 09:17:58.351 -06:00 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-02-13 09:17:58.353 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:17:58.362 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:17:58.368 -06:00 [INF] Executed ViewResult - view Index executed in 14.7704ms.
+2026-02-13 09:17:58.368 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes) in 16.9471ms
+2026-02-13 09:17:58.368 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-02-13 09:17:58.368 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Dashboard/Index - 200 null text/html; charset=utf-8 22.9958ms
+2026-02-13 09:17:58.385 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/js/dashboard.js?v=dVn0f8NCxdZYMkYuRGQWoGF996Q6sISNqj68HoIhq1o - null null
+2026-02-13 09:17:58.403 -06:00 [INF] Sending file. Request path: '/js/dashboard.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\dashboard.js'
+2026-02-13 09:17:58.403 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/js/dashboard.js?v=dVn0f8NCxdZYMkYuRGQWoGF996Q6sISNqj68HoIhq1o - 200 null text/javascript 18.6988ms
+2026-02-13 09:17:58.439 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - null null
+2026-02-13 09:17:58.449 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:17:58.454 -06:00 [INF] Route matched with {action = "Counts", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Counts(System.String) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-02-13 09:17:58.590 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit) AND [p].[Estado] = N'Abierta'
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:17:58.631 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.633 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.638 -06:00 [INF] Executed DbCommand (4ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.639 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.641 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.642 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:17:58.644 -06:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.List`1[[GestionPlazasVacantes.Controllers.DashboardController+CountItem, GestionPlazasVacantes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-13 09:17:58.653 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes) in 198.5149ms
+2026-02-13 09:17:58.653 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:17:58.653 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - 200 null application/json; charset=utf-8 214.167ms
+2026-02-13 09:18:13.438 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - null null
+2026-02-13 09:18:13.440 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:18:13.440 -06:00 [INF] Route matched with {action = "Counts", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Counts(System.String) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-02-13 09:18:13.444 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit) AND [p].[Estado] = N'Abierta'
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:13.446 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.446 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.447 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.448 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.449 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.450 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:13.450 -06:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.List`1[[GestionPlazasVacantes.Controllers.DashboardController+CountItem, GestionPlazasVacantes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-13 09:18:13.450 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes) in 9.8752ms
+2026-02-13 09:18:13.450 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:18:13.451 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - 200 null application/json; charset=utf-8 12.2013ms
+2026-02-13 09:18:14.310 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Plazas/Index - null null
+2026-02-13 09:18:14.311 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:14.313 -06:00 [INF] Route matched with {action = "Index", controller = "Plazas"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PlazasController (GestionPlazasVacantes).
+2026-02-13 09:18:14.328 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:14.331 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:14.341 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:14.343 -06:00 [INF] Executed ViewResult - view Index executed in 14.1198ms.
+2026-02-13 09:18:14.344 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes) in 30.2185ms
+2026-02-13 09:18:14.344 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:14.358 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Plazas/Index - 200 null text/html; charset=utf-8 47.2433ms
+2026-02-13 09:18:19.990 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Plazas/Crear - null null
+2026-02-13 09:18:19.991 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-02-13 09:18:19.991 -06:00 [INF] Route matched with {action = "Crear", controller = "Plazas"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Crear() on controller GestionPlazasVacantes.Controllers.PlazasController (GestionPlazasVacantes).
+2026-02-13 09:18:19.992 -06:00 [INF] Executing ViewResult, running view Crear.
+2026-02-13 09:18:20.064 -06:00 [INF] Executed DbCommand (22ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:20.080 -06:00 [INF] Executed ViewResult - view Crear executed in 88.4716ms.
+2026-02-13 09:18:20.080 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes) in 88.9716ms
+2026-02-13 09:18:20.081 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasController.Crear (GestionPlazasVacantes)'
+2026-02-13 09:18:20.081 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Plazas/Crear - 200 null text/html; charset=utf-8 91.2361ms
+2026-02-13 09:18:20.093 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/jquery-validation/dist/jquery.validate.min.js - null null
+2026-02-13 09:18:20.094 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-02-13 09:18:20.109 -06:00 [INF] Sending file. Request path: '/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js'
+2026-02-13 09:18:20.109 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 200 null text/javascript 14.9318ms
+2026-02-13 09:18:20.117 -06:00 [INF] Sending file. Request path: '/lib/jquery-validation/dist/jquery.validate.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js'
+2026-02-13 09:18:20.117 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/jquery-validation/dist/jquery.validate.min.js - 200 null text/javascript 24.3325ms
+2026-02-13 09:18:22.450 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Seguimiento/Index - null null
+2026-02-13 09:18:22.451 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:22.453 -06:00 [INF] Route matched with {action = "Index", controller = "Seguimiento"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.SeguimientoController (GestionPlazasVacantes).
+2026-02-13 09:18:22.568 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:22.653 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p].[Id] = [p0].[PlazaVacanteId]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC, [p].[Id], [u].[Id]
+2026-02-13 09:18:22.693 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:22.705 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:22.706 -06:00 [INF] Executed ViewResult - view Index executed in 13.5384ms.
+2026-02-13 09:18:22.706 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes) in 252.5874ms
+2026-02-13 09:18:22.706 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.SeguimientoController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:22.706 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Seguimiento/Index - 200 null text/html; charset=utf-8 255.8208ms
+2026-02-13 09:18:28.939 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Asignaciones/Index - null null
+2026-02-13 09:18:28.941 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:28.946 -06:00 [INF] Route matched with {action = "Index", controller = "Asignaciones"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.AsignacionesController (GestionPlazasVacantes).
+2026-02-13 09:18:28.967 -06:00 [INF] Executed DbCommand (17ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:29.014 -06:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username], [p0].[Id], [p0].[ArchivoTitulosPath], [p0].[Cedula], [p0].[Correo], [p0].[CurriculumPath], [p0].[Direccion], [p0].[EstadoProceso], [p0].[ExperienciaLaboral], [p0].[FechaActualizacion], [p0].[FormacionAcademica], [p0].[FormacionComplementaria], [p0].[FotoColegiaturaPath], [p0].[FotoLicenciaPath], [p0].[FotoPermisoArmasPath], [p0].[FotoTituloPath], [p0].[Habilidades], [p0].[Idiomas], [p0].[NombreCompleto], [p0].[NumeroColegiatura], [p0].[NumeroPermisoArmas], [p0].[OtrosDatos], [p0].[PerfilProfesional], [p0].[PlazaVacanteId], [p0].[Telefono], [p0].[TipoLicencia]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+LEFT JOIN [gestion].[Postulantes] AS [p0] ON [p].[Id] = [p0].[PlazaVacanteId]
+WHERE [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC, [p].[Id], [u].[Id]
+2026-02-13 09:18:29.122 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Activo] = CAST(1 AS bit) AND [u].[Rol] = N'Colaborador'
+ORDER BY [u].[FullName]
+2026-02-13 09:18:29.126 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:29.136 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:29.137 -06:00 [INF] Executed ViewResult - view Index executed in 10.6838ms.
+2026-02-13 09:18:29.137 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes) in 190.2663ms
+2026-02-13 09:18:29.137 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AsignacionesController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:29.137 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Asignaciones/Index - 200 null text/html; charset=utf-8 197.7556ms
+2026-02-13 09:18:34.803 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Reportes/Index - null null
+2026-02-13 09:18:34.804 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:34.812 -06:00 [INF] Route matched with {action = "Index", controller = "Reportes"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String) on controller GestionPlazasVacantes.Controllers.ReportesController (GestionPlazasVacantes).
+2026-02-13 09:18:34.845 -06:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId], [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [gestion].[PlazasVacantes] AS [p]
+LEFT JOIN [auth].[Usuarios] AS [u] ON [p].[UsuarioAsignadoId] = [u].[Id]
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:34.849 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:34.943 -06:00 [INF] Executed DbCommand (23ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:34.943 -06:00 [INF] Executed ViewResult - view Index executed in 95.1852ms.
+2026-02-13 09:18:34.943 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes) in 131.5774ms
+2026-02-13 09:18:34.943 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.ReportesController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:34.944 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Reportes/Index - 200 null text/html; charset=utf-8 140.256ms
+2026-02-13 09:18:38.665 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Postulacion/Index - null null
+2026-02-13 09:18:38.665 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:38.668 -06:00 [INF] Route matched with {action = "Index", controller = "Postulacion"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PostulacionController (GestionPlazasVacantes).
+2026-02-13 09:18:38.702 -06:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[TipoConcurso] = N'Externo' AND [p].[FechaLimite] >= CONVERT(date, GETDATE()) AND [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:38.703 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:38.707 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:38.707 -06:00 [INF] Executed ViewResult - view Index executed in 5.0693ms.
+2026-02-13 09:18:38.708 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes) in 39.2967ms
+2026-02-13 09:18:38.708 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:38.708 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Postulacion/Index - 200 null text/html; charset=utf-8 42.8531ms
+2026-02-13 09:18:40.811 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/PlazasInternas/Index - null null
+2026-02-13 09:18:40.811 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:40.814 -06:00 [INF] Route matched with {action = "Index", controller = "PlazasInternas"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PlazasInternasController (GestionPlazasVacantes).
+2026-02-13 09:18:40.836 -06:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[TipoConcurso] = N'Interno' AND [p].[FechaLimite] >= CONVERT(date, GETDATE()) AND [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:40.837 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:40.841 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:40.842 -06:00 [INF] Executed ViewResult - view Index executed in 5.4726ms.
+2026-02-13 09:18:40.842 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes) in 27.9464ms
+2026-02-13 09:18:40.842 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PlazasInternasController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:40.842 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/PlazasInternas/Index - 200 null text/html; charset=utf-8 31.1406ms
+2026-02-13 09:18:42.863 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Postulacion/Index - null null
+2026-02-13 09:18:42.866 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:42.866 -06:00 [INF] Route matched with {action = "Index", controller = "Postulacion"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GestionPlazasVacantes.Controllers.PostulacionController (GestionPlazasVacantes).
+2026-02-13 09:18:42.868 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[TipoConcurso] = N'Externo' AND [p].[FechaLimite] >= CONVERT(date, GETDATE()) AND [p].[Activa] = CAST(1 AS bit)
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:42.868 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:42.870 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:42.871 -06:00 [INF] Executed ViewResult - view Index executed in 2.8043ms.
+2026-02-13 09:18:42.871 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes) in 5.0876ms
+2026-02-13 09:18:42.871 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.PostulacionController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:42.871 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Postulacion/Index - 200 null text/html; charset=utf-8 7.6432ms
+2026-02-13 09:18:45.429 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Dashboard/Index - null null
+2026-02-13 09:18:45.431 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:45.431 -06:00 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-02-13 09:18:45.432 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:18:45.434 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:18:45.435 -06:00 [INF] Executed ViewResult - view Index executed in 3.3591ms.
+2026-02-13 09:18:45.435 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes) in 4.4663ms
+2026-02-13 09:18:45.435 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Index (GestionPlazasVacantes)'
+2026-02-13 09:18:45.436 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Dashboard/Index - 200 null text/html; charset=utf-8 6.3067ms
+2026-02-13 09:18:45.463 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - null null
+2026-02-13 09:18:45.464 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:18:45.464 -06:00 [INF] Route matched with {action = "Counts", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Counts(System.String) on controller GestionPlazasVacantes.Controllers.DashboardController (GestionPlazasVacantes).
+2026-02-13 09:18:45.519 -06:00 [INF] Executed DbCommand (49ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[Id], [p].[Activa], [p].[ArmasObligatorio], [p].[ColegiaturaObligatoria], [p].[Departamento], [p].[Estado], [p].[EstadoFinal], [p].[FechaCierre], [p].[FechaCreacion], [p].[FechaLimite], [p].[Horario], [p].[LicenciaObligatoria], [p].[NumeroConcurso], [p].[Observaciones], [p].[Requisitos], [p].[SalarioCompuesto], [p].[SalarioGlobal], [p].[SolicitarColegiatura], [p].[SolicitarLicencia], [p].[SolicitarPermisoArmas], [p].[SolicitarTitulos], [p].[TipoConcurso], [p].[Titulo], [p].[TitulosObligatorios], [p].[UsuarioAsignadoId]
+FROM [gestion].[PlazasVacantes] AS [p]
+WHERE [p].[Activa] = CAST(1 AS bit) AND [p].[Estado] = N'Abierta'
+ORDER BY [p].[FechaCreacion] DESC
+2026-02-13 09:18:45.555 -06:00 [INF] Executed DbCommand (35ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.557 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.559 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.561 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.562 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.563 -06:00 [INF] Executed DbCommand (0ms) [Parameters=[@__plaza_Id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [gestion].[Postulantes] AS [p]
+WHERE [p].[PlazaVacanteId] = @__plaza_Id_0
+2026-02-13 09:18:45.564 -06:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.List`1[[GestionPlazasVacantes.Controllers.DashboardController+CountItem, GestionPlazasVacantes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-13 09:18:45.564 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes) in 99.9129ms
+2026-02-13 09:18:45.564 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.DashboardController.Counts (GestionPlazasVacantes)'
+2026-02-13 09:18:45.564 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Dashboard/Counts?groupBy=plaza - 200 null application/json; charset=utf-8 101.2012ms
+2026-02-13 09:20:47.499 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 218
+2026-02-13 09:20:47.503 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:47.503 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:20:47.510 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:20:47.510 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:20:47.545 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:20:47.546 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:47.546 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:20:47.729 -06:00 [INF] Executed DbCommand (181ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:20:48.158 -06:00 [INF] Executing UnauthorizedObjectResult, writing value of type '<>f__AnonymousType1`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-13 09:20:48.159 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 613.4082ms
+2026-02-13 09:20:48.159 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:48.159 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 401 null application/json; charset=utf-8 614.0585ms
+2026-02-13 09:20:48.160 -06:00 [INF] Received HTTP response headers after 649.5956ms - 401
+2026-02-13 09:20:48.160 -06:00 [INF] End processing HTTP request after 649.8865ms - 401
+2026-02-13 09:20:48.162 -06:00 [INF] Executing ViewResult, running view Login.
+2026-02-13 09:20:48.165 -06:00 [INF] Executed ViewResult - view Login executed in 2.6074ms.
+2026-02-13 09:20:48.165 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 661.9817ms
+2026-02-13 09:20:48.165 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:48.165 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 200 null text/html; charset=utf-8 665.9821ms
+2026-02-13 09:20:57.434 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/ - application/x-www-form-urlencoded 217
+2026-02-13 09:20:57.435 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:57.435 -06:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.Models.LoginVM, System.String) on controller GestionPlazasVacantes.Controllers.AccountController (GestionPlazasVacantes).
+2026-02-13 09:20:57.437 -06:00 [INF] Start processing HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:20:57.437 -06:00 [INF] Sending HTTP request POST http://localhost:5196/api/auth/login
+2026-02-13 09:20:57.438 -06:00 [INF] Request starting HTTP/1.1 POST http://localhost:5196/api/auth/login - application/json; charset=utf-8 null
+2026-02-13 09:20:57.442 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:57.443 -06:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(GestionPlazasVacantes.DTOs.LoginRequestDto) on controller GestionPlazasVacantes.Controllers.AuthController (GestionPlazasVacantes).
+2026-02-13 09:20:57.447 -06:00 [INF] Executed DbCommand (1ms) [Parameters=[@__dto_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__dto_Username_0 AND [u].[Activo] = CAST(1 AS bit)
+2026-02-13 09:20:57.776 -06:00 [INF] Executing OkObjectResult, writing value of type 'GestionPlazasVacantes.DTOs.LoginResponseDto'.
+2026-02-13 09:20:57.776 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes) in 333.4437ms
+2026-02-13 09:20:57.776 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AuthController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:57.777 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/api/auth/login - 200 null application/json; charset=utf-8 338.3599ms
+2026-02-13 09:20:57.776 -06:00 [INF] Received HTTP response headers after 339.4482ms - 200
+2026-02-13 09:20:57.777 -06:00 [INF] End processing HTTP request after 339.8626ms - 200
+2026-02-13 09:20:57.777 -06:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-02-13 09:20:57.777 -06:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-02-13 09:20:57.778 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes) in 342.1054ms
+2026-02-13 09:20:57.778 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.AccountController.Login (GestionPlazasVacantes)'
+2026-02-13 09:20:57.778 -06:00 [INF] Request finished HTTP/1.1 POST http://localhost:5196/ - 302 0 null 343.6596ms
+2026-02-13 09:20:57.784 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/Home/Index - null null
+2026-02-13 09:20:57.784 -06:00 [INF] Executing endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-02-13 09:20:57.785 -06:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller GestionPlazasVacantes.Controllers.HomeController (GestionPlazasVacantes).
+2026-02-13 09:20:57.785 -06:00 [INF] Executing ViewResult, running view Index.
+2026-02-13 09:20:57.788 -06:00 [INF] Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Activo], [u].[CreadoUtc], [u].[Email], [u].[FullName], [u].[PasswordHash], [u].[Rol], [u].[UltimoAccesoUtc], [u].[Username]
+FROM [auth].[Usuarios] AS [u]
+WHERE [u].[Username] = @__username_0
+2026-02-13 09:20:57.788 -06:00 [INF] Executed ViewResult - view Index executed in 3.5633ms.
+2026-02-13 09:20:57.788 -06:00 [INF] Executed action GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes) in 3.6997ms
+2026-02-13 09:20:57.788 -06:00 [INF] Executed endpoint 'GestionPlazasVacantes.Controllers.HomeController.Index (GestionPlazasVacantes)'
+2026-02-13 09:20:57.788 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/Home/Index - 200 null text/html; charset=utf-8 4.9053ms
+2026-02-13 09:20:57.806 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-02-13 09:20:57.806 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - null null
+2026-02-13 09:20:57.809 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - null null
+2026-02-13 09:20:57.810 -06:00 [INF] Sending file. Request path: '/GestionPlazasVacantes.styles.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\obj\Debug\net8.0\scopedcss\bundle\GestionPlazasVacantes.styles.css'
+2026-02-13 09:20:57.809 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/images/curridabat-logo.jpg - null null
+2026-02-13 09:20:57.810 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/GestionPlazasVacantes.styles.css?v=8Cfq2N6npb5Vnpg-aUU1-OqUaOsuVEOdBTgUFPtEz74 - 200 null text/css 1.144ms
+2026-02-13 09:20:57.811 -06:00 [INF] Sending file. Request path: '/images/curridabat-logo.jpg'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\curridabat-logo.jpg'
+2026-02-13 09:20:57.811 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/images/curridabat-logo.jpg - 200 23077 image/jpeg 2.3004ms
+2026-02-13 09:20:57.811 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/images/escudo-curridabat.png - null null
+2026-02-13 09:20:57.811 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/jquery/dist/jquery.min.js - null null
+2026-02-13 09:20:57.813 -06:00 [INF] Sending file. Request path: '/css/site.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\css\site.css'
+2026-02-13 09:20:57.813 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css'
+2026-02-13 09:20:57.813 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/css/site.css?v=r9jMkGtKVDenJi_xYwFcWFmEa5GIA6ZZRZHyq7LGPfw - 200 null text/css 6.7669ms
+2026-02-13 09:20:57.813 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/css/bootstrap.min.css - 200 null text/css 6.966ms
+2026-02-13 09:20:57.814 -06:00 [INF] Sending file. Request path: '/lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\jquery\dist\jquery.min.js'
+2026-02-13 09:20:57.814 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/jquery/dist/jquery.min.js - 200 null text/javascript 2.9018ms
+2026-02-13 09:20:57.815 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-02-13 09:20:57.818 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - null null
+2026-02-13 09:20:57.819 -06:00 [INF] Sending file. Request path: '/js/site.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\site.js'
+2026-02-13 09:20:57.819 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/js/site.js?v=wMZNXIGPKa7togVRiGY26xEDJbaUfQaTfMjM--jdhsQ - 200 null text/javascript 1.4976ms
+2026-02-13 09:20:57.820 -06:00 [INF] Request starting HTTP/1.1 GET http://localhost:5196/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - null null
+2026-02-13 09:20:57.821 -06:00 [INF] Sending file. Request path: '/js/session-timeout.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\js\session-timeout.js'
+2026-02-13 09:20:57.821 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/js/session-timeout.js?v=2yXXA4KWF-H7bnVlMdGo0tNWYEtJP0UY5a6gocVRdNc - 200 null text/javascript 0.7628ms
+2026-02-13 09:20:57.823 -06:00 [INF] Sending file. Request path: '/images/escudo-curridabat.png'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\images\escudo-curridabat.png'
+2026-02-13 09:20:57.824 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/images/escudo-curridabat.png - 200 342113 image/png 12.3485ms
+2026-02-13 09:20:57.825 -06:00 [INF] Sending file. Request path: '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\lvdan\OneDrive\Escritorio\Plazas\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js'
+2026-02-13 09:20:57.825 -06:00 [INF] Request finished HTTP/1.1 GET http://localhost:5196/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 null text/javascript 10.0613ms

@@ -1,0 +1,76 @@
+2026-02-13 08:14:22.280 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 08:14:28.061 -06:00 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 08:14:28.302 -06:00 [INF] Executed DbCommand (228ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 08:14:28.664 -06:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:14:28.674 -06:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:14:28.888 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 08:14:29.053 -06:00 [INF] Now listening on: http://localhost:5196
+2026-02-13 08:14:29.056 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-13 08:14:29.056 -06:00 [INF] Hosting environment: Development
+2026-02-13 08:14:29.056 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
+2026-02-13 08:34:56.429 -06:00 [INF] Iniciando aplicación Gestión de Plazas Vacantes
+2026-02-13 08:34:57.950 -06:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-13 08:34:58.129 -06:00 [INF] Executed DbCommand (154ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0
+2026-02-13 08:34:58.435 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [auth].[Usuarios] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:34:58.453 -06:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [gestion].[PlazasVacantes] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-13 08:34:58.608 -06:00 [INF] User profile is available. Using 'C:\Users\lvdan\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-13 08:34:58.721 -06:00 [INF] Now listening on: http://localhost:5196
+2026-02-13 08:34:58.729 -06:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-13 08:34:58.729 -06:00 [INF] Hosting environment: Development
+2026-02-13 08:34:58.729 -06:00 [INF] Content root path: C:\Users\lvdan\OneDrive\Escritorio\Plazas
