@@ -1,7 +1,9 @@
 using GestionPlazasVacantes.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,7 +47,41 @@ builder.Services.AddHttpClient("Api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:44330/");
 });
+//builder.Services.AddHttpClient("Api", client =>
+//{
+//    client.BaseAddress = new Uri("https://localhost:44328/");
+//})
+//.AddHttpMessageHandler(() => new JwtHandler());
 
+/// <sumary>
+/// Blinda las URL para usuarios logueados
+/// </summary>
+builder.Services.AddAuthorization(options =>
+{
+    // TODO requiere login por defecto
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient("Api", (sp, client) =>
+{
+    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+    var token = httpContext?.Session.GetString("JWToken");
+
+    if (!string.IsNullOrEmpty(token))
+    {
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    client.BaseAddress = new Uri("https://localhost:44330/");
+});
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -67,7 +103,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

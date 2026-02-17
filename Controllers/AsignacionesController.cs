@@ -1,139 +1,125 @@
-using GestionPlazasVacantes.Data;
-using GestionPlazasVacantes.Models;
+using GestionPlazasVacantes.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Json;
 
 namespace GestionPlazasVacantes.Controllers
 {
-    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Jefe")]
+    /// <summary>
+    /// Controlador MVC para la gestión de asignaciones de plazas vacantes.
+    /// 
+    /// Seguridad:
+    /// - Requiere autenticación
+    /// - Acceso exclusivo para usuarios con rol "Jefe"
+    /// 
+    /// Arquitectura:
+    /// MVC → API → Base de Datos
+    /// 
+    /// Este controlador NO accede directamente a la base de datos.
+    /// Toda la lógica de negocio se delega al API.
+    /// </summary>
+    [Authorize(Roles = "Jefe")]
     public class AsignacionesController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly HttpClient _api;
 
-        public AsignacionesController(AppDbContext context)
+        /// <summary>
+        /// Constructor que inicializa el HttpClient para consumo del API.
+        /// </summary>
+        public AsignacionesController(IHttpClientFactory factory)
         {
-            _context = context;
+            _api = factory.CreateClient("Api");
         }
 
-        // GET: Asignaciones
-        // Vista principal para gestionar asignaciones de plazas a colaboradores
+        /// <summary>
+        /// Vista principal para gestionar asignaciones de plazas a colaboradores.
+        /// </summary>
         public async Task<IActionResult> Index()
         {
-            // Verificar que el usuario actual es Jefe
-            var username = User.Identity?.Name;
-            var usuarioActual = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Username == username);
+            // Obtener plazas activas con asignaciones
+            var plazasResponse = await _api.GetAsync("api/asignaciones/plazas-activas");
 
-            if (usuarioActual == null || usuarioActual.Rol != RolUsuario.Jefe)
+            if (!plazasResponse.IsSuccessStatusCode)
             {
-                TempData["ErrorMessage"] = "⚠️ No tienes permisos para acceder a esta sección.";
+                TempData["ErrorMessage"] = "⚠️ No se pudieron cargar las plazas.";
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            // Obtener todas las plazas activas con sus asignaciones
-            var plazasActivas = await _context.PlazasVacantes
-                .Include(p => p.UsuarioAsignado)
-                .Include(p => p.Postulantes)
-                .Where(p => p.Activa == true)
-                .OrderByDescending(p => p.FechaCreacion)
-                .ToListAsync();
+            //var plazas = await plazasResponse
+            //    .Content
+            //    .ReadFromJsonAsync<List<PlazaAsignacionDto>>();
+            var plazas = await plazasResponse.Content.ReadFromJsonAsync<List<PlazaAsignacionDto>>()
+            ?? new List<PlazaAsignacionDto>();
 
-            // Obtener todos los colaboradores activos
-            var colaboradores = await _context.Usuarios
-                .Where(u => u.Activo == true && u.Rol == RolUsuario.Colaborador)
-                .OrderBy(u => u.FullName)
-                .ToListAsync();
+            //// Obtener colaboradores disponibles
+            //var colaboradoresResponse = await _api.GetAsync("api/asignaciones/colaboradores");
+
+            //if (!colaboradoresResponse.IsSuccessStatusCode)
+            //{
+            //    TempData["ErrorMessage"] = "⚠️ No se pudieron cargar los colaboradores.";
+            //    return RedirectToAction("Index", "Dashboard");
+            //}
+
+            //var colaboradores = await colaboradoresResponse
+            //    .Content
+            //    .ReadFromJsonAsync<List<UsuarioDto>>();
+
+
+            //var colaboradores = await _api.GetFromJsonAsync<List<UsuarioDto>>("api/usuarios/colaboradores")
+            //      ?? new List<UsuarioDto>();
+            var colaboradores = await _api
+                .GetFromJsonAsync<List<UsuarioDto>>("api/asignaciones/colaboradores")
+                ?? new List<UsuarioDto>();
+
+
+            //var colaboradores = await _api
+            //      .GetFromJsonAsync<List<UsuarioDto>>("api/usuarios/colaboradores");
+
 
             ViewBag.Colaboradores = colaboradores;
-            ViewBag.UsuarioActual = usuarioActual;
 
-            return View(plazasActivas);
+            return View(plazas);
         }
 
-        // POST: Asignaciones/AsignarPlaza
+        /// <summary>
+        /// Asigna una plaza vacante a un colaborador.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AsignarPlaza(int plazaId, int usuarioId)
         {
-            // Verificar que el usuario actual es Jefe
-            var username = User.Identity?.Name;
-            var usuarioActual = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Username == username);
+            var response = await _api.PostAsJsonAsync(
+                "api/asignaciones/asignar",
+                new { plazaId, usuarioId });
 
-            if (usuarioActual == null || usuarioActual.Rol != RolUsuario.Jefe)
+            if (!response.IsSuccessStatusCode)
             {
-                TempData["ErrorMessage"] = "⚠️ No tienes permisos para realizar esta acción.";
-                return RedirectToAction("Index", "Dashboard");
-            }
-
-            // Buscar la plaza
-            var plaza = await _context.PlazasVacantes.FindAsync(plazaId);
-            if (plaza == null)
-            {
-                TempData["ErrorMessage"] = "⚠️ No se encontró la plaza especificada.";
+                TempData["ErrorMessage"] = "⚠️ No se pudo asignar la plaza.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Verificar que la plaza esté activa
-            if (!plaza.Activa)
-            {
-                TempData["ErrorMessage"] = "⚠️ No se puede asignar una plaza inactiva.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Buscar el colaborador
-            var colaborador = await _context.Usuarios.FindAsync(usuarioId);
-            if (colaborador == null || colaborador.Rol != RolUsuario.Colaborador)
-            {
-                TempData["ErrorMessage"] = "⚠️ El usuario seleccionado no es válido.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (!colaborador.Activo)
-            {
-                TempData["ErrorMessage"] = "⚠️ No se puede asignar a un usuario inactivo.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Asignar la plaza al colaborador
-            plaza.UsuarioAsignadoId = usuarioId;
-            _context.PlazasVacantes.Update(plaza);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = $"✅ Plaza '{plaza.Titulo}' asignada a {colaborador.FullName} correctamente.";
+            TempData["SuccessMessage"] = "✅ Plaza asignada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Asignaciones/RemoverAsignacion
+        /// <summary>
+        /// Remueve la asignación de una plaza vacante.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoverAsignacion(int plazaId)
         {
-            // Verificar que el usuario actual es Jefe
-            var username = User.Identity?.Name;
-            var usuarioActual = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Username == username);
+            var response = await _api.PostAsJsonAsync(
+                "api/asignaciones/remover",
+                new { plazaId });
 
-            if (usuarioActual == null || usuarioActual.Rol != RolUsuario.Jefe)
+            if (!response.IsSuccessStatusCode)
             {
-                TempData["ErrorMessage"] = "⚠️ No tienes permisos para realizar esta acción.";
-                return RedirectToAction("Index", "Dashboard");
-            }
-
-            // Buscar la plaza
-            var plaza = await _context.PlazasVacantes.FindAsync(plazaId);
-            if (plaza == null)
-            {
-                TempData["ErrorMessage"] = "⚠️ No se encontró la plaza especificada.";
+                TempData["ErrorMessage"] = "⚠️ No se pudo remover la asignación.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Remover la asignación
-            plaza.UsuarioAsignadoId = null;
-            _context.PlazasVacantes.Update(plaza);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = $"✅ Asignación removida de la plaza '{plaza.Titulo}' correctamente.";
+            TempData["SuccessMessage"] = "✅ Asignación removida correctamente.";
             return RedirectToAction(nameof(Index));
         }
     }

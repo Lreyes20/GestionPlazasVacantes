@@ -1,7 +1,7 @@
-@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+@model IEnumerable<GestionPlazasVacantes.DTOs.PlazaAsignacionDto>
 @{
     ViewData["Title"] = "Asignación de Plazas";
-    var colaboradores = ViewBag.Colaboradores as List<GestionPlazasVacantes.Models.Usuario>;
+    var colaboradores = ViewBag.Colaboradores as List<GestionPlazasVacantes.DTOs.UsuarioDto>;
 }
 
 <div class="container-fluid py-4">
@@ -115,14 +115,14 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-secondary">
-                                            @plaza.Postulantes.Count
+                                            @plaza.CantidadPostulantes
                                         </span>
                                     </td>
                                     <td>
-                                        @if (plaza.UsuarioAsignado != null)
+                                        @if (!string.IsNullOrWhiteSpace(plaza.UsuarioAsignadoNombre))
                                         {
                                             <span class="badge bg-success">
-                                                <i class="bi bi-person-check"></i> @plaza.UsuarioAsignado.FullName
+                                                <i class="bi bi-person-check"></i> @plaza.UsuarioAsignadoNombre
                                             </span>
                                         }
                                         else
@@ -139,11 +139,11 @@
                                             
                                             <select name="usuarioId" class="form-select form-select-sm" style="width: 150px;">
                                                 <option value="">Seleccionar...</option>
-                                                @foreach (var colaborador in colaboradores)
+                                                @foreach (var colaborador in colaboradores ?? new List<GestionPlazasVacantes.DTOs.UsuarioDto>())
                                                 {
                                                     var isSelected = plaza.UsuarioAsignadoId == colaborador.Id;
                                                     <option value="@colaborador.Id" selected="@isSelected">
-                                                        @colaborador.FullName
+                                                        @colaborador.Nombre
                                                     </option>
                                                 }
                                             </select>

@@ -52,7 +52,7 @@
             </a>
 
             @* Enlace de Asignaciones - Solo visible para Jefe de RRHH *@
-            @if (User.Identity?.IsAuthenticated == true)
+            @* @if (User.Identity?.IsAuthenticated == true)
             {
                 var username = User.Identity.Name;
                 var context = Context.RequestServices.GetRequiredService<GestionPlazasVacantes.Data.AppDbContext>();
@@ -65,6 +65,12 @@
                         <i class="bi bi-person-check"></i> <span>Asignaciones</span>
                     </a>
                 }
+            } *@
+            @if (User.IsInRole("Jefe"))
+            {
+                <a class="nav-link" asp-controller="Asignaciones" asp-action="Index">
+                    <i class="bi-person-check"></i> <span>Asignaciones</span>
+                </a>
             }
 
             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reportes" ? "active" : "")"
