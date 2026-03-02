@@ -12,28 +12,27 @@ namespace GestionPlazasVacantes.Controllers
 {
     /// <summary>
     /// Controlador encargado de la autenticación de usuarios en el sistema MVC.
-    /// 
-    /// Este controlador NO accede directamente a la base de datos.
-    /// Toda la validación de credenciales se delega al API PlazasVacantesAPI.
-    /// 
-    /// Arquitectura:
-    /// MVC → API → Base de Datos
+    ///
+    /// Este controlador NO valida credenciales localmente ni consulta la BD.
+    /// Toda la autenticación se delega al API (JWT + RefreshToken).
+    ///
+    /// Flujo:
+    /// 1) MVC envía credenciales al API (cliente "ApiNoAuth")
+    /// 2) API devuelve { token, refreshToken, datos de usuario }
+    /// 3) MVC guarda tokens en Session y crea cookie auth (Claims) para navegación
+    /// 4) HttpClient "Api" (con JwtDelegatingHandler) adjunta JWT y refresca si expira
     /// </summary>
     public class AccountController : Controller
     {
         /// <summary>
-        /// Cliente HTTP configurado para comunicarse con el API.
-        /// Se obtiene desde IHttpClientFactory para una gestión eficiente de conexiones y configuración centralizada.
+        /// Cliente HTTP SIN handler (no adjunta JWT).
+        /// Se usa para Login/Refresh/Logout hacia el API para evitar loops.
         /// </summary>
-        private readonly HttpClient _api;
+        private readonly HttpClient _apiNoAuth;
 
-        /// <summary>
-        /// Constructor del controlador.
-        /// Inicializa el HttpClient utilizando el cliente nombrado "Api".
-        /// </summary>
         public AccountController(IHttpClientFactory factory)
         {
-            _api = factory.CreateClient("Api");
+            _apiNoAuth = factory.CreateClient("ApiNoAuth");
         }
 
         /// <summary>
@@ -48,13 +47,7 @@ namespace GestionPlazasVacantes.Controllers
         }
 
         /// <summary>
-        /// Procesa el intento de inicio de sesión del usuario.
-        /// 
-        /// Flujo:
-        /// 1. Valida el modelo recibido desde la vista.
-        /// 2. Envía las credenciales al API de autenticación.
-        /// 3. Si el API valida correctamente, crea una sesión basada en cookies.
-        /// 4. Genera los Claims del usuario autenticado.
+        /// Procesa el inicio de sesión.
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -62,44 +55,42 @@ namespace GestionPlazasVacantes.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginVM vm, string? returnUrl = null)
         {
-            // Validación del modelo enviado desde la vista
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // Llamada al API para validar credenciales
-            var response = await _api.PostAsJsonAsync(
+            // Login SIEMPRE con ApiNoAuth (sin Bearer) para evitar efectos colaterales.
+            var response = await _apiNoAuth.PostAsJsonAsync(
                 "api/auth/login",
                 new { vm.Username, vm.Password });
 
-            // Si el API devuelve error, se asume credenciales inválidas
             if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError(string.Empty, "Usuario o contraseña inválidos.");
                 return View(vm);
             }
 
-            // Lectura de la respuesta del API con la información del usuario autenticado
             var user = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+            if (user == null || string.IsNullOrWhiteSpace(user.Token) || string.IsNullOrWhiteSpace(user.RefreshToken))
+            {
+                ModelState.AddModelError(string.Empty, "Respuesta inválida del servicio de autenticación.");
+                return View(vm);
+            }
 
-            // 🔐 Guardar tokens en sesión
-            HttpContext.Session.SetString("JWToken", user!.Token);
+            // 🔐 Guardar tokens en Session (lo que usan los handlers para adjuntar/refresh)
+            HttpContext.Session.SetString("JWToken", user.Token);
             HttpContext.Session.SetString("RefreshToken", user.RefreshToken);
 
-            // Creación de los claims que representarán la identidad del usuario
+            // Claims para cookie auth (navegación/autorizar vistas/controladores en MVC)
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.GivenName, user.FullName),
-        new Claim(ClaimTypes.Role, user.Rol)
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.GivenName, user.FullName),
+                new Claim(ClaimTypes.Role, user.Rol)
+            };
 
-            // Construcción de la identidad basada en cookies
-            var identity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            // Inicio de sesión en el contexto HTTP usando autenticación por cookies
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(identity),
@@ -109,28 +100,27 @@ namespace GestionPlazasVacantes.Controllers
                     AllowRefresh = true
                 });
 
-            // Redirección segura a la URL original si existe
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            // Redirección por defecto tras login exitoso
             return RedirectToAction("Index", "Home");
         }
 
-
         /// <summary>
-        /// Cierra la sesión del usuario autenticado.
+        /// Cierra sesión (cookie auth) y elimina tokens de Session.
         /// </summary>
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            // Limpia tokens usados por el HttpClient handler
+            HttpContext.Session.Remove("JWToken");
+            HttpContext.Session.Remove("RefreshToken");
 
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction(nameof(Login));
         }
 
         /// <summary>
-        /// Vista mostrada cuando el usuario intenta acceder a un recurso no autorizado.
+        /// Vista cuando el usuario no tiene permisos para un recurso.
         /// </summary>
         public IActionResult Denied() => View();
     }

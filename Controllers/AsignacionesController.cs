@@ -12,7 +12,7 @@ namespace GestionPlazasVacantes.Controllers
     /// - Requiere autenticación
     /// - Acceso exclusivo para usuarios con rol "Jefe"
     /// </summary>
-    [Authorize(Roles = "Jefe")]
+    //[Authorize(Roles = "Jefe")]
     public class AsignacionesController : Controller
     {
         private readonly HttpClient _api;
