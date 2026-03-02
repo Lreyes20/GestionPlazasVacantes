@@ -42,6 +42,21 @@ namespace GestionPlazasVacantes.Controllers
                 };
                 _context.Usuarios.Add(jefe);
             }
+            if (!await _context.Usuarios.AnyAsync(u => u.Username == "macuna"))
+            {
+                var macuna = new Usuario
+                {
+                    Username = "macuna",
+                    FullName = "Maikol Acuña",
+                    Email = "maikol.acuna@example.com",
+                    Rol = RolUsuario.Jefe,
+                    Activo = true,
+                    CreadoUtc = DateTime.UtcNow
+                };
+
+                macuna.SetPassword("macuna1234");
+                _context.Usuarios.Add(macuna);
+            }
             // Siempre actualizar la contraseña para asegurar que sea la correcta
             jefe.SetPassword("lreyes1234");
 
@@ -102,7 +117,10 @@ namespace GestionPlazasVacantes.Controllers
                     var plaza = new PlazaVacante
                     {
                         Titulo = $"{puesto} de {depto} {i}",
-                        TipoConcurso = i % 2 == 0 ? "Interno" : "Externo",
+                        //TipoConcurso = i % 2 == 0 ? "Interno" : "Externo",
+                        TipoConcurso = i % 2 == 0
+                            ? TipoConcursoEnum.Interno
+                            : TipoConcursoEnum.Externo,
                         NumeroConcurso = $"2025-{i:000}",
                         Departamento = depto,
                         SalarioCompuesto = rnd.Next(500000, 1500000),

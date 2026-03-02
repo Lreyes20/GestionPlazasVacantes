@@ -1,8 +1,9 @@
-﻿@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+﻿@* @model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante> *@
+@model IEnumerable<GestionPlazasVacantes.DTOs.PlazaDto>
 
 @{
     ViewData["Title"] = "Plazas Internas Disponibles";
-    var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
+    //var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
 }
 
 
@@ -10,14 +11,14 @@
 <div class="container-fluid px-4">
     <h2 class="titulo-pagina">🏢 Plazas Internas Disponibles para Empleados</h2>
 
-    @if (!plazasVigentes.Any())
+    @if (!Model.Any())
     {
         <p class="no-plazas">🚫 No hay plazas internas disponibles en este momento.</p>
     }
     else
     {
         <div class="plaza-grid">
-            @foreach (var plaza in plazasVigentes)
+            @foreach (var plaza in Model)
             {
                 <div class="plaza-card">
                     <div>

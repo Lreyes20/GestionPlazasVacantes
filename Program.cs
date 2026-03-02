@@ -1,9 +1,12 @@
 using GestionPlazasVacantes.Data;
+using GestionPlazasVacantes.Handlers;
+using GestionPlazasVacantes.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +41,29 @@ builder.Services.AddRateLimiter(_ => _
         options.QueueLimit = 0;
     }));
 
+// TipoConcurso como STRING
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddControllersWithViews();
+
+// <summary>
+// Para que el HttpClient pueda acceder al token JWT almacenado en sesión con Handler automático
+// </summary>
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<JwtDelegatingHandler>();
+
+
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+})
+.AddHttpMessageHandler<JwtDelegatingHandler>();
+
 
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
@@ -64,6 +89,26 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
+// <summary>
+// Para que el HttpClient pueda acceder al token JWT almacenado en sesión
+// </summary>
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
+
+// Cliente SIN handler (para refresh/logout)
+builder.Services.AddHttpClient("ApiNoAuth", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/"); // tu API
+});
+
+// Cliente CON handler (para el resto del sistema)
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+})
+.AddHttpMessageHandler<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
+
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
@@ -82,6 +127,33 @@ builder.Services.AddHttpClient("Api", (sp, client) =>
 });
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddTransient<JwtAuthorizationHandler>();
+
+// <summary>
+// Configura el HttpClient para que use el JwtAuthorizationHandler, que adjunta el token JWT a cada request.
+// <summary>
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+})
+.AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 

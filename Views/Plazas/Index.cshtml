@@ -1,9 +1,10 @@
-﻿@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+﻿@* @model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante> *@
+@model IEnumerable<GestionPlazasVacantes.DTOs.PlazaDto>
 
 
 @{
     ViewData["Title"] = "Listado de Plazas Vacantes";
-    var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
+    // var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
 }
 
 
@@ -22,14 +23,14 @@
         </a>
     </div>
 
-    @if (!plazasVigentes.Any())
+    @if (!Model.Any())
     {
         <p class="no-plazas">🚫 No hay plazas disponibles en este momento.</p>
     }
     else
     {
         <div class="plaza-grid">
-            @foreach (var plaza in plazasVigentes)
+            @foreach (var plaza in Model)
             {
                 <div class="plaza-card">
                     <div>
@@ -76,6 +77,7 @@
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <form asp-action="Eliminar" asp-route-id="@plaza.Id" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta plaza?')">
+                            @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                 <i class="bi bi-trash"></i> Eliminar
                             </button>

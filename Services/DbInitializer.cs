@@ -38,6 +38,16 @@ namespace GestionPlazasVacantes.Services
                         Activo = true,
                         CreadoUtc = DateTime.UtcNow
                     },
+                     new Usuario
+                    {
+                        Username = "macuna",
+                        FullName = "Maikol Acuña",
+                        Email = "maikol.acuna@example.com",
+                        PasswordHash = Services.PasswordHasher.HashPassword("macuna1234"),
+                        Rol = RolUsuario.Jefe,
+                        Activo = true,
+                        CreadoUtc = DateTime.UtcNow
+                    },
                     new Usuario
                     {
                         Username = "gluna",
@@ -76,7 +86,7 @@ namespace GestionPlazasVacantes.Services
                 {
                     new PlazaVacante
                     {
-                        TipoConcurso = "Interno",
+                        TipoConcurso = TipoConcursoEnum.Interno,
                         NumeroConcurso = "INT-2024-001",
                         Titulo = "Analista de Sistemas Senior",
                         Departamento = "Tecnologías de Información",
@@ -103,7 +113,7 @@ namespace GestionPlazasVacantes.Services
                     },
                     new PlazaVacante
                     {
-                        TipoConcurso = "Externo",
+                        TipoConcurso = TipoConcursoEnum.Interno,
                         NumeroConcurso = "EXT-2024-002",
                         Titulo = "Oficial de Seguridad",
                         Departamento = "Seguridad Municipal",
@@ -130,7 +140,7 @@ namespace GestionPlazasVacantes.Services
                     },
                     new PlazaVacante
                     {
-                        TipoConcurso = "Interno",
+                        TipoConcurso = TipoConcursoEnum.Interno,
                         NumeroConcurso = "INT-2024-003",
                         Titulo = "Contador General",
                         Departamento = "Contabilidad",

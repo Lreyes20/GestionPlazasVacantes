@@ -11,12 +11,6 @@ namespace GestionPlazasVacantes.Controllers
     /// Seguridad:
     /// - Requiere autenticación
     /// - Acceso exclusivo para usuarios con rol "Jefe"
-    /// 
-    /// Arquitectura:
-    /// MVC → API → Base de Datos
-    /// 
-    /// Este controlador NO accede directamente a la base de datos.
-    /// Toda la lógica de negocio se delega al API.
     /// </summary>
     [Authorize(Roles = "Jefe")]
     public class AsignacionesController : Controller

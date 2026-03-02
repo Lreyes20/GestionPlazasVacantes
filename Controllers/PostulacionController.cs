@@ -32,7 +32,8 @@ namespace GestionPlazasVacantes.Controllers
         {
             var ahora = DateTime.Now;
             var plazasExternas = await _context.PlazasVacantes
-                .Where(p => p.TipoConcurso == "Externo" && p.FechaLimite >= DateTime.Today && p.Activa)
+                .Where(p => p.TipoConcurso.Equals("Externo") && p.FechaLimite >= DateTime.Today && p.Activa)
+                //.Where(p => p.TipoConcurso == "Externo" && p.FechaLimite >= DateTime.Today && p.Activa)
                 .OrderByDescending(p => p.FechaCreacion)
                 .ToListAsync();
 

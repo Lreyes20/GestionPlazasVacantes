@@ -80,16 +80,19 @@ namespace GestionPlazasVacantes.Controllers
 
             // Lectura de la respuesta del API con la información del usuario autenticado
             var user = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+            // 🔐 Guardar tokens en sesión
             HttpContext.Session.SetString("JWToken", user!.Token);
+            HttpContext.Session.SetString("RefreshToken", user.RefreshToken);
 
             // Creación de los claims que representarán la identidad del usuario
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.GivenName, user.FullName),
-                new Claim(ClaimTypes.Role, user.Rol)
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.GivenName, user.FullName),
+        new Claim(ClaimTypes.Role, user.Rol)
+    };
 
             // Construcción de la identidad basada en cookies
             var identity = new ClaimsIdentity(
@@ -113,6 +116,7 @@ namespace GestionPlazasVacantes.Controllers
             // Redirección por defecto tras login exitoso
             return RedirectToAction("Index", "Home");
         }
+
 
         /// <summary>
         /// Cierra la sesión del usuario autenticado.

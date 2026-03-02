@@ -1,4 +1,5 @@
-﻿@model GestionPlazasVacantes.Models.Postulante
+﻿@* @model GestionPlazasVacantes.Models.Postulante *@
+@model GestionPlazasVacantes.DTOs.ConfirmacionPostulacionDto
 @{
     ViewData["Title"] = "Confirmación de Postulación Interna";
 }
@@ -142,8 +143,9 @@
                 <div class="col-6 mb-2"><strong>Fecha:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")</div>
                 <div class="col-6 mb-2"><strong>Cédula:</strong> @Model.Cedula</div>
                 <div class="col-12 mb-2"><strong>Postulante:</strong> @Model.NombreCompleto</div>
-                <div class="col-12 mb-2"><strong>Plaza:</strong> @(Model.PlazaVacante?.Titulo ?? "Plaza Vacante")</div>
+                <div class="col-12 mb-2"><strong>Plaza:</strong> @(Model.PlazaTitulo ?? "Plaza Vacante")</div>
                 <div class="col-12 mb-2"><strong>Estado:</strong> <span class="badge bg-success">Recibido</span></div>
+                @* <span class="badge bg-success">@Model.EstadoProceso</span> *@
             </div>
             
             <div class="mt-4 text-center border-top pt-3 d-none d-print-block">

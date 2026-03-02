@@ -9,8 +9,8 @@ namespace GestionPlazasVacantes.Models
         [Key]
         public int Id { get; set; }
 
-        [Required, StringLength(50)]
-        public string TipoConcurso { get; set; } = string.Empty;
+        [Required]
+        public TipoConcursoEnum TipoConcurso { get; set; }
 
         [Required, StringLength(50)]
         public string NumeroConcurso { get; set; } = string.Empty;

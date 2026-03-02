@@ -1,4 +1,5 @@
-﻿@model GestionPlazasVacantes.Models.PlazaVacante
+﻿@using GestionPlazasVacantes.Models
+@model GestionPlazasVacantes.Models.PlazaVacante
 
 @{
     ViewData["Title"] = "Editar Plaza Vacante";
@@ -19,12 +20,17 @@
             <div class="row g-3 align-items-center justify-content-center">
                 <div class="col-md-4">
                     <label asp-for="TipoConcurso"></label>
-                    <select asp-for="TipoConcurso" class="form-select" required>
+                    <select asp-for="TipoConcurso"
+                            class="form-select"
+                            asp-items="Html.GetEnumSelectList<TipoConcursoEnum>()">
+                    </select>
+                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
+                    @* <select asp-for="TipoConcurso" class="form-select" required>
                         <option value="">Seleccione...</option>
                         <option value="Interno">Interno</option>
                         <option value="Externo">Externo</option>
                     </select>
-                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
+                    <span asp-validation-for="TipoConcurso" class="text-danger"></span> *@
                 </div>
 
                 <div class="col-md-4">
@@ -35,7 +41,7 @@
             </div>
 
             <div id="previewConcurso" class="mt-4">
-                <h5 id="tituloConcurso">CONCURSO @Model.TipoConcurso?.ToUpper() N° @Model.NumeroConcurso</h5>
+                <h5 id="tituloConcurso">CONCURSO @Model.TipoConcurso.ToString().ToUpper() N° @Model.NumeroConcurso</h5>
                 <p>Requiere contratar los servicios de:</p>
             </div>
         </div>
@@ -100,6 +106,23 @@
                     <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
                 </div>
             </div>
+        </div>
+
+        <!-- Sección 4 -->
+        <div class="seccion">
+            <h5>4️⃣ Requisitos Especiales</h5>
+
+            <div class="form-check">
+                <input asp-for="SolicitarColegiatura" class="form-check-input" />
+                <label asp-for="SolicitarColegiatura" class="form-check-label"></label>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="ColegiaturaObligatoria" class="form-check-input" />
+                <label asp-for="ColegiaturaObligatoria" class="form-check-label"></label>
+            </div>
+
+            <!-- repetir para los demás -->
         </div>
 
         <div class="botones-formulario mt-4">

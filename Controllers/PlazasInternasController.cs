@@ -1,210 +1,93 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using GestionPlazasVacantes.Data;
+using GestionPlazasVacantes.DTOs;
 using GestionPlazasVacantes.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace GestionPlazasVacantes.Controllers
+[Authorize]
+public class PlazasInternasController : Controller
 {
-    public class PlazasInternasController : Controller
+    private readonly HttpClient _api;
+
+    public PlazasInternasController(IHttpClientFactory factory)
     {
-        private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _env;
-        private static readonly string[] ExtImgs = new[] { ".jpg", ".jpeg", ".png" };
-        private static readonly string[] ExtPdf = new[] { ".pdf" };
+        _api = factory.CreateClient("Api");
+    }
 
-        public PlazasInternasController(AppDbContext context, IWebHostEnvironment env)
+    public async Task<IActionResult> Index()
+    {
+        var plazas = await _api.GetFromJsonAsync<List<PlazaDto>>(
+            "api/plazas-internas");
+
+        return View(plazas ?? []);
+    }
+
+    public async Task<IActionResult> Aplicar(int id)
+    {
+        var plaza = await _api.GetFromJsonAsync<PlazaDto>(
+            $"api/plazas-internas/{id}");
+
+        //ViewBag.Plaza = plaza;
+        //return View(new Postulante { PlazaVacanteId = id });
+        var vm = new Postulacion
         {
-            _context = context;
-            _env = env;
+            Plaza = plaza,
+            Postulante = new PostulanteDto { PlazaVacanteId = id }
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Aplicar(
+        Postulacion vm,
+        IFormFile curriculum,
+        IFormFile? fotoTitulo,
+        IFormFile? fotoColegiatura,
+        IFormFile? fotoLicencia,
+        IFormFile? fotoPermisoArmas)
+    {
+        var form = new MultipartFormDataContent();
+
+        form.Add(new StringContent(vm.Postulante.PlazaVacanteId.ToString()), "PlazaVacanteId");
+        form.Add(new StringContent(vm.Postulante.NombreCompleto), "NombreCompleto");
+        form.Add(new StringContent(vm.Postulante.Cedula), "Cedula");
+        form.Add(new StringContent(vm.Postulante.Correo), "Correo");
+
+        form.Add(new StreamContent(curriculum.OpenReadStream()), "curriculum", curriculum.FileName);
+
+        if (fotoTitulo != null)
+            form.Add(new StreamContent(fotoTitulo.OpenReadStream()), "fotoTitulo", fotoTitulo.FileName);
+
+        if (fotoColegiatura != null)
+            form.Add(new StreamContent(fotoColegiatura.OpenReadStream()), "fotoColegiatura", fotoColegiatura.FileName);
+
+        if (fotoLicencia != null)
+            form.Add(new StreamContent(fotoLicencia.OpenReadStream()), "fotoLicencia", fotoLicencia.FileName);
+
+        if (fotoPermisoArmas != null)
+            form.Add(new StreamContent(fotoPermisoArmas.OpenReadStream()), "fotoPermisoArmas", fotoPermisoArmas.FileName);
+
+        var response = await _api.PostAsync("api/plazas-internas/aplicar", form);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            ModelState.AddModelError("", "Error al enviar la postulación.");
+            return View(vm);
         }
 
-        // 🏢 Vista principal de plazas INTERNAS disponibles
-        public async Task<IActionResult> Index()
-        {
-            var ahora = DateTime.Now;
-            var plazasInternas = await _context.PlazasVacantes
-                .Where(p => p.TipoConcurso == "Interno" && p.FechaLimite >= DateTime.Today && p.Activa)
-                .OrderByDescending(p => p.FechaCreacion)
-                .ToListAsync();
+        var result = await response.Content.ReadFromJsonAsync<dynamic>();
+        return RedirectToAction("Confirmacion", new { id = (int)result!.Id });
+    }
 
-            return View(plazasInternas);
-        }
+    public async Task<IActionResult> Confirmacion(int id)
+    {
+        var postulante = await _api.GetFromJsonAsync<ConfirmacionPostulacionDto>(
+            $"api/plazas-internas/confirmacion/{id}");
 
-        // 🧾 Mostrar formulario de aplicación (GET) - Con Pre-llenado
-        public async Task<IActionResult> Aplicar(int id)
-        {
-            var plaza = await _context.PlazasVacantes.FindAsync(id);
-            if (plaza == null || plaza.TipoConcurso != "Interno") 
-                return NotFound("Esta plaza no está disponible para postulación interna.");
+        if (postulante == null)
+            return NotFound();
 
-            // Pre-llenar datos del usuario logueado
-            var username = User.Identity?.Name;
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
-
-            var postulante = new Postulante 
-            { 
-                PlazaVacanteId = id,
-                NombreCompleto = usuario?.FullName ?? "",
-                Correo = usuario?.Email ?? "",
-                Cedula = "" 
-            };
-
-            ViewBag.Plaza = plaza;
-            return View(postulante);
-        }
-
-        // 💾 Guardar postulación (POST)
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Aplicar(Postulante model, IFormFile? curriculum, IFormFile? fotoTitulo, IFormFile? fotoColegiatura, IFormFile? fotoLicencia, IFormFile? fotoPermisoArmas)
-        {
-            var plaza = await _context.PlazasVacantes.FindAsync(model.PlazaVacanteId);
-            if (plaza == null || plaza.TipoConcurso != "Interno") 
-                return NotFound();
-
-            ViewBag.Plaza = plaza;
-
-            // Validaciones básicas
-            if (string.IsNullOrWhiteSpace(model.NombreCompleto) ||
-                string.IsNullOrWhiteSpace(model.Cedula) ||
-                string.IsNullOrWhiteSpace(model.Correo))
-            {
-                ModelState.AddModelError("", "⚠️ Debe completar todos los campos obligatorios.");
-                return View(model);
-            }
-
-            // Validar unicidad de la postulación
-            var existe = await _context.Postulantes
-                .AnyAsync(p => p.PlazaVacanteId == model.PlazaVacanteId && p.Cedula == model.Cedula);
-
-            if (existe)
-            {
-                ModelState.AddModelError("", $"⚠️ Ya existe una postulación registrada con esta cédula para la plaza '{plaza.Titulo}'.");
-                return View(model);
-            }
-
-            // Validar curriculum (obligatorio)
-            if (curriculum == null || curriculum.Length == 0)
-            {
-                ModelState.AddModelError("", "⚠️ Debe adjuntar su currículum vitae en formato PDF.");
-                return View(model);
-            }
-
-            try
-            {
-                var uploadsPath = Path.Combine(_env.WebRootPath, "uploads", "postulantes");
-                if (!Directory.Exists(uploadsPath))
-                    Directory.CreateDirectory(uploadsPath);
-
-                // Guardar curriculum
-                if (curriculum != null && curriculum.Length > 0)
-                {
-                    if (!ValidarExtension(curriculum.FileName, ExtPdf))
-                    {
-                        ModelState.AddModelError("", "⚠️ El currículum debe ser un archivo PDF.");
-                        return View(model);
-                    }
-
-                    var curriculumFileName = $"{Guid.NewGuid()}_{SanitizarNombre(curriculum.FileName)}";
-                    var curriculumPath = Path.Combine(uploadsPath, curriculumFileName);
-                    using (var stream = new FileStream(curriculumPath, FileMode.Create))
-                    {
-                        await curriculum.CopyToAsync(stream);
-                    }
-                    model.CurriculumPath = $"/uploads/postulantes/{curriculumFileName}";
-                }
-
-                // Guardar documentos opcionales
-                if (fotoTitulo != null && fotoTitulo.Length > 0 && plaza.SolicitarTitulos)
-                {
-                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoTitulo.FileName)}";
-                    var filePath = Path.Combine(uploadsPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await fotoTitulo.CopyToAsync(stream);
-                    }
-                    model.FotoTituloPath = $"/uploads/postulantes/{fileName}";
-                }
-
-                if (fotoColegiatura != null && fotoColegiatura.Length > 0 && plaza.SolicitarColegiatura)
-                {
-                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoColegiatura.FileName)}";
-                    var filePath = Path.Combine(uploadsPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await fotoColegiatura.CopyToAsync(stream);
-                    }
-                    model.FotoColegiaturaPath = $"/uploads/postulantes/{fileName}";
-                }
-
-                if (fotoLicencia != null && fotoLicencia.Length > 0 && plaza.SolicitarLicencia)
-                {
-                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoLicencia.FileName)}";
-                    var filePath = Path.Combine(uploadsPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await fotoLicencia.CopyToAsync(stream);
-                    }
-                    model.FotoLicenciaPath = $"/uploads/postulantes/{fileName}";
-                }
-
-                if (fotoPermisoArmas != null && fotoPermisoArmas.Length > 0 && plaza.SolicitarPermisoArmas)
-                {
-                    var fileName = $"{Guid.NewGuid()}_{SanitizarNombre(fotoPermisoArmas.FileName)}";
-                    var filePath = Path.Combine(uploadsPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await fotoPermisoArmas.CopyToAsync(stream);
-                    }
-                    model.FotoPermisoArmasPath = $"/uploads/postulantes/{fileName}";
-                }
-
-                // Guardar en base de datos
-                model.EstadoProceso = "Recibido";
-                model.FechaActualizacion = DateTime.Now;
-
-                _context.Postulantes.Add(model);
-                await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "Su postulación ha sido recibida exitosamente.";
-                return RedirectToAction("Confirmacion", new { id = model.Id });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                ModelState.AddModelError("", "⚠️ Ocurrió un error al procesar su postulación.");
-                return View(model);
-            }
-        }
-
-        // ✅ Confirmación
-        public async Task<IActionResult> Confirmacion(int id)
-        {
-            var postulante = await _context.Postulantes
-                .Include(p => p.PlazaVacante)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (postulante == null) return NotFound();
-            return View(postulante);
-        }
-
-        private bool ValidarExtension(string fileName, string[] extensionesPermitidas)
-        {
-            if (string.IsNullOrEmpty(fileName)) return false;
-            var ext = Path.GetExtension(fileName).ToLowerInvariant();
-            return extensionesPermitidas.Contains(ext);
-        }
-
-        private string SanitizarNombre(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName)) return "archivo";
-            return Path.GetFileName(fileName).Replace(" ", "_");
-        }
+        return View(postulante);
     }
 }

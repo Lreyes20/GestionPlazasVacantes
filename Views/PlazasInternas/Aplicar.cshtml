@@ -1,7 +1,8 @@
-﻿@model GestionPlazasVacantes.Models.Postulante
+﻿@* @model GestionPlazasVacantes.Models.Postulante *@
+@model GestionPlazasVacantes.Models.Postulacion
 @{
     ViewData["Title"] = "Formulario de Postulación Interna";
-    var plaza = ViewBag.Plaza as GestionPlazasVacantes.Models.PlazaVacante;
+    var plaza = Model.Plaza; /* as GestionPlazasVacantes.Models.PlazaVacante; */
     Layout = "_Layout";
 }
 
@@ -25,38 +26,40 @@
     }
 
     <form id="formPostulacion" asp-action="Aplicar" method="post" enctype="multipart/form-data">
-        <input type="hidden" asp-for="Id" />
         @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Postulante.Id" />
+        <input type="hidden" asp-for="Postulante.PlazaVacanteId" />
+
         <div asp-validation-summary="All" class="text-danger mb-3"></div>
-        <input type="hidden" asp-for="PlazaVacanteId" />
 
         <!-- 🔹 Datos personales -->
         <div class="seccion">
             <h5>1️⃣ Datos Personales</h5>
             <div class="row">
                 <div class="col-md-6">
-                    <label asp-for="NombreCompleto"></label>
-                    <input asp-for="NombreCompleto" class="form-control" required />
+                    <label asp-for="Postulante.NombreCompleto"></label>
+                    <input asp-for="Postulante.NombreCompleto" class="form-control" required />
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Cedula"></label>
-                    <input asp-for="Cedula" class="form-control" required />
+                    <label asp-for="Postulante.Cedula"></label>
+                    <input asp-for="Postulante.Cedula" class="form-control" required />
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-md-6">
-                    <label asp-for="Correo"></label>
-                    <input asp-for="Correo" type="email" class="form-control" required />
+                    <label asp-for="Postulante.Correo"></label>
+                    <input asp-for="Postulante.Correo" type="email" class="form-control" required />
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Telefono"></label>
-                    <input asp-for="Telefono" class="form-control" />
+                    <label asp-for="Postulante.Telefono"></label>
+                    <input asp-for="Postulante.Telefono" class="form-control" />
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-12">
-                    <label asp-for="Direccion"></label>
-                    <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
+                    <label asp-for="Postulante.Direccion"></label>
+                    <textarea asp-for="Postulante.Direccion" class="form-control" rows="2"></textarea>
                 </div>
             </div>
         </div>
@@ -65,26 +68,26 @@
         <div class="seccion">
             <h5>📄 Información Curricular</h5>
 
-            <label asp-for="PerfilProfesional"></label>
-            <textarea asp-for="PerfilProfesional" class="form-control" rows="3" placeholder="Describe brevemente tu perfil profesional..."></textarea>
+            <label asp-for="Postulante.PerfilProfesional"></label>
+            <textarea asp-for="Postulante.PerfilProfesional" class="form-control" rows="3" placeholder="Describe brevemente tu perfil profesional..."></textarea>
 
-            <label asp-for="ExperienciaLaboral"></label>
-            <textarea asp-for="ExperienciaLaboral" class="form-control" rows="3" placeholder="Describe tus experiencias laborales más relevantes..."></textarea>
+            <label asp-for="Postulante.ExperienciaLaboral"></label>
+            <textarea asp-for="Postulante.ExperienciaLaboral" class="form-control" rows="3" placeholder="Describe tus experiencias laborales más relevantes..."></textarea>
 
-            <label asp-for="FormacionAcademica"></label>
-            <textarea asp-for="FormacionAcademica" class="form-control" rows="3" placeholder="Incluye tus títulos o grados académicos..."></textarea>
+            <label asp-for="Postulante.FormacionAcademica"></label>
+            <textarea asp-for="Postulante.FormacionAcademica" class="form-control" rows="3" placeholder="Incluye tus títulos o grados académicos..."></textarea>
 
-            <label asp-for="Habilidades"></label>
-            <textarea asp-for="Habilidades" class="form-control" rows="2" placeholder="Ejemplo: liderazgo, programación, redacción técnica..."></textarea>
+            <label asp-for="Postulante.Habilidades"></label>
+            <textarea asp-for="Postulante.Habilidades" class="form-control" rows="2" placeholder="Ejemplo: liderazgo, programación, redacción técnica..."></textarea>
 
-            <label asp-for="Idiomas"></label>
-            <textarea asp-for="Idiomas" class="form-control" rows="2" placeholder="Ejemplo: Español (nativo), Inglés (B2)..."></textarea>
+            <label asp-for="Postulante.Idiomas"></label>
+            <textarea asp-for="Postulante.Idiomas" class="form-control" rows="2" placeholder="Ejemplo: Español (nativo), Inglés (B2)..."></textarea>
 
-            <label asp-for="FormacionComplementaria"></label>
-            <textarea asp-for="FormacionComplementaria" class="form-control" rows="2" placeholder="Cursos, certificaciones, talleres..."></textarea>
+            <label asp-for="Postulante.FormacionComplementaria"></label>
+            <textarea asp-for="Postulante.FormacionComplementaria" class="form-control" rows="2" placeholder="Cursos, certificaciones, talleres..."></textarea>
 
-            <label asp-for="OtrosDatos"></label>
-            <textarea asp-for="OtrosDatos" class="form-control" rows="2" placeholder="Cualquier otra información que consideres relevante..."></textarea>
+            <label asp-for="Postulante.OtrosDatos"></label>
+            <textarea asp-for="Postulante.OtrosDatos" class="form-control" rows="2" placeholder="Cualquier otra información que consideres relevante..."></textarea>
         </div>
 
         <div class="seccion">
@@ -93,8 +96,8 @@
 
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <label for="curriculum" class="form-label">📄 Subir tu currículum (solo PDF)</label>
-                    <input type="file" name="curriculum" id="curriculum" accept=".pdf" class="form-control" required />
+                    <label for="Postulante.curriculum" class="form-label">📄 Subir tu currículum (solo PDF)</label>
+                    <input type="Postulante.file" name="curriculum" id="curriculum" accept=".pdf" class="form-control" required />
                     <small class="text-muted">Tamaño máximo: 10 MB</small>
                 </div>
                 <div class="col-md-6 text-center">
@@ -116,7 +119,7 @@
                 @if (plaza.SolicitarColegiatura)
                 {
                     <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                    <input asp-for="Postulante.NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
                     <label class="mt-2">Foto del carné del colegio profesional</label>
                     <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
                 }
@@ -124,7 +127,7 @@
                 @if (plaza.SolicitarLicencia)
                 {
                     <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
+                    <input asp-for="Postulante.TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
                     <label class="mt-2">Foto de la licencia</label>
                     <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
                 }
@@ -132,7 +135,7 @@
                 @if (plaza.SolicitarPermisoArmas)
                 {
                     <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
+                    <input asp-for="Postulante.NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
                     <label class="mt-2">Foto del permiso</label>
                     <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
                 }
@@ -164,7 +167,7 @@
 
         <!-- 🔘 Botones -->
         <div class="botones-formulario mt-4">
-            
+
             <button type="submit" id="btnEnviar" class="btn btn-primary">
                 <i class="bi bi-send-check"></i> Enviar Postulación
             </button>
@@ -214,8 +217,8 @@
             form.target = '_blank';
 
             // Copiar todos los campos del formulario principal
-            const campos = ['NombreCompleto', 'Cedula', 'Correo', 'Telefono', 'Direccion', 
-                           'PerfilProfesional', 'ExperienciaLaboral', 'FormacionAcademica', 
+            const campos = ['NombreCompleto', 'Cedula', 'Correo', 'Telefono', 'Direccion',
+                           'PerfilProfesional', 'ExperienciaLaboral', 'FormacionAcademica',
                            'Habilidades', 'Idiomas', 'FormacionComplementaria', 'OtrosDatos'];
 
             campos.forEach(campo => {
