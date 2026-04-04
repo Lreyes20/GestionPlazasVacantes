@@ -5,7 +5,9 @@ namespace GestionPlazasVacantes.DTOs
     public class PlazaDto
     {
         public int Id { get; set; }
-        public TipoConcursoEnum TipoConcurso { get; set; }
+        //public TipoConcursoEnum TipoConcurso { get; set; }
+        public string TipoConcurso { get; set; }
+
         public string NumeroConcurso { get; set; } = string.Empty;
         public string Titulo { get; set; } = string.Empty;
         public string? Departamento { get; set; }
