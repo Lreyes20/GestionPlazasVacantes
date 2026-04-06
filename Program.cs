@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
@@ -15,8 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-// Cookie Auth (no se crean usuarios desde la app)
+// Cookie Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opt =>
     {
@@ -30,18 +28,23 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         opt.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
 
-builder.Services.AddAuthorization();
+// Authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
-// Rate limiting de login (mitiga fuerza bruta, sin lockout)
+// Rate limiting
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter("login", options =>
     {
-        options.PermitLimit = 10; // 10 intentos por minuto por IP
+        options.PermitLimit = 10;
         options.Window = TimeSpan.FromMinutes(1);
         options.QueueLimit = 0;
     }));
 
-// TipoConcurso como STRING
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -51,103 +54,8 @@ builder.Services.AddControllers()
 
 builder.Services.AddControllersWithViews();
 
-// <summary>
-// Para que el HttpClient pueda acceder al token JWT almacenado en sesión con Handler automático
-// </summary>
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<JwtDelegatingHandler>();
-
-
-builder.Services.AddHttpClient("Api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:44330/");
-})
-.AddHttpMessageHandler<JwtDelegatingHandler>();
-
-
-
-QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-
-builder.Services.AddHttpClient("Api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:44330/");
-});
-//builder.Services.AddHttpClient("Api", client =>
-//{
-//    client.BaseAddress = new Uri("https://localhost:44328/");
-//})
-//.AddHttpMessageHandler(() => new JwtHandler());
-
-/// <sumary>
-/// Blinda las URL para usuarios logueados
-/// </summary>
-builder.Services.AddAuthorization(options =>
-{
-    // TODO requiere login por defecto
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
-
-// <summary>
-// Para que el HttpClient pueda acceder al token JWT almacenado en sesión
-// </summary>
-builder.Services.AddSession();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
-
-// Cliente SIN handler (para refresh/logout)
-builder.Services.AddHttpClient("ApiNoAuth", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:44330/"); // tu API
-});
-
-// Cliente CON handler (para el resto del sistema)
-builder.Services.AddHttpClient("Api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:44330/");
-})
-.AddHttpMessageHandler<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
-
-builder.Services.AddSession();
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddHttpClient("Api", (sp, client) =>
-{
-    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
-    var token = httpContext?.Session.GetString("JWToken");
-
-    if (!string.IsNullOrEmpty(token))
-    {
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-    }
-
-    client.BaseAddress = new Uri("https://localhost:44330/");
-});
-
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddTransient<JwtAuthorizationHandler>();
-
-// <summary>
-// Configura el HttpClient para que use el JwtAuthorizationHandler, que adjunta el token JWT a cada request.
-// <summary>
-builder.Services.AddHttpClient("Api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:44330/");
-})
-.AddHttpMessageHandler<JwtAuthorizationHandler>();
-
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
+// Session + ContextAccessor
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(8);
@@ -155,11 +63,31 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddHttpContextAccessor();
+
+// Si realmente usas handlers JWT en otras pantallas, déjalos:
+builder.Services.AddTransient<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
+builder.Services.AddTransient<JwtAuthorizationHandler>();
+
+// Cliente sin auth, por si lo ocupas
+builder.Services.AddHttpClient("ApiNoAuth", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+});
+
+// Cliente principal API
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:44330/");
+})
+.AddHttpMessageHandler<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
+
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 var app = builder.Build();
 
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 Console.WriteLine("CONNECTION STRING = " + (cs ?? "NULL"));
-
 
 // Inicializar datos de prueba
 using (var scope = app.Services.CreateScope())
@@ -179,7 +107,7 @@ app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Cabeceras seguras + CSP para Bootstrap CDN
+// Cabeceras seguras + CSP
 app.Use(async (ctx, next) =>
 {
     ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
@@ -195,10 +123,6 @@ app.Use(async (ctx, next) =>
         "frame-ancestors 'none'; base-uri 'self';";
     await next();
 });
-
-
-// Sirve archivos desde wwwroot
-
 
 app.UseRouting();
 app.UseRateLimiter();
