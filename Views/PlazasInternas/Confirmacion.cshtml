@@ -157,11 +157,14 @@
             Gracias por aplicar. Tu solicitud ha sido registrada correctamente.
             Conserve este comprobante para sus registros.
         </p>
-        
+
         <div class="d-flex justify-content-center gap-3 mt-4 d-print-none">
-            <button onclick="window.print()" class="btn btn-outline-secondary">
-                <i class="bi bi-printer"></i> Imprimir Comprobante
-            </button>
+            <a asp-controller="PlazasInternas"
+               asp-action="DescargarComprobantePdf"
+               asp-route-id="@Model.Id"
+               class="btn btn-outline-danger">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar Comprobante PDF
+            </a>
         </div>
     }
 

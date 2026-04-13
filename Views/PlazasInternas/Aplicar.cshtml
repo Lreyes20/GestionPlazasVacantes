@@ -1,8 +1,9 @@
-﻿@* @model GestionPlazasVacantes.Models.Postulante *@
-@model GestionPlazasVacantes.Models.Postulacion
+﻿@model GestionPlazasVacantes.Models.Postulacion
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Formulario de Postulación Interna";
-    var plaza = Model.Plaza; /* as GestionPlazasVacantes.Models.PlazaVacante; */
+    var plaza = Model?.Plaza; /* as GestionPlazasVacantes.Models.PlazaVacante; */
     Layout = "_Layout";
 }
 
@@ -97,7 +98,8 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <label for="Postulante.curriculum" class="form-label">📄 Subir tu currículum (solo PDF)</label>
-                    <input type="Postulante.file" name="curriculum" id="curriculum" accept=".pdf" class="form-control" required />
+                    @* <input type="Postulante.file" name="curriculum" id="curriculum" accept=".pdf" class="form-control" required /> *@
+                    <input type="file" name="curriculum" id="curriculum" accept=".pdf" class="form-control" required />
                     <small class="text-muted">Tamaño máximo: 10 MB</small>
                 </div>
                 <div class="col-md-6 text-center">
@@ -111,45 +113,50 @@
         </div>
 
         <!-- 🔹 Documentos requeridos -->
-        @if (plaza != null && (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos))
+        @* @if (plaza != null && (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos))
+        { *@
+        @if (plaza != null)
         {
-            <div class="seccion mt-4">
-                <h5>📚 Documentos Requeridos por la Plaza</h5>
+            if (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos)
+            {
+                <div class="seccion mt-4">
+                    <h5>📚 Documentos Requeridos por la Plaza</h5>
 
-                @if (plaza.SolicitarColegiatura)
-                {
-                    <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="Postulante.NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
-                    <label class="mt-2">Foto del carné del colegio profesional</label>
-                    <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
-                }
+                    @if (plaza.SolicitarColegiatura)
+                    {
+                        <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                        <input asp-for="Postulante.NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                        <label class="mt-2">Foto del carné del colegio profesional</label>
+                        <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                    }
 
-                @if (plaza.SolicitarLicencia)
-                {
-                    <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="Postulante.TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
-                    <label class="mt-2">Foto de la licencia</label>
-                    <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
-                }
+                    @if (plaza.SolicitarLicencia)
+                    {
+                        <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
+                        <input asp-for="Postulante.TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
+                        <label class="mt-2">Foto de la licencia</label>
+                        <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
+                    }
 
-                @if (plaza.SolicitarPermisoArmas)
-                {
-                    <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="Postulante.NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
-                    <label class="mt-2">Foto del permiso</label>
-                    <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
-                }
+                    @if (plaza.SolicitarPermisoArmas)
+                    {
+                        <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
+                        <input asp-for="Postulante.NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
+                        <label class="mt-2">Foto del permiso</label>
+                        <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
+                    }
 
-                @if (plaza.SolicitarTitulos)
-                {
-                    <label class="mt-3">Adjuntar títulos o certificaciones @(plaza.TitulosObligatorios ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
+                    @if (plaza.SolicitarTitulos)
+                    {
+                        <label class="mt-3">Adjuntar títulos o certificaciones @(plaza.TitulosObligatorios ? "(Obligatorio)" : "(Opcional)")</label>
+                        <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
 
-                    <label class="mt-2">Foto del título principal</label>
-                    <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
-                }
+                        <label class="mt-2">Foto del título principal</label>
+                        <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
+                    }
 
-            </div>
+                </div>
+            }
         }
 
         <!-- 🔹 Declaración bajo juramento -->
@@ -177,74 +184,76 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+
         const btnEnviar = document.getElementById("btnEnviar");
         const btnGenerarCV = document.getElementById("btnGenerarCV");
 
-        // Validación del formulario principal
-        btnEnviar.addEventListener("click", (e) => {
-            const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
-            const cedula = document.querySelector('[name="Cedula"]').value.trim();
-            const correo = document.querySelector('[name="Correo"]').value.trim();
-            const check = document.getElementById("declaracionJurada");
+        // ✅ VALIDACIÓN
+            btnGenerarCV.addEventListener("click", async () => {
 
-            if (!nombre || !cedula || !correo) {
-                e.preventDefault();
-                alert("⚠️ Por favor completa los campos obligatorios antes de enviar la postulación.");
-                return false;
-            }
+            btnGenerarCV.disabled = true;
+            btnGenerarCV.innerText = "Generando...";
 
-            if (!check.checked) {
-                e.preventDefault();
-                alert("⚠️ Debes aceptar la declaración bajo juramento para continuar.");
-                return false;
-            }
-        });
-
-        // Generar CV en PDF
-        btnGenerarCV.addEventListener("click", () => {
-            const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
-            const cedula = document.querySelector('[name="Cedula"]').value.trim();
+            const nombre = document.querySelector('[name="Postulante.NombreCompleto"]')?.value.trim();
+            const cedula = document.querySelector('[name="Postulante.Cedula"]')?.value.trim();
 
             if (!nombre || !cedula) {
-                alert("⚠️ Debes completar al menos tu nombre y cédula antes de generar el CV.");
+                alert("⚠️ Completa nombre y cédula.");
+                btnGenerarCV.disabled = false;
+                btnGenerarCV.innerText = "Generar CV";
                 return;
             }
 
-            // Crear formulario temporal para enviar datos a GenerarCVPrevia
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '@Url.Action("GenerarCVPrevia", "Postulacion")';
-            form.target = '_blank';
+            const formData = new FormData();
 
-            // Copiar todos los campos del formulario principal
-            const campos = ['NombreCompleto', 'Cedula', 'Correo', 'Telefono', 'Direccion',
-                           'PerfilProfesional', 'ExperienciaLaboral', 'FormacionAcademica',
-                           'Habilidades', 'Idiomas', 'FormacionComplementaria', 'OtrosDatos'];
+            const campos = [
+                'NombreCompleto','Cedula','Correo','Telefono','Direccion',
+                'PerfilProfesional','ExperienciaLaboral','FormacionAcademica',
+                'Habilidades','Idiomas','FormacionComplementaria','OtrosDatos'
+            ];
 
             campos.forEach(campo => {
-                const input = document.querySelector(`[name="${campo}"]`);
+                const input = document.querySelector(`[name="Postulante.${campo}"]`);
                 if (input && input.value) {
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = campo;
-                    hidden.value = input.value;
-                    form.appendChild(hidden);
+                    formData.append(campo, input.value);
                 }
             });
 
-            // Agregar token antiforgery
-            const token = document.querySelector('input[name="__RequestVerificationToken"]');
-            if (token) {
-                const hiddenToken = document.createElement('input');
-                hiddenToken.type = 'hidden';
-                hiddenToken.name = '__RequestVerificationToken';
-                hiddenToken.value = token.value;
-                form.appendChild(hiddenToken);
-            }
+            try {
+                const response = await fetch('@Configuration["Api:BaseUrl"]api/plazas-internas/generar-cv', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+                // if (!response.ok) {
+                //     alert("❌ Error generando PDF");
+                //     return;
+                // }
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("ERROR API:", errorText);
+                    alert(errorText);
+                    return;
+                }
+
+                const blob = await response.blob();
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `CV_${nombre.replaceAll(" ", "_")}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                } catch (error) {
+                    console.error("ERROR REAL:", error);
+                    alert(error.message);
+                } finally {
+                btnGenerarCV.disabled = false;
+                btnGenerarCV.innerText = "Generar CV";
+            }
         });
+
     });
 </script>

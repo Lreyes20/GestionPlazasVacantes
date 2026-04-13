@@ -1,18 +1,18 @@
-using GestionPlazasVacantes.Data;
+﻿//using GestionPlazasVacantes.Data;
 using GestionPlazasVacantes.Handlers;
 using GestionPlazasVacantes.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // EF Core
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Cookie Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -65,7 +65,7 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-// Si realmente usas handlers JWT en otras pantallas, d�jalos:
+// Si realmente usas handlers JWT en otras pantallas, déjalos:
 builder.Services.AddTransient<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
 builder.Services.AddTransient<JwtAuthorizationHandler>();
 
@@ -86,16 +86,46 @@ QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var app = builder.Build();
 
+//app.Use(async (context, next) =>
+//{
+//    context.Response.Headers["Content-Security-Policy"] =
+//        "default-src 'self'; " +
+//        "img-src 'self' https://localhost:44330 data:; " +
+//        "script-src 'self' 'unsafe-inline'; " +
+//        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+//        "font-src 'self' https://fonts.gstatic.com;";
+//    await next();
+//});
+
+app.Use(async (ctx, next) =>
+{
+    ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    ctx.Response.Headers["X-Frame-Options"] = "DENY";
+    ctx.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    ctx.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+
+    ctx.Response.Headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "img-src 'self' https://localhost:44330 data:; " +
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+        "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+        "connect-src 'self' https://localhost:44330; " +
+        "frame-ancestors 'none'; base-uri 'self';";
+
+    await next();
+});
+
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 Console.WriteLine("CONNECTION STRING = " + (cs ?? "NULL"));
 
 // Inicializar datos de prueba
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<AppDbContext>();
-    GestionPlazasVacantes.Services.DbInitializer.Initialize(context);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var context = services.GetRequiredService<AppDbContext>();
+//    GestionPlazasVacantes.Services.DbInitializer.Initialize(context);
+//}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -108,21 +138,21 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // Cabeceras seguras + CSP
-app.Use(async (ctx, next) =>
-{
-    ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
-    ctx.Response.Headers["X-Frame-Options"] = "DENY";
-    ctx.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    ctx.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
-    ctx.Response.Headers["Content-Security-Policy"] =
-        "default-src 'self'; " +
-        "script-src 'self' https://cdn.jsdelivr.net; " +
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
-        "font-src 'self' https://cdn.jsdelivr.net data:; " +
-        "img-src 'self' data:; " +
-        "frame-ancestors 'none'; base-uri 'self';";
-    await next();
-});
+//app.Use(async (ctx, next) =>
+//{
+//    ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
+//    ctx.Response.Headers["X-Frame-Options"] = "DENY";
+//    ctx.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+//    ctx.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+//    ctx.Response.Headers["Content-Security-Policy"] =
+//        "default-src 'self'; " +
+//        "script-src 'self' https://cdn.jsdelivr.net; " +
+//        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+//        "font-src 'self' https://cdn.jsdelivr.net data:; " +
+//        "img-src 'self' data:; " +
+//        "frame-ancestors 'none'; base-uri 'self';";
+//    await next();
+//});
 
 app.UseRouting();
 app.UseRateLimiter();

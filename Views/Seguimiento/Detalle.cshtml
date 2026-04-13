@@ -1,205 +1,461 @@
-﻿@model GestionPlazasVacantes.Models.Postulante
+﻿@model GestionPlazasVacantes.DTOs.DetallePostulanteVM
 @{
-    ViewData["Title"] = "Detalle del Postulante";
-    var s = ViewBag.Seguimiento;
+    var p = Model.Postulante;
+    var s = Model.Seguimiento;
+    var baseUrl = ViewBag.ApiBaseUrl as string;
+
+    var etapas = new List<string>
+    {
+        "Revisión documental",
+        "Pruebas técnicas",
+        "Pruebas psicométricas",
+        "Entrevista presencial",
+        "Final"
+    };
+
+    int pasoActual = etapas.IndexOf(s.EtapaActual);
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-
-
 <div class="container">
-    <!-- 🔹 DATOS DEL POSTULANTE -->
-    <div class="card">
+    <!-- DATOS DEL POSTULANTE -->
+    <div class="card mb-4">
         <div class="card-body">
-            <h3><i class="bi bi-person-badge"></i> @Model.NombreCompleto</h3>
-            <p class="text-muted mb-1"><i class="bi bi-briefcase"></i> @Model.PlazaVacante.Titulo</p>
-            <p class="text-muted"><i class="bi bi-building"></i> @Model.PlazaVacante.Departamento</p>
+            <h3><i class="bi bi-person-badge"></i> @p.NombreCompleto</h3>
+            <p class="text-muted mb-1">
+                <i class="bi bi-briefcase"></i> @p.PlazaVacante?.Titulo
+            </p>
+            <p class="text-muted">
+                <i class="bi bi-building"></i> @p.PlazaVacante?.Departamento
+            </p>
 
             <div class="row mt-3">
                 <div class="col-md-6">
-                    <p><i class="bi bi-envelope"></i> <strong>Correo:</strong> @(Model.Correo ?? "No registrado")</p>
-                    <p><i class="bi bi-telephone"></i> <strong>Teléfono:</strong> @(Model.Telefono ?? "No registrado")</p>
-                    <p><i class="bi bi-person-vcard"></i> <strong>Cédula:</strong> @Model.Cedula</p>
+                    <p><i class="bi bi-envelope"></i> <strong>Correo:</strong> @(p.Correo ?? "No registrado")</p>
+                    <p><i class="bi bi-telephone"></i> <strong>Teléfono:</strong> @(p.Telefono ?? "No registrado")</p>
+                    <p><i class="bi bi-person-vcard"></i> <strong>Cédula:</strong> @p.Cedula</p>
                 </div>
                 <div class="col-md-6">
-                    <p><i class="bi bi-geo-alt"></i> <strong>Dirección:</strong> @(Model.Direccion ?? "No registrada")</p>
-                    <p><i class="bi bi-calendar-event"></i> <strong>Actualizado:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><i class="bi bi-geo-alt"></i> <strong>Dirección:</strong> @(p.Direccion ?? "No registrada")</p>
+                    <p><i class="bi bi-calendar-event"></i> <strong>Actualizado:</strong> @p.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</p>
                 </div>
             </div>
 
-            <!-- 📎 Documentos Adjuntos -->
+            <!-- DOCUMENTOS -->
             <hr class="my-4" />
-            <h5 class="fw-bold text-secondary"><i class="bi bi-folder2-open"></i> Documentos Adjuntos</h5>
+            <h5 class="fw-bold text-secondary">
+                <i class="bi bi-folder2-open"></i> Documentos Adjuntos
+            </h5>
+
+            <style>
+                .documentos-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                    gap: 20px;
+                }
+
+                .doc-card {
+                    border: 1px solid #eee;
+                    border-radius: 12px;
+                    padding: 15px;
+                    background: #fff;
+                    text-align: center;
+                    transition: all 0.2s ease;
+                    height: 100%;
+                }
+
+                    .doc-card:hover {
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                        transform: translateY(-3px);
+                    }
+
+                .doc-preview {
+                    max-height: 140px;
+                    max-width: 100%;
+                    object-fit: cover;
+                    border-radius: 8px;
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    border: 1px solid #ddd;
+                }
+
+                .doc-actions {
+                    display: flex;
+                    gap: 8px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    margin-top: 8px;
+                }
+            </style>
+
             <div class="documentos-grid mt-3">
 
                 <!-- CV -->
-                <div>
-                    <label>📄 Currículum Vitae</label><br />
-                    @if (!string.IsNullOrEmpty(Model.CurriculumPath))
+                <div class="doc-card">
+                    <strong>📄 Currículum Vitae</strong><br />
+
+                    @if (!string.IsNullOrEmpty(p.CurriculumPath))
                     {
-                        <a href="@Model.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm mt-1">
-                            <i class="bi bi-file-earmark-pdf"></i> Ver CV
-                        </a>
+                        if (p.CurriculumPath.ToLower().EndsWith(".pdf"))
+                        {
+                            <div class="doc-actions">
+                                <a href="@p.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <img src="@p.CurriculumPath" class="doc-preview" alt="CV" />
+                            <div class="doc-actions">
+                                <a href="@p.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
+                                </a>
+                            </div>
+                        }
                     }
                     else
                     {
-
                         <span class="text-muted fst-italic">No adjuntado</span>
                     }
                 </div>
 
-                <!-- Foto del Título -->
-                <div>
-                    <label>🎓 Foto del Título</label><br />
-                    @if (!string.IsNullOrEmpty(Model.FotoTituloPath))
+                <!-- TÍTULO -->
+                <div class="doc-card">
+                    <strong>🎓 Título</strong><br />
+
+                    @if (!string.IsNullOrEmpty(p.FotoTituloPath))
                     {
-                        if (Model.FotoTituloPath.EndsWith(".pdf"))
+                        if (p.FotoTituloPath.ToLower().EndsWith(".pdf"))
                         {
-                            <a href="@Model.FotoTituloPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
-                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                            </a>
+                            <div class="doc-actions">
+                                <a href="@p.FotoTituloPath" target="_blank" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
                         }
                         else
                         {
-                            <img src="@Model.FotoTituloPath" alt="Título" class="img-thumbnail-custom mt-1" />
+                            <img src="@p.FotoTituloPath" class="doc-preview" alt="Título" />
+                            <div class="doc-actions">
+                                <a href="@p.FotoTituloPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
+                                </a>
+                            </div>
                         }
                     }
                     else
                     {
-
                         <span class="text-muted fst-italic">No adjuntado</span>
                     }
                 </div>
 
-                <!-- Colegiatura -->
-                <div>
-                    <label>🏛️ Colegiatura</label><br />
-                    @if (!string.IsNullOrEmpty(Model.FotoColegiaturaPath))
+                <!-- COLEGIATURA -->
+                <div class="doc-card">
+                    <strong>🏛️ Colegiatura</strong><br />
+
+                    @if (!string.IsNullOrEmpty(p.FotoColegiaturaPath))
                     {
-                        if (Model.FotoColegiaturaPath.EndsWith(".pdf"))
+                        if (p.FotoColegiaturaPath.ToLower().EndsWith(".pdf"))
                         {
-                            <a href="@Model.FotoColegiaturaPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
-                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                            </a>
+                            <div class="doc-actions">
+                                <a href="@p.FotoColegiaturaPath" target="_blank" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
                         }
                         else
                         {
-                            <img src="@Model.FotoColegiaturaPath" alt="Colegiatura" class="img-thumbnail-custom mt-1" />
+                            <img src="@p.FotoColegiaturaPath" class="doc-preview" alt="Colegiatura" />
+                            <div class="doc-actions">
+                                <a href="@p.FotoColegiaturaPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
+                                </a>
+                            </div>
                         }
                     }
                     else
                     {
-
                         <span class="text-muted fst-italic">No adjuntada</span>
                     }
                 </div>
 
-                <!-- Licencia -->
-                <div>
-                    <label>🚗 Licencia</label><br />
-                    @if (!string.IsNullOrEmpty(Model.FotoLicenciaPath))
+                <!-- LICENCIA -->
+                <div class="doc-card">
+                    <strong>🚗 Licencia</strong><br />
+
+                    @if (!string.IsNullOrEmpty(p.FotoLicenciaPath))
                     {
-                        if (Model.FotoLicenciaPath.EndsWith(".pdf"))
+                        if (p.FotoLicenciaPath.ToLower().EndsWith(".pdf"))
                         {
-                            <a href="@Model.FotoLicenciaPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
-                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                            </a>
+                            <div class="doc-actions">
+                                <a href="@p.FotoLicenciaPath" target="_blank" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
                         }
                         else
                         {
-                            <img src="@Model.FotoLicenciaPath" alt="Licencia" class="img-thumbnail-custom mt-1" />
+                            <img src="@p.FotoLicenciaPath" class="doc-preview" alt="Licencia" />
+                            <div class="doc-actions">
+                                <a href="@p.FotoLicenciaPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
+                                </a>
+                            </div>
                         }
                     }
                     else
                     {
-
                         <span class="text-muted fst-italic">No adjuntada</span>
                     }
                 </div>
 
-                <!-- Permiso de Armas -->
-                <div>
-                    <label>🔫 Permiso de Armas</label><br />
-                    @if (!string.IsNullOrEmpty(Model.FotoPermisoArmasPath))
+                <!-- PERMISO DE ARMAS -->
+                <div class="doc-card">
+                    <strong>🛡️ Permiso de armas</strong><br />
+
+                    @if (!string.IsNullOrEmpty(p.FotoPermisoArmasPath))
                     {
-                        if (Model.FotoPermisoArmasPath.EndsWith(".pdf"))
+                        if (p.FotoPermisoArmasPath.ToLower().EndsWith(".pdf"))
                         {
-                            <a href="@Model.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-danger btn-sm mt-1">
-                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                            </a>
+                            <div class="doc-actions">
+                                <a href="@p.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
                         }
                         else
                         {
-                            <img src="@Model.FotoPermisoArmasPath" alt="Permiso" class="img-thumbnail-custom mt-1" />
+                            <img src="@p.FotoPermisoArmasPath" class="doc-preview" alt="Permiso de armas" />
+                            <div class="doc-actions">
+                                <a href="@p.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
+                                </a>
+                            </div>
                         }
                     }
                     else
                     {
-
                         <span class="text-muted fst-italic">No adjuntado</span>
                     }
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- 🔹 SEGUIMIENTO -->
-    <div class="card card-custom">
+    <style>
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+            .progress-container::before {
+                content: '';
+                position: absolute;
+                top: 22px;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: #e0e0e0;
+                z-index: 0;
+            }
+
+        .progress-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+            .progress-step:hover {
+                transform: scale(1.05);
+            }
+
+        .circle {
+            width: 45px;
+            height: 45px;
+            margin: auto;
+            border-radius: 50%;
+            background: #e0e0e0;
+            line-height: 45px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .progress-step.active .circle {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .progress-step.completed .circle {
+            background: #198754;
+            color: white;
+        }
+
+        .progress-step span {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+    </style>
+
+    <div class="progress-container">
+
+        @for (int i = 0; i < etapas.Count; i++)
+        {
+            var estado = "";
+
+            if (i < pasoActual) estado = "completed";
+            else if (i == pasoActual) estado = "active";
+
+            <div class="progress-step @estado"
+                 onclick="cambiarEtapa('@etapas[i]')">
+
+                <div class="circle">@(i + 1)</div>
+                <span>@etapas[i]</span>
+            </div>
+        }
+
+    </div>
+
+    @if (!s.CumpleRequisitos)
+    {
+        <div class="alert alert-danger text-center mt-3">
+            ❌ Proceso detenido (No cumple requisitos)
+        </div>
+    }
+
+    <!-- SEGUIMIENTO -->
+    <div class="card">
         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pb-0">
             <h5 style="color:#435563; font-weight:700;">
                 <i class="bi bi-check2-square" style="color:#FF8200;"></i> Seguimiento del Proceso
             </h5>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#descartarModal">
-                <i class="bi bi-person-x"></i> Descartar
-            </button>
         </div>
 
         <div class="card-body mt-2">
-            <form asp-action="Actualizar" asp-controller="Seguimiento" method="post" class="row g-3">
-                <input type="hidden" name="postulanteId" value="@Model.Id" />
+            <form asp-action="Actualizar" asp-controller="Seguimiento" method="post">
+                <input type="hidden" name="postulanteId" value="@p.Id" />
 
-                <div class="col-md-6">
-                    <label>Etapa actual</label>
-                    <select name="etapa" class="form-select">
-                        <option value="Revisión documental" selected="@(s.EtapaActual == "Revisión documental")">Revisión documental</option>
-                        <option value="Pruebas técnicas" selected="@(s.EtapaActual == "Pruebas técnicas")">Pruebas técnicas</option>
-                        <option value="Pruebas psicométricas" selected="@(s.EtapaActual == "Pruebas psicométricas")">Pruebas psicométricas</option>
-                        <option value="Entrevista presencial" selected="@(s.EtapaActual == "Entrevista presencial")">Entrevista presencial</option>
-                        <option value="Final" selected="@(s.EtapaActual == "Final")">Final</option>
-                    </select>
-                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Etapa actual</label>
+                        <select name="etapa" class="form-select">
+                            @if (s.EtapaActual == "Revisión documental")
+                            {
+                                <option value="Revisión documental" selected>Revisión documental</option>
+                            }
+                            else
+                            {
+                                <option value="Revisión documental">Revisión documental</option>
+                            }
 
-                <div class="col-md-6">
-                    <label>Cumple requisitos</label>
-                    <select name="cumple" class="form-select">
-                        <option value="true" selected="@s.CumpleRequisitos">Sí</option>
-                        <option value="false" selected="@(!s.CumpleRequisitos)">No</option>
-                    </select>
-                </div>
+                            @if (s.EtapaActual == "Pruebas técnicas")
+                            {
+                                <option value="Pruebas técnicas" selected>Pruebas técnicas</option>
+                            }
+                            else
+                            {
+                                <option value="Pruebas técnicas">Pruebas técnicas</option>
+                            }
 
-                <div class="col-md-6">
-                    <label>Nota prueba técnica</label>
-                    <input type="number" name="notaTec" value="@s.NotaPruebaTecnica" step="0.1" min="0" max="100" class="form-control" />
-                </div>
+                            @if (s.EtapaActual == "Pruebas psicométricas")
+                            {
+                                <option value="Pruebas psicométricas" selected>Pruebas psicométricas</option>
+                            }
+                            else
+                            {
+                                <option value="Pruebas psicométricas">Pruebas psicométricas</option>
+                            }
 
-                <div class="col-md-6">
-                    <label>Nota prueba psicométrica</label>
-                    <input type="number" name="notaPsi" value="@s.NotaPsicometrica" step="0.1" min="0" max="100" class="form-control" />
-                </div>
+                            @if (s.EtapaActual == "Entrevista presencial")
+                            {
+                                <option value="Entrevista presencial" selected>Entrevista presencial</option>
+                            }
+                            else
+                            {
+                                <option value="Entrevista presencial">Entrevista presencial</option>
+                            }
 
-                <div class="col-12">
-                    <label>Observaciones</label>
-                    <textarea name="obs" class="form-control" rows="3">@s.Observaciones</textarea>
-                </div>
+                            @if (s.EtapaActual == "Final")
+                            {
+                                <option value="Final" selected>Final</option>
+                            }
+                            else
+                            {
+                                <option value="Final">Final</option>
+                            }
 
-                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                    <a href="@Url.Action("PorPlaza", "Seguimiento", new { plazaId = Model.PlazaVacanteId })" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver
-                    </a>
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="bi bi-save"></i> Guardar cambios
-                    </button>
+                            @if (s.EtapaActual == "Descartado")
+                            {
+                                <option value="Descartado" selected>Descartado</option>
+                            }
+                            else
+                            {
+                                <option value="Descartado">Descartado</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Cumple requisitos</label>
+                        <select name="cumple" class="form-select">
+                            @if (s.CumpleRequisitos)
+                            {
+                                <option value="true" selected>Sí</option>
+                                <option value="false">No</option>
+                            }
+                            else
+                            {
+                                <option value="true">Sí</option>
+                                <option value="false" selected>No</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nota prueba técnica</label>
+                        <input type="number"
+                               name="notaTec"
+                               value="@s.NotaPruebaTecnica"
+                               step="0.1"
+                               min="0"
+                               max="100"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nota prueba psicométrica</label>
+                        <input type="number"
+                               name="notaPsi"
+                               value="@s.NotaPsicometrica"
+                               step="0.1"
+                               min="0"
+                               max="100"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="obs" class="form-control" rows="3">@s.Observaciones</textarea>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                        <a href="@Url.Action("PorPlaza", "Seguimiento", new { plazaId = p.PlazaVacanteId })"
+                           class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-save"></i> Guardar cambios
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -219,55 +475,49 @@
     }
 </div>
 
-<!-- 🔹 MODAL DESCARTE -->
-<div class="modal fade" id="descartarModal" tabindex="-1" aria-labelledby="descartarModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="Descartar" asp-controller="Seguimiento" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="descartarModalLabel">
-                        <i class="bi bi-exclamation-triangle"></i> Descartar Postulante
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
 
-                <div class="modal-body">
-                    <input type="hidden" name="postulanteId" value="@Model.Id" />
-                    <div class="mb-3">
-                        <label>Motivo del descarte</label>
-                        <textarea name="motivo"
-                                  class="form-control border-danger-subtle"
-                                  rows="3"
-                                  required
-                                  placeholder="Explique brevemente por qué se descarta al postulante..."></textarea>
-                    </div>
-                    <p class="text-muted small">
-                        Este postulante será removido del seguimiento activo y no aparecerá más en las plazas abiertas.
-                    </p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-check-circle"></i> Confirmar descarte
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- 🔹 SCRIPT CONFIRMACIONES -->
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".btn-eliminar-plaza").forEach(btn => {
-            btn.addEventListener("click", e => {
-                if (!confirm("⚠️ ¿Seguro que deseas eliminar esta plaza? Esta acción no se puede deshacer.")) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
+    function cambiarEtapa(etapa) {
+
+        // 🔥 setea el select
+        document.querySelector("select[name='etapa']").value = etapa;
+
+        // 🔥 cargar datos simulados por etapa
+        cargarDatosPorEtapa(etapa);
+    }
+
+    function cargarDatosPorEtapa(etapa) {
+
+        const notaTec = document.querySelector("input[name='notaTec']");
+        const notaPsi = document.querySelector("input[name='notaPsi']");
+        const obs = document.querySelector("textarea[name='obs']");
+
+        // 💡 lógica base (puedes conectarlo luego al API)
+        switch (etapa) {
+
+            case "Revisión documental":
+                notaTec.value = "";
+                notaPsi.value = "";
+                obs.value = "Documentos en revisión";
+                break;
+
+            case "Pruebas técnicas":
+                notaTec.value = notaTec.value || 0;
+                obs.value = "Pendiente evaluación técnica";
+                break;
+
+            case "Pruebas psicométricas":
+                notaPsi.value = notaPsi.value || 0;
+                obs.value = "Evaluación psicométrica en proceso";
+                break;
+
+            case "Entrevista presencial":
+                obs.value = "Entrevista programada";
+                break;
+
+            case "Final":
+                obs.value = "Candidato finalista";
+                break;
+        }
+    }
 </script>

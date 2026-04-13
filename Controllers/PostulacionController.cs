@@ -80,6 +80,8 @@ namespace GestionPlazasVacantes.Controllers
             }
         }
 
+        // SOLO CAMBIA ESTE MÉTODO, TODO LO DEMÁS QUEDA IGUAL
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Aplicar(
@@ -121,15 +123,51 @@ namespace GestionPlazasVacantes.Controllers
 
             try
             {
-                postulante.CurriculumPath = await GuardarArchivo(archivoCV, "curriculums", ExtPdf);
-                postulante.FotoTituloPath = await GuardarArchivo(FotoTitulo, "uploads_postulantes", ExtImgs.Concat(ExtPdf).ToArray());
+                var content = new MultipartFormDataContent();
 
-                postulante.EstadoProceso = "En revisión";
-                postulante.FechaActualizacion = DateTime.Now;
-                postulante.Id = 0;
+                // 🔹 MAPEAR TODO EL MODELO
+                foreach (var prop in typeof(Postulante).GetProperties())
+                {
+                    var value = prop.GetValue(postulante);
+                    if (value != null)
+                        content.Add(new StringContent(value.ToString()!), prop.Name);
+                }
 
-                var response = await client.PostAsJsonAsync(
-                    "api/PostulacionPublica/postular", postulante);
+                // 🔹 ARCHIVOS
+                void AddFile(IFormFile? file, string name)
+                {
+                    if (file != null)
+                    {
+                        var stream = file.OpenReadStream();
+                        var fileContent = new StreamContent(stream);
+                        fileContent.Headers.ContentType =
+                            new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                        content.Add(fileContent, name, file.FileName);
+                    }
+                }
+
+                AddFile(archivoCV, "archivoCV");
+                AddFile(FotoTitulo, "FotoTitulo");
+                AddFile(FotoColegiatura, "FotoColegiatura");
+                AddFile(FotoLicencia, "FotoLicencia");
+                AddFile(FotoPermisoArmas, "FotoPermisoArmas");
+
+                if (ArchivoTitulos != null)
+                {
+                    foreach (var file in ArchivoTitulos)
+                        AddFile(file, "ArchivoTitulos");
+                }
+
+                var response = await client.PostAsync(
+                    "api/PostulacionPublica/postular", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = error;
+                    return View(postulante);
+                }
 
                 var creado = await response.Content.ReadFromJsonAsync<Postulante>(_jsonOptions);
 
@@ -146,15 +184,24 @@ namespace GestionPlazasVacantes.Controllers
         {
             var client = _httpClientFactory.CreateClient("Api");
 
-            var postulante = await client.GetFromJsonAsync<Postulante>(
+            try
+            {
+                var postulante = await client.GetFromJsonAsync<Postulante>(
                 $"api/PostulacionPublica/postulacion/{id}",
                 _jsonOptions);
 
-            return View(postulante);
+                return View(postulante);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         private async Task<string?> GuardarArchivo(IFormFile? file, string subfolder, string[] extensionesPermitidas)
         {
+            Console.WriteLine("ENTRÓ A GENERAR CV");
             if (file == null) return null;
 
             var ext = Path.GetExtension(file.FileName).ToLower();
@@ -169,6 +216,113 @@ namespace GestionPlazasVacantes.Controllers
             await file.CopyToAsync(fs);
 
             return $"/{subfolder}/{nombre}";
+        }
+
+        [HttpPost("GenerarCVPrevia")]
+        public IActionResult GenerarCVPrevia(
+            string NombreCompleto,
+            string Cedula,
+            string? Correo,
+            string? Telefono,
+            string? Direccion,
+            string? PerfilProfesional,
+            string? ExperienciaLaboral,
+            string? FormacionAcademica,
+            string? Habilidades,
+            string? Idiomas,
+            string? FormacionComplementaria,
+            string? OtrosDatos
+        )
+        {
+            var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+
+            var pdf = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Content().Column(col =>
+                    {
+                        // 🔷 HEADER CON LOGO
+                        col.Item().Row(row =>
+                        {
+                            row.ConstantItem(80).Height(60).Image(logoPath);
+
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().AlignRight().Text(NombreCompleto)
+                                    .FontSize(20).Bold();
+
+                                c.Item().AlignRight().Text($"Cédula: {Cedula}")
+                                    .FontSize(10).FontColor(Colors.Grey.Darken1);
+                            });
+                        });
+
+                        col.Item().PaddingVertical(5).LineHorizontal(1);
+
+                        // 🔷 CONTACTO
+                        col.Item().PaddingTop(5).Text(text =>
+                        {
+                            text.Span("Correo: ").SemiBold();
+                            text.Span(Correo ?? "");
+                        });
+
+                        col.Item().Text(text =>
+                        {
+                            text.Span("Teléfono: ").SemiBold();
+                            text.Span(Telefono ?? "");
+                        });
+
+                        col.Item().Text(text =>
+                        {
+                            text.Span("Dirección: ").SemiBold();
+                            text.Span(Direccion ?? "");
+                        });
+
+                        // 🔷 SECCIONES
+                        void Seccion(string titulo, string? contenido)
+                        {
+                            col.Item().PaddingTop(10).Text(titulo)
+                                .FontSize(14).Bold().FontColor(Colors.Blue.Darken2);
+
+                            col.Item().LineHorizontal(1);
+
+                            col.Item().Text(contenido ?? "").FontSize(10);
+                        }
+
+                        Seccion("Perfil Profesional", PerfilProfesional);
+                        Seccion("Experiencia Laboral", ExperienciaLaboral);
+                        Seccion("Formación Académica", FormacionAcademica);
+
+                        // 🔷 DOS COLUMNAS
+                        col.Item().PaddingTop(10).Row(row =>
+                        {
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().Text("Habilidades").Bold();
+                                c.Item().LineHorizontal(1);
+                                c.Item().Text(Habilidades ?? "").FontSize(10);
+                            });
+
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().Text("Idiomas").Bold();
+                                c.Item().LineHorizontal(1);
+                                c.Item().Text(Idiomas ?? "").FontSize(10);
+                            });
+                        });
+
+                        Seccion("Formación Complementaria", FormacionComplementaria);
+                        Seccion("Otros Datos", OtrosDatos);
+                    });
+                });
+            });
+
+            var stream = new MemoryStream();
+            pdf.GeneratePdf(stream);
+
+            return File(stream.ToArray(), "application/pdf");
         }
     }
 }
