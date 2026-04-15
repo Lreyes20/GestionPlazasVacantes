@@ -1,0 +1,293 @@
+﻿@model IEnumerable<GestionPlazasVacantes.Models.Postulante>
+
+@{
+    ViewData["Title"] = "Mis Postulaciones";
+}
+<style>
+    :root {
+        --color-primary: #0d6efd;
+        --color-success: #198754;
+        --color-danger: #dc3545;
+    }
+
+    .timeline-horizontal {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    /* 🔥 BARRA PROGRESO */
+    .timeline-bar {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+
+    .timeline-progress {
+        height: 100%;
+        background: var(--color-primary);
+        width: 0%;
+        transition: width 0.6s ease;
+    }
+
+    /* FUTURO */
+    .timeline-horizontal .step {
+        opacity: 0.4;
+        text-align: center;
+        flex: 1;
+        font-size: 12px;
+    }
+
+        /* COMPLETADO */
+        .timeline-horizontal .step.done {
+            opacity: 1;
+        }
+
+            .timeline-horizontal .step.done .circle {
+                background: #dbeafe;
+                color: var(--color-primary);
+            }
+
+        /* ACTUAL */
+        .timeline-horizontal .step.current {
+            opacity: 1;
+        }
+
+            .timeline-horizontal .step.current .circle {
+                background: var(--color-primary);
+                color: white;
+                transform: scale(1.1);
+                box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
+            }
+
+            .timeline-horizontal .step.current span {
+                font-weight: 600;
+                color: var(--color-primary);
+            }
+
+        /* APROBADO */
+        .timeline-horizontal .step.success .circle {
+            background: var(--color-success);
+            color: white;
+        }
+
+        /* RECHAZADO */
+        .timeline-horizontal .step.danger .circle {
+            background: var(--color-danger);
+            color: white;
+        }
+
+    /* CÍRCULO */
+    .timeline-horizontal .circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 6px;
+        transition: all 0.3s ease;
+    }
+
+    .plaza-card {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        padding: 20px;
+        background: white;
+        transition: all 0.2s ease;
+    }
+
+        .plaza-card:hover {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+    .card-header-institucional {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .logo-mini {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
+    }
+
+    .estado-mensaje .alert {
+        background: #eef4ff;
+        border-left: 4px solid var(--color-primary);
+        border-radius: 6px;
+    }
+</style>
+
+<!-- 🔍 BUSCADOR -->
+<form method="get" asp-action="MisPostulaciones" class="mb-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-10">
+                    <input type="text"
+                           name="cedula"
+                           value="@Context.Request.Query["cedula"]"
+                           class="form-control"
+                           placeholder="Ingrese su cédula para consultar postulaciones"
+                           required />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        🔍 Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (Model != null && Model.Any())
+{
+    <div class="plaza-grid">
+
+        @foreach (var p in Model)
+        {
+            var estado = p.EstadoProceso?.ToLower() ?? "";
+
+            var progreso = estado switch
+            {
+                "en revisión" => 25,
+                "en proceso" => 50,
+                "aprobado" => 100,
+                "rechazado" => 100,
+                _ => 10
+            };
+
+            var claseEstado = estado switch
+            {
+                "en revisión" => "warning",
+                "en proceso" => "info",
+                "aprobado" => "success",
+                "rechazado" => "danger",
+                _ => "secondary"
+            };
+
+            <!-- 🔷 CARD -->
+            <div class="plaza-card shadow-sm">
+
+                <!-- 🔥 HEADER -->
+                <div class="card-header-institucional">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="~/images/curridabat-logo.jpg" class="logo-mini" />
+                        <small class="text-muted">Municipalidad de Curridabat</small>
+                    </div>
+
+                    <span class="badge bg-@claseEstado px-3 py-2">
+                        @p.EstadoProceso
+                    </span>
+                </div>
+
+                <h5 class="mb-1">@p.PlazaVacante?.Titulo</h5>
+
+                <!-- 🔥 MENSAJE -->
+                @{
+                    var mensaje = estado switch
+                    {
+                        "en revisión" => "Tu postulación está siendo revisada por el equipo de RRHH.",
+                        "en proceso" => "Estás avanzando en el proceso de selección.",
+                        "aprobado" => "¡Felicidades! Has sido seleccionado.",
+                        "rechazado" => "Tu perfil no fue seleccionado en esta ocasión.",
+                        _ => "Postulación registrada correctamente."
+                    };
+                }
+
+                <div class="estado-mensaje mb-3">
+                    <div class="alert">
+                        @mensaje
+                    </div>
+                </div>
+
+                <!-- 🔥 BARRA PROGRESO -->
+                <div class="timeline-bar">
+                    <div class="timeline-progress" style="width:@progreso%"></div>
+                </div>
+
+                <!-- 🔥 TIMELINE -->
+                <div class="timeline-horizontal">
+
+                    <div class="step @(estado != "" ? "done" : "")">
+                        <div class="circle">✔</div>
+                        <span>Postulación</span>
+                    </div>
+
+                    <div class="step @(estado == "en revisión" ? "current" :
+                                                                estado == "en proceso" || estado == "aprobado" ? "done" : "")">
+                <div class="circle">🔎</div>
+                <span>Revisión</span>
+            </div>
+
+                    <div class="step @(estado == "en proceso" ? "current" :
+                                                        estado == "aprobado" ? "done" : "")">
+                <div class="circle">⚙</div>
+                <span>Proceso</span>
+            </div>
+
+                    <div class="step @(estado == "aprobado" ? "current success" : "")">
+                        <div class="circle">🎯</div>
+                        <span>Seleccionado</span>
+                    </div>
+
+                    <div class="step @(estado == "rechazado" ? "current danger" : "")">
+                        <div class="circle">✖</div>
+                        <span>Rechazado</span>
+                    </div>
+
+                </div>
+
+                <!-- 🔷 ACCIONES -->
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+
+                    <a class="btn btn-outline-primary btn-sm"
+                       asp-action="Confirmacion"
+                       asp-route-id="@p.Id">
+                        🔍 Ver detalle
+                    </a>
+
+                    <a class="btn btn-success btn-sm"
+                       href="@($"{ViewBag.ApiBaseUrl}/api/PostulacionPublica/comprobante/{p.Id}")"
+                       target="_blank">
+                        📄 Descargar comprobante
+                    </a>
+
+                </div>
+
+            </div>
+        }
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(Context.Request.Query["cedula"]))
+{
+    <div class="alert alert-warning">
+        No se encontraron postulaciones para la cédula ingresada.
+    </div>
+}
+
+@section Scripts {
+    <script>
+        const inputCedula = document.querySelector('input[name="cedula"]');
+
+        if (inputCedula) {
+            if (localStorage.getItem("cedula") && !inputCedula.value) {
+                inputCedula.value = localStorage.getItem("cedula");
+            }
+
+            inputCedula.addEventListener("input", () => {
+                localStorage.setItem("cedula", inputCedula.value);
+            });
+        }
+    </script>
+}

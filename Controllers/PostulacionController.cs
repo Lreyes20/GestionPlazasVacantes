@@ -1,26 +1,30 @@
-﻿using System;
+﻿using GestionPlazasVacantes.DTOs;
+using GestionPlazasVacantes.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using GestionPlazasVacantes.Models;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace GestionPlazasVacantes.Controllers
 {
+    [AllowAnonymous]
     public class PostulacionController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _configuration;
 
         private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
@@ -32,13 +36,15 @@ namespace GestionPlazasVacantes.Controllers
         private static readonly string[] ExtPdf = new[] { ".pdf" };
         private static readonly string[] ExtWord = new[] { ".doc", ".docx" };
 
-        public PostulacionController(IHttpClientFactory httpClientFactory, IWebHostEnvironment env)
+        public PostulacionController(IHttpClientFactory httpClientFactory, IWebHostEnvironment env, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _env = env;
+            _configuration = configuration;
         }
 
         // 🏢 Vista principal
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             try
@@ -58,6 +64,7 @@ namespace GestionPlazasVacantes.Controllers
             }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Aplicar(int id)
         {
             try
@@ -83,6 +90,7 @@ namespace GestionPlazasVacantes.Controllers
         // SOLO CAMBIA ESTE MÉTODO, TODO LO DEMÁS QUEDA IGUAL
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Aplicar(
             Postulante postulante,
@@ -180,6 +188,7 @@ namespace GestionPlazasVacantes.Controllers
             }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Confirmacion(int id)
         {
             var client = _httpClientFactory.CreateClient("Api");
@@ -323,6 +332,159 @@ namespace GestionPlazasVacantes.Controllers
             pdf.GeneratePdf(stream);
 
             return File(stream.ToArray(), "application/pdf");
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> MisPostulaciones(string cedula)
+        {
+            if (string.IsNullOrWhiteSpace(cedula))
+                return View(new List<Postulante>());
+
+            var client = _httpClientFactory.CreateClient("Api");
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            var data = await client.GetFromJsonAsync<List<Postulante>>(
+                $"api/PostulacionPublica/mis-postulaciones?cedula={cedula}",
+                options
+            );
+
+            ViewBag.ApiBaseUrl = _configuration["Api:BaseUrl"]?.TrimEnd('/');
+
+            return View(data ?? new List<Postulante>());
+        }
+
+        public async Task<IActionResult> DescargarComprobantePdf(int id)
+        {
+            var client = _httpClientFactory.CreateClient("Api");
+
+            var modelo = await client.GetFromJsonAsync<ConfirmacionPostulacionDto>(
+                $"api/plazas-internas/confirmacion/{id}");
+
+            if (modelo == null)
+                return NotFound();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var logoPath = Path.Combine(_env.WebRootPath, "images", "curridabat-logo.jpg");
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    // 🔥 WATERMARK
+                    page.Background()
+                        .AlignCenter()
+                        .AlignMiddle()
+                        .Rotate(-45)
+                        .Text("CURRIDABAT")
+                        .FontSize(100)
+                        .FontColor(Colors.Grey.Lighten3);
+
+                    page.Content().Column(col =>
+                    {
+                        col.Spacing(10);
+
+                        // 🔶 HEADER
+                        col.Item().Background("#f97316").Padding(10).Row(row =>
+                        {
+                            if (System.IO.File.Exists(logoPath))
+                                row.ConstantItem(60).Image(logoPath);
+
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().Text("Municipalidad de Curridabat")
+                                    .FontColor(Colors.White)
+                                    .Bold()
+                                    .FontSize(14);
+
+                                c.Item().Text("Curridabat Ciudad Dulce")
+                                    .FontColor(Colors.White)
+                                    .FontSize(10);
+                            });
+                        });
+
+                        // 🔷 TITULO
+                        col.Item().AlignCenter().PaddingTop(10).Text("COMPROBANTE OFICIAL DE POSTULACIÓN")
+                            .Bold()
+                            .FontSize(16)
+                            .FontColor(Colors.Blue.Darken2);
+
+                        col.Item().AlignCenter().Text($"Código de trámite: #{modelo.Id}")
+                            .FontSize(10)
+                            .FontColor(Colors.Grey.Darken1);
+
+                        // 🔷 CONTENIDO
+                        col.Item().PaddingTop(10).Border(1)
+                            .BorderColor(Colors.Grey.Lighten2)
+                            .Padding(15)
+                            .Column(main =>
+                            {
+                                main.Spacing(8);
+
+                                main.Item().Text($"Fecha: {modelo.FechaActualizacion:dd/MM/yyyy HH:mm}");
+                                main.Item().Text($"Cédula: {modelo.Cedula}");
+                                main.Item().Text($"Postulante: {modelo.NombreCompleto}");
+                                main.Item().Text($"Plaza: {modelo.PlazaTitulo}");
+
+                                main.Item().PaddingTop(5).LineHorizontal(1);
+
+                                main.Item().Text("Estado del proceso:")
+                                    .Bold();
+
+                                main.Item().Text(modelo.EstadoProceso)
+                                    .FontColor(Colors.Blue.Medium)
+                                    .Bold()
+                                    .FontSize(12);
+                            });
+
+                        // 🔷 TEXTO LEGAL
+                        col.Item().PaddingTop(10).Text(
+                            "Este documento certifica que la postulación fue registrada correctamente en el sistema institucional de la Municipalidad de Curridabat.")
+                            .FontSize(9)
+                            .FontColor(Colors.Grey.Darken1);
+
+                        // 🔥 FIRMA
+                        col.Item().PaddingTop(20).AlignRight().Column(firma =>
+                        {
+                            firma.Item().Text("Sistema Institucional")
+                                .FontSize(10)
+                                .Bold();
+
+                            firma.Item().Text("Municipalidad de Curridabat")
+                                .FontSize(9);
+                        });
+                    });
+
+                    // 🔻 FOOTER
+                    page.Footer().AlignCenter().Text(txt =>
+                    {
+                        txt.Span("Documento generado automáticamente - ")
+                            .FontSize(9)
+                            .FontColor(Colors.Grey.Darken1);
+
+                        txt.Span(DateTime.Now.ToString("dd/MM/yyyy HH:mm"))
+                            .Bold()
+                            .FontSize(9);
+                    });
+                });
+            });
+
+            var stream = new MemoryStream();
+            document.GeneratePdf(stream);
+
+            return File(
+                stream.ToArray(),
+                "application/pdf",
+                $"Comprobante_{modelo.Cedula}_{modelo.Id}.pdf"
+            );
         }
     }
 }

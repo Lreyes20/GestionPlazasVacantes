@@ -1486,3 +1486,170 @@ label {
     border: none;
     color: #fff;
 }
+
+/* PORTAL PUBLICO */
+.card-hover {
+    transition: all 0.2s ease-in-out;
+    border-radius: 12px;
+}
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+#busqueda {
+    border-radius: 10px;
+}
+
+.form-select {
+    border-radius: 10px;
+}
+
+/* ============================= */
+/* 🔥 TIMELINE PRO (HORIZONTAL) */
+/* ============================= */
+
+.timeline-horizontal {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100%;
+    gap: 0;
+}
+
+    /* PASOS */
+    .timeline-horizontal .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 0 auto;
+        font-size: 12px;
+        color: #999;
+    }
+
+    /* CÍRCULO */
+    .timeline-horizontal .circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* LÍNEA */
+    .timeline-horizontal .line {
+        height: 4px;
+        background: #dee2e6;
+        flex: 1;
+        margin: 0 6px;
+    }
+
+    /* ACTIVOS */
+    .timeline-horizontal .step.active .circle {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    .timeline-horizontal .line.active {
+        background: #0d6efd;
+    }
+
+    /* ESTADOS */
+    .timeline-horizontal .step.success .circle {
+        background: #198754;
+    }
+
+    .timeline-horizontal .step.danger .circle {
+        background: #dc3545;
+    }
+
+    /* ============================= */
+    /* 🟢 APROBADO */
+    /* ============================= */
+
+    .timeline-horizontal .step.success .circle {
+        background: #198754;
+        color: white;
+    }
+
+    /* ============================= */
+    /* 🔴 RECHAZADO */
+    /* ============================= */
+
+    .timeline-horizontal .step.danger .circle {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* ============================= */
+    /* ✨ HOVER SUAVE */
+    /* ============================= */
+
+    .timeline-horizontal .step:hover .circle {
+        transform: scale(1.1);
+    }
+
+/* ============================= */
+/* 📱 RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+    .timeline-horizontal {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .timeline-horizontal .line {
+            display: none;
+        }
+
+        .timeline-horizontal .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 1;
+        }
+
+        .timeline-horizontal .circle {
+            margin: 0;
+        }
+}
+
+.estado-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.estado-mensaje .alert {
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* 🔥 FIX FORZADO TIMELINE */
+.timeline-horizontal {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+    .timeline-horizontal .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .timeline-horizontal .line {
+        flex: 1;
+        height: 4px;
+        background: #dee2e6;
+    }

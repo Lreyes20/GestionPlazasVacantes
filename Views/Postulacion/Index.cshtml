@@ -5,10 +5,31 @@
     var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
 }
 
-
-
 <div class="container-fluid px-4">
     <h2 class="titulo-pagina">💼 Plazas Disponibles para Postulación</h2>
+
+    @if (plazasVigentes.Any())
+    {
+        <div class="row mb-4 g-3">
+            <div class="col-md-8">
+                <input type="text" id="busquedaPlaza" class="form-control"
+                       placeholder="🔍 Buscar por título, departamento, requisitos u observaciones..." />
+            </div>
+            <div class="col-md-4">
+                <select id="filtroDepartamento" class="form-select">
+                    <option value="">Todos los departamentos</option>
+                    @foreach (var depto in plazasVigentes
+                                    .Where(p => !string.IsNullOrWhiteSpace(p.Departamento))
+                                    .Select(p => p.Departamento)
+                                    .Distinct()
+                                    .OrderBy(x => x))
+                    {
+                        <option value="@depto.ToLower()">@depto</option>
+                    }
+                </select>
+            </div>
+        </div>
+    }
 
     @if (!plazasVigentes.Any())
     {
@@ -16,12 +37,29 @@
     }
     else
     {
-        <div class="plaza-grid">
+        <div class="plaza-grid" id="contenedorPlazas">
             @foreach (var plaza in plazasVigentes)
             {
-                <div class="plaza-card">
+                var observaciones = plaza.Observaciones ?? "";
+                var requisitos = plaza.Requisitos ?? "";
+                var departamento = plaza.Departamento ?? "";
+                var horario = plaza.Horario ?? "";
+                var titulo = plaza.Titulo ?? "";
+
+                <div class="plaza-card plaza-filtrable"
+                     data-titulo="@titulo.ToLower()"
+                     data-departamento="@departamento.ToLower()"
+                     data-requisitos="@requisitos.ToLower()"
+                     data-observaciones="@observaciones.ToLower()">
+
                     <div>
-                        <h5>@plaza.Titulo</h5>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-1">@plaza.Titulo</h5>
+                            <span class="badge bg-primary-subtle text-primary-emphasis">
+                                @plaza.TipoConcurso
+                            </span>
+                        </div>
+
                         <p class="subtitulo">
                             <i class="bi bi-briefcase"></i> @plaza.TipoConcurso Nº @plaza.NumeroConcurso
                         </p>
@@ -68,5 +106,56 @@
                 </div>
             }
         </div>
+
+        <div id="mensajeSinResultados" class="no-plazas" style="display:none;">
+            🚫 No se encontraron plazas con esos filtros.
+        </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputBusqueda = document.getElementById("busquedaPlaza");
+            const filtroDepartamento = document.getElementById("filtroDepartamento");
+            const cards = document.querySelectorAll(".plaza-filtrable");
+            const mensajeSinResultados = document.getElementById("mensajeSinResultados");
+
+            function filtrarPlazas() {
+                const texto = (inputBusqueda?.value || "").toLowerCase().trim();
+                const departamento = (filtroDepartamento?.value || "").toLowerCase().trim();
+
+                let visibles = 0;
+
+                cards.forEach(card => {
+                    const titulo = card.dataset.titulo || "";
+                    const depto = card.dataset.departamento || "";
+                    const requisitos = card.dataset.requisitos || "";
+                    const observaciones = card.dataset.observaciones || "";
+
+                    const coincideTexto =
+                        !texto ||
+                        titulo.includes(texto) ||
+                        depto.includes(texto) ||
+                        requisitos.includes(texto) ||
+                        observaciones.includes(texto);
+
+                    const coincideDepartamento =
+                        !departamento || depto === departamento;
+
+                    if (coincideTexto && coincideDepartamento) {
+                        card.style.display = "";
+                        visibles++;
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+
+                mensajeSinResultados.style.display = visibles === 0 ? "block" : "none";
+            }
+
+            inputBusqueda?.addEventListener("input", filtrarPlazas);
+            filtroDepartamento?.addEventListener("change", filtrarPlazas);
+        });
+    </script>
+}
