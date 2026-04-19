@@ -28,5 +28,6 @@ namespace GestionPlazasVacantes.DTOs
         public bool ArmasObligatorio { get; set; }
         public bool SolicitarTitulos { get; set; }
         public bool TitulosObligatorios { get; set; }
+        public List<DocumentoDto> Documentos { get; set; } = new();
     }
 }

@@ -1,7 +1,9 @@
-﻿using GestionPlazasVacantes.Models;
+﻿using GestionPlazasVacantes.DTOs;
+using GestionPlazasVacantes.Models;
 
 public class DetallePostulanteDTO
 {
-    public Postulante Postulante { get; set; }
-    public SeguimientoPostulante Seguimiento { get; set; }
+    public PostulanteDto Postulante { get; set; }
+    public SeguimientoDto Seguimiento { get; set; }
+    public List<ArchivoDto> Archivos { get; set; } = new(); // 🔥 importante
 }

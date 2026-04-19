@@ -1,4 +1,5 @@
-﻿@model GestionPlazasVacantes.DTOs.DetallePostulanteVM
+﻿@using GestionPlazasVacantes.DTOs
+@model GestionPlazasVacantes.DTOs.DetallePostulanteVM
 @{
     var p = Model.Postulante;
     var s = Model.Seguimiento;
@@ -14,6 +15,25 @@
     };
 
     int pasoActual = etapas.IndexOf(s.EtapaActual);
+
+    string NormalizarRuta(string? ruta)
+    {
+        if (string.IsNullOrWhiteSpace(ruta))
+            return string.Empty;
+
+        if (ruta.StartsWith("http://") || ruta.StartsWith("https://"))
+            return ruta;
+
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+            return $"{baseUrl.TrimEnd('/')}/{ruta.TrimStart('/')}";
+
+        return ruta;
+    }
+
+    bool EsPdf(string? ruta) => !string.IsNullOrWhiteSpace(ruta) && ruta.ToLower().EndsWith(".pdf");
+
+    var archivosDinamicos = Model.Archivos ?? new List<ArchivoDto>();
+    var documentosPlaza = Model.Postulante?.PlazaVacante?.Documentos ?? new List<DocumentoDto>();
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
@@ -24,10 +44,10 @@
         <div class="card-body">
             <h3><i class="bi bi-person-badge"></i> @p.NombreCompleto</h3>
             <p class="text-muted mb-1">
-                <i class="bi bi-briefcase"></i> @p.PlazaVacante?.Titulo
+                <i class="bi bi-briefcase"></i> Plaza ID: @p.PlazaVacanteId
             </p>
             <p class="text-muted">
-                <i class="bi bi-building"></i> @p.PlazaVacante?.Departamento
+                <i class="bi bi-building"></i> Información de plaza no disponible
             </p>
 
             <div class="row mt-3">
@@ -97,19 +117,21 @@
 
                     @if (!string.IsNullOrEmpty(p.CurriculumPath))
                     {
-                        if (p.CurriculumPath.ToLower().EndsWith(".pdf"))
+                        var rutaCv = NormalizarRuta(p.CurriculumPath);
+
+                        if (EsPdf(rutaCv))
                         {
                             <div class="doc-actions">
-                                <a href="@p.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="@rutaCv" target="_blank" class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-file-earmark-pdf"></i> Ver PDF
                                 </a>
                             </div>
                         }
                         else
                         {
-                            <img src="@p.CurriculumPath" class="doc-preview" alt="CV" />
+                            <img src="@rutaCv" class="doc-preview" alt="CV" />
                             <div class="doc-actions">
-                                <a href="@p.CurriculumPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="@rutaCv" target="_blank" class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-image"></i> Ver imagen
                                 </a>
                             </div>
@@ -121,125 +143,47 @@
                     }
                 </div>
 
-                <!-- TÍTULO -->
-                <div class="doc-card">
-                    <strong>🎓 Título</strong><br />
+                <!-- DOCUMENTOS DINÁMICOS -->
+                @if (documentosPlaza.Any())
+                {
+                    foreach (var doc in documentosPlaza)
+                    {
+                        var archivo = archivosDinamicos
+                        .FirstOrDefault(a => a.Tipo != null &&
+                        a.Tipo.Trim().ToLower() == doc.Nombre.Trim().ToLower());
 
-                    @if (!string.IsNullOrEmpty(p.FotoTituloPath))
-                    {
-                        if (p.FotoTituloPath.ToLower().EndsWith(".pdf"))
-                        {
-                            <div class="doc-actions">
-                                <a href="@p.FotoTituloPath" target="_blank" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                                </a>
-                            </div>
-                        }
-                        else
-                        {
-                            <img src="@p.FotoTituloPath" class="doc-preview" alt="Título" />
-                            <div class="doc-actions">
-                                <a href="@p.FotoTituloPath" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-image"></i> Ver imagen
-                                </a>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <span class="text-muted fst-italic">No adjuntado</span>
-                    }
-                </div>
+                        var rutaDinamicaNormalizada = NormalizarRuta(archivo?.Ruta);
 
-                <!-- COLEGIATURA -->
-                <div class="doc-card">
-                    <strong>🏛️ Colegiatura</strong><br />
+                        <div class="doc-card">
+                            <strong>📎 @doc.Nombre</strong><br />
 
-                    @if (!string.IsNullOrEmpty(p.FotoColegiaturaPath))
-                    {
-                        if (p.FotoColegiaturaPath.ToLower().EndsWith(".pdf"))
-                        {
-                            <div class="doc-actions">
-                                <a href="@p.FotoColegiaturaPath" target="_blank" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                                </a>
-                            </div>
-                        }
-                        else
-                        {
-                            <img src="@p.FotoColegiaturaPath" class="doc-preview" alt="Colegiatura" />
-                            <div class="doc-actions">
-                                <a href="@p.FotoColegiaturaPath" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-image"></i> Ver imagen
-                                </a>
-                            </div>
-                        }
+                            @if (!string.IsNullOrEmpty(rutaDinamicaNormalizada))
+                            {
+                                if (EsPdf(rutaDinamicaNormalizada))
+                                {
+                                    <div class="doc-actions">
+                                        <a href="@rutaDinamicaNormalizada" target="_blank" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <img src="@rutaDinamicaNormalizada" class="doc-preview" alt="@doc.Nombre" />
+                                    <div class="doc-actions">
+                                        <a href="@rutaDinamicaNormalizada" target="_blank" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-image"></i> Ver imagen
+                                        </a>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">No adjuntado</span>
+                            }
+                        </div>
                     }
-                    else
-                    {
-                        <span class="text-muted fst-italic">No adjuntada</span>
-                    }
-                </div>
-
-                <!-- LICENCIA -->
-                <div class="doc-card">
-                    <strong>🚗 Licencia</strong><br />
-
-                    @if (!string.IsNullOrEmpty(p.FotoLicenciaPath))
-                    {
-                        if (p.FotoLicenciaPath.ToLower().EndsWith(".pdf"))
-                        {
-                            <div class="doc-actions">
-                                <a href="@p.FotoLicenciaPath" target="_blank" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                                </a>
-                            </div>
-                        }
-                        else
-                        {
-                            <img src="@p.FotoLicenciaPath" class="doc-preview" alt="Licencia" />
-                            <div class="doc-actions">
-                                <a href="@p.FotoLicenciaPath" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-image"></i> Ver imagen
-                                </a>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <span class="text-muted fst-italic">No adjuntada</span>
-                    }
-                </div>
-
-                <!-- PERMISO DE ARMAS -->
-                <div class="doc-card">
-                    <strong>🛡️ Permiso de armas</strong><br />
-
-                    @if (!string.IsNullOrEmpty(p.FotoPermisoArmasPath))
-                    {
-                        if (p.FotoPermisoArmasPath.ToLower().EndsWith(".pdf"))
-                        {
-                            <div class="doc-actions">
-                                <a href="@p.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
-                                </a>
-                            </div>
-                        }
-                        else
-                        {
-                            <img src="@p.FotoPermisoArmasPath" class="doc-preview" alt="Permiso de armas" />
-                            <div class="doc-actions">
-                                <a href="@p.FotoPermisoArmasPath" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-image"></i> Ver imagen
-                                </a>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <span class="text-muted fst-italic">No adjuntado</span>
-                    }
-                </div>
+                }
 
             </div>
         </div>
@@ -474,7 +418,6 @@
         </div>
     }
 </div>
-
 
 <script>
     function cambiarEtapa(etapa) {

@@ -5,113 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Gestión de Plazas Vacantes</title>
 
-    <!-- Bootstrap & Fuentes institucionales -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GestionPlazasVacantes.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Biryani:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .tree-toggle::after {
+            content: "\F282";
+            font-family: "bootstrap-icons";
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+
+        .tree-toggle.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .collapse .nav-link { padding-left: 1.8rem; }
+        .collapse .collapse .nav-link { padding-left: 2.8rem; }
+
+        .disabled-link {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .badge-count {
+            margin-left: auto;
+            background: #6c757d;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- ===== SIDEBAR ===== -->
+    @{
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+        var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+        bool esPlazas =
+        controller == "Plazas" ||
+        controller == "Asignaciones" ||
+        controller == "PlazasInternas" ||
+        controller == "Postulacion";
+
+        bool esReporteria =
+        controller == "Dashboard" ||
+        controller == "Reportes";
+
+        // 🔥 Simulación de contadores (luego backend)
+        int totalPlazas = 12;
+        int totalAsignaciones = 5;
+
+        bool esJefe = User.IsInRole("Jefe");
+    }
+
     @if (User.Identity?.IsAuthenticated == true)
     {
-        <nav class="sidebar" id="sidebar">
+        <nav class="sidebar">
             <div class="brand">
                 <i class="bi bi-briefcase-fill me-2"></i>
-                <span class="brand-text">Plazas Vacantes</span>
+                Plazas Vacantes
             </div>
 
             <div class="nav flex-column mt-3">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+
+                <!-- Inicio -->
+                <a class="nav-link @(controller == "Home" ? "active" : "")"
                    asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-house-door-fill"></i> <span>Inicio</span>
+                    <i class="bi bi-house-door-fill"></i> Inicio
                 </a>
 
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
-                   asp-controller="Dashboard" asp-action="Index">
-                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                <!-- PLAZAS -->
+                <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#plazas">
+                    <i class="bi bi-briefcase"></i> Plazas
                 </a>
 
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Plazas" &&
-                                                                     ViewContext.RouteData.Values["action"]?.ToString() == "Crear" ? "active" : "")"
-               asp-controller="Plazas" asp-action="Crear">
-                <i class="bi bi-file-earmark-plus"></i> <span>Crear Plaza Vacante</span>
-            </a>
+                @* <div class="collapse @(esPlazas ? "show" : "")" id="plazas"> *@
+                <div class="collapse" id="plazas">
 
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Plazas" &&
-                                                                 ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
-               asp-controller="Plazas" asp-action="Index">
-                <i class="bi bi-briefcase"></i> <span>Listado de Plazas</span>
-            </a>
-
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Seguimiento" ? "active" : "")"
-                   asp-controller="Seguimiento" asp-action="Index">
-                    <i class="bi bi-people-fill"></i> <span>Seguimiento de Postulantes</span>
-                </a>
-
-            @if (User.IsInRole("Jefe"))
-                {
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Asignaciones" ? "active" : "")"
-                       asp-controller="Asignaciones" asp-action="Index">
-                        <i class="bi bi-person-check"></i> <span>Asignaciones</span>
+                    <a class="nav-link @(controller == "Plazas" && action == "Crear" ? "active" : "")"
+                       asp-controller="Plazas" asp-action="Crear">
+                        Crear plaza vacante
                     </a>
-                }
 
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reportes" ? "active" : "")"
-                   asp-controller="Reportes" asp-action="Index">
-                    <i class="bi bi-file-earmark-bar-graph"></i> <span>Reportes</span>
+                    <a class="nav-link @(controller=="Asignaciones"?"active":"")"
+                       asp-controller="Asignaciones" asp-action="Index">
+                        Asignaciones
+                        <span class="badge badge-count">@totalAsignaciones</span>
+                    </a>
+
+                    <a class="nav-link @(controller=="Plazas" && action=="Index"?"active":"")"
+                       asp-controller="Plazas" asp-action="Index">
+                        Listado de plazas
+                        <span class="badge badge-count">@totalPlazas</span>
+                    </a>
+
+                    <a class="nav-link"
+                       asp-controller="Postulacion" asp-action="Index" target="_blank">
+                        Portal Público
+                    </a>
+
+                    <a class="nav-link @(controller == "PlazasInternas" ? "active" : "")"
+                       asp-controller="PlazasInternas" asp-action="Index">
+                        Plazas internas
+                    </a>
+
+                    <a class="nav-link @(controller == "Seguimineto" ? "active" : "")"
+                       asp-controller="Seguimiento" asp-action="Index">
+                        Seguimiento de plazas
+                    </a>
+
+                    <!-- Gestión -->
+                    <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#gestion">
+                        Gestión de plazas
+                    </a>
+
+                    @* <div class="collapse @(controller == "Asignaciones" ? "show" : "")" id="gestion"> *@
+                    <div class="collapse" id="gestion">
+                        <a class="nav-link @(controller == "Asignaciones" ? "active" : "")"
+                           asp-controller="Asignaciones"
+                           asp-action="Index">
+                            Asignaciones
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- REPORTERÍA -->
+                <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#reportes">
+                    <i class="bi bi-bar-chart"></i> Reportería
                 </a>
 
-                <a class="nav-link"
-                   asp-controller="Account" asp-action="Logout">
-                    <i class="bi bi-box-arrow-right"></i> <span>Salir</span>
+                <div class="collapse @(esReporteria ? "show" : "")" id="reportes">
+
+                    <a class="nav-link @(controller == "Dashboard" ? "active" : "")"
+                       asp-controller="Dashboard" asp-action="Index">
+                        Dashboard
+                    </a>
+
+                    <a class="nav-link @(controller == "Reportes" ? "active" : "")"
+                       asp-controller="Reportes" asp-action="Index">
+                        Reportes
+                    </a>
+                </div>
+
+                <!-- Salir -->
+                <a class="nav-link" asp-controller="Account" asp-action="Logout">
+                    <i class="bi bi-box-arrow-right"></i> Salir
                 </a>
 
-                <hr class="mx-3" />
-
-                <!-- 🔥 Portal público en nueva pestaña -->
-                <a class="nav-link"
-                   asp-controller="Postulacion"
-                   asp-action="Index"
-                   target="_blank">
-                    <i class="bi bi-megaphone"></i> <span>Portal Público</span>
-                </a>
-
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "PlazasInternas" ? "active" : "")"
-                   asp-controller="PlazasInternas" asp-action="Index">
-                    <i class="bi bi-building-lock"></i> <span>Plazas Internas</span>
-                </a>
             </div>
         </nav>
     }
 
-    <!-- ===== CONTENIDO ===== -->
     <div class="content flex-grow-1">
-        <div class="navbar-top shadow-sm d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <button class="btn btn-link text-dark d-lg-none me-2" id="sidebarToggle">
-                        <i class="bi bi-list fs-1"></i>
-                    </button>
-                }
+        <div class="navbar-top shadow-sm d-flex justify-content-between">
 
-                <img src="~/images/curridabat-logo.jpg" alt="Curridabat" class="logo-curridabat">
-                <span class="fs-6 fw-semibold d-none d-sm-inline">Municipalidad de Curridabat</span>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-link d-lg-none" id="sidebarToggle">
+                    <i class="bi bi-list fs-1"></i>
+                </button>
+
+                <img src="~/images/curridabat-logo.jpg" class="logo-curridabat">
+                <span class="fw-semibold">Municipalidad de Curridabat</span>
             </div>
 
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <div class="user-info">
-                    <i class="bi bi-person-circle"></i>
-                    <div>
-                        <small>Bienvenido/a</small>
-                        <span>@User.Identity?.Name</span>
-                    </div>
-                </div>
-            }
+            <div class="user-info">
+                <i class="bi bi-person-circle"></i>
+                <span>@User.Identity?.Name</span>
+            </div>
         </div>
 
         <main class="mt-4">
@@ -123,12 +185,25 @@
         </footer>
     </div>
 
-    <!-- Overlay sidebar -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // 💾 persistencia
+        document.querySelectorAll('.tree-toggle').forEach(el => {
+            el.addEventListener('click', () => {
+                let id = el.getAttribute('href');
+                localStorage.setItem(id, !document.querySelector(id).classList.contains('show'));
+            });
+        });
+
+        // document.querySelectorAll('.collapse').forEach(el => {
+        //     let state = localStorage.getItem('#'+el.id);
+        //     if(state === 'true') el.classList.add('show');
+        // });
+    </script>
+
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

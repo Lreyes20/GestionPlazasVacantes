@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GestionPlazasVacantes.DTOs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -67,5 +68,6 @@ namespace GestionPlazasVacantes.Models
         public Usuario? UsuarioAsignado { get; set; }
 
         public ICollection<Postulante> Postulantes { get; set; } = new List<Postulante>();
+        public List<DocumentoDto> Documentos { get; set; } = new();
     }
 }

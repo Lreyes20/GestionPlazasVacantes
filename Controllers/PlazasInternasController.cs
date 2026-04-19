@@ -30,13 +30,35 @@ public class PlazasInternasController : Controller
 
     public async Task<IActionResult> Aplicar(int id)
     {
-        var plaza = await _api.GetFromJsonAsync<PlazaDto>(
-            $"api/plazas-internas/{id}");
+        // =========================================================
+        // 🔐 AGREGAR TOKEN (SI USAS AUTH)
+        // =========================================================
+        var token = HttpContext.Session.GetString("Token");
 
+        if (!string.IsNullOrEmpty(token))
+        {
+            _api.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        // =========================================================
+        // 🔥 CARGAR PLAZA DESDE API (CON DOCUMENTOS)
+        // =========================================================
+        var plaza = await _api.GetFromJsonAsync<PlazaDto>($"api/plazas/{id}");
+
+        if (plaza == null)
+            return NotFound();
+
+        // =========================================================
+        // CREAR VIEWMODEL
+        // =========================================================
         var vm = new Postulacion
         {
             Plaza = plaza,
-            Postulante = new PostulanteDto { PlazaVacanteId = id }
+            Postulante = new PostulanteDto
+            {
+                PlazaVacanteId = id
+            }
         };
 
         return View(vm);
@@ -46,13 +68,11 @@ public class PlazasInternasController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Aplicar(
     Postulacion vm,
-    IFormFile curriculum,
-    IFormFile? fotoTitulo,
-    IFormFile? fotoColegiatura,
-    IFormFile? fotoLicencia,
-    IFormFile? fotoPermisoArmas)
+    IFormFile curriculum)
     {
-        // Reconstruir si el model binding falló (común con multipart)
+        // =========================================================
+        // RECONSTRUIR MODELO
+        // =========================================================
         if (vm?.Postulante == null || vm.Postulante.PlazaVacanteId == 0)
         {
             vm = new Postulacion
@@ -60,9 +80,9 @@ public class PlazasInternasController : Controller
                 Postulante = new PostulanteDto
                 {
                     PlazaVacanteId = int.Parse(Request.Form["Postulante.PlazaVacanteId"].FirstOrDefault() ?? "0"),
-                    NombreCompleto = Request.Form["Postulante.NombreCompleto"].FirstOrDefault() ?? "",
-                    Cedula = Request.Form["Postulante.Cedula"].FirstOrDefault() ?? "",
-                    Correo = Request.Form["Postulante.Correo"].FirstOrDefault() ?? "",
+                    NombreCompleto = Request.Form["Postulante.NombreCompleto"].FirstOrDefault(),
+                    Cedula = Request.Form["Postulante.Cedula"].FirstOrDefault(),
+                    Correo = Request.Form["Postulante.Correo"].FirstOrDefault(),
                     Telefono = Request.Form["Postulante.Telefono"].FirstOrDefault(),
                     Direccion = Request.Form["Postulante.Direccion"].FirstOrDefault(),
                     PerfilProfesional = Request.Form["Postulante.PerfilProfesional"].FirstOrDefault(),
@@ -76,27 +96,38 @@ public class PlazasInternasController : Controller
             };
         }
 
-        // Recargar Plaza
-        if (vm.Plaza == null && vm.Postulante.PlazaVacanteId > 0)
-        {
-            vm.Plaza = await _api.GetFromJsonAsync<PlazaDto>(
-                $"api/plazas-internas/{vm.Postulante.PlazaVacanteId}");
-        }
+        // =========================================================
+        // 🔥 SIEMPRE RECARGAR PLAZA
+        // =========================================================
+        vm.Plaza = await _api.GetFromJsonAsync<PlazaDto>(
+            $"api/plazas/{vm.Postulante.PlazaVacanteId}");
 
+        // =========================================================
+        // VALIDAR CURRICULUM
+        // =========================================================
         if (curriculum == null || curriculum.Length == 0)
         {
             ModelState.AddModelError("", "Debe adjuntar el currículum.");
             return View(vm);
         }
 
+        // =========================================================
+        // CREAR FORM DATA
+        // =========================================================
         var form = new MultipartFormDataContent();
 
-        form.Add(new StringContent(vm.Postulante.PlazaVacanteId.ToString()), "PlazaVacanteId");
-        form.Add(new StringContent(vm.Plaza?.TipoConcurso ?? "Interno"), "TipoConcurso");
+        // 🔥 AGREGAR CURRICULUM COMO CAMPO SEPARADO
+        if (curriculum != null && curriculum.Length > 0)
+        {
+            form.Add(new StreamContent(curriculum.OpenReadStream()), "curriculum", curriculum.FileName);
+        }
 
-        form.Add(new StringContent(vm.Postulante.NombreCompleto), "NombreCompleto");
-        form.Add(new StringContent(vm.Postulante.Cedula), "Cedula");
-        form.Add(new StringContent(vm.Postulante.Correo), "Correo");
+        // 🔥 CAMPOS SEGUROS (NULL SAFE)
+        form.Add(new StringContent(vm.Postulante.PlazaVacanteId.ToString()), "PlazaVacanteId");
+
+        form.Add(new StringContent(vm.Postulante.NombreCompleto ?? "N/A"), "NombreCompleto");
+        form.Add(new StringContent(vm.Postulante.Cedula ?? "000"), "Cedula");
+        form.Add(new StringContent(vm.Postulante.Correo ?? ""), "Correo");
         form.Add(new StringContent(vm.Postulante.Telefono ?? ""), "Telefono");
         form.Add(new StringContent(vm.Postulante.Direccion ?? ""), "Direccion");
 
@@ -108,44 +139,40 @@ public class PlazasInternasController : Controller
         form.Add(new StringContent(vm.Postulante.FormacionComplementaria ?? ""), "FormacionComplementaria");
         form.Add(new StringContent(vm.Postulante.OtrosDatos ?? ""), "OtrosDatos");
 
-        // Archivos
-        form.Add(new StreamContent(curriculum.OpenReadStream()), "curriculum", curriculum.FileName);
+        // =========================================================
+        // 🔥 DOCUMENTOS DINÁMICOS
+        // =========================================================
+        var archivos = Request.Form.Files.Where(f => f.Name == "Archivos").ToList();
+        var tipos = Request.Form["Tipos"];
 
-        if (fotoTitulo != null && fotoTitulo.Length > 0)
-            form.Add(new StreamContent(fotoTitulo.OpenReadStream()), "fotoTitulo", fotoTitulo.FileName);
-
-        if (fotoColegiatura != null && fotoColegiatura.Length > 0)
-            form.Add(new StreamContent(fotoColegiatura.OpenReadStream()), "fotoColegiatura", fotoColegiatura.FileName);
-
-        if (fotoLicencia != null && fotoLicencia.Length > 0)
-            form.Add(new StreamContent(fotoLicencia.OpenReadStream()), "fotoLicencia", fotoLicencia.FileName);
-
-        if (fotoPermisoArmas != null && fotoPermisoArmas.Length > 0)
-            form.Add(new StreamContent(fotoPermisoArmas.OpenReadStream()), "fotoPermisoArmas", fotoPermisoArmas.FileName);
-
-        foreach (var archivo in Request.Form.Files.Where(f => f.Name == "ArchivoTitulos"))
+        for (int i = 0; i < archivos.Count; i++)
         {
+            var archivo = archivos[i];
+            var tipo = tipos[i];
+
             if (archivo.Length > 0)
-                form.Add(new StreamContent(archivo.OpenReadStream()), "archivoTitulos", archivo.FileName);
+            {
+                form.Add(new StreamContent(archivo.OpenReadStream()), "Archivos", archivo.FileName);
+                form.Add(new StringContent(tipo), "Tipos");
+            }
         }
 
-        var response = await _api.PostAsync("api/plazas-internas/aplicar", form);
+        // =========================================================
+        // ENVIAR A API
+        // =========================================================
+        var response = await _api.PostAsync("api/plazas/postular", form);
 
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", error);
+
+            // 🔥 LIMPIAR ERROR (para no mostrar stacktrace gigante)
+            ModelState.AddModelError("", "Error al enviar la postulación. Verifique los datos.");
+
             return View(vm);
         }
 
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        int id = json.TryGetProperty("Id", out var idElement) ? idElement.GetInt32() : 0;
-
-        if (id > 0)
-            return RedirectToAction("Confirmacion", new { id });
-
-        ModelState.AddModelError("", "Postulación registrada pero no se obtuvo el ID.");
-        return View(vm);
+        return RedirectToAction("Index", "Home");
     }
 
     public async Task<IActionResult> Confirmacion(int id)

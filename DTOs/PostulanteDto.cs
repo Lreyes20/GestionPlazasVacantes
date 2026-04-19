@@ -41,5 +41,7 @@ namespace GestionPlazasVacantes.DTOs
 
         public string EstadoProceso { get; set; } = "En revisión";
         public DateTime FechaActualizacion { get; set; } = DateTime.Now;
+        public PlazaDto? PlazaVacante { get; set; }
+        public string? CurriculumPath { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using GestionPlazasVacantes.DTOs;
 using GestionPlazasVacantes.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,7 +10,6 @@ namespace GestionPlazasVacantes.Controllers
     public class SeguimientoController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly IConfiguration _config;
 
         public SeguimientoController(IHttpClientFactory httpClientFactory, IConfiguration config)
@@ -25,11 +23,6 @@ namespace GestionPlazasVacantes.Controllers
             PropertyNameCaseInsensitive = true,
             Converters = { new JsonStringEnumConverter() }
         };
-
-        //public SeguimientoController(IHttpClientFactory httpClientFactory)
-        //{
-        //    _httpClientFactory = httpClientFactory;
-        //}
 
         // 📋 Vista general de plazas activas con seguimiento
         public async Task<IActionResult> Index()
@@ -48,7 +41,6 @@ namespace GestionPlazasVacantes.Controllers
             ViewBag.UsuarioActual = username;
             return View(response);
         }
-
 
         // 👀 Seguimiento por plaza
         public async Task<IActionResult> PorPlaza(int plazaId)
@@ -73,18 +65,19 @@ namespace GestionPlazasVacantes.Controllers
         {
             var client = _httpClientFactory.CreateClient("Api");
 
-            var data = await client.GetFromJsonAsync<DetallePostulanteDTO>(
-                $"api/SeguimientoApi/detalle/{id}",
-                _jsonOptions);
+            var dto = await client.GetFromJsonAsync<DetallePostulanteDTO>(
+                $"api/SeguimientoApi/detalle/{id}");
 
-            if (data == null)
+            if (dto == null)
                 return NotFound();
 
             var vm = new DetallePostulanteVM
             {
-                Postulante = data.Postulante,
-                Seguimiento = data.Seguimiento
+                Postulante = dto.Postulante,
+                Seguimiento = dto.Seguimiento,
+                Archivos = dto.Archivos ?? new List<ArchivoDto>()
             };
+
             ViewBag.ApiBaseUrl = _config["Api:BaseUrl"];
 
             return View(vm);
@@ -106,7 +99,7 @@ namespace GestionPlazasVacantes.Controllers
                 Obs = obs
             };
 
-            var response = await client.PostAsJsonAsync("api/SeguimientoApi/actualizar", payload);
+            await client.PostAsJsonAsync("api/SeguimientoApi/actualizar", payload);
 
             return RedirectToAction("Detalle", new { id = postulanteId });
         }
@@ -131,7 +124,6 @@ namespace GestionPlazasVacantes.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FinalizarPlaza(int plazaId)
@@ -149,7 +141,6 @@ namespace GestionPlazasVacantes.Controllers
             TempData["SuccessMessage"] = "✅ La plaza fue finalizada correctamente.";
             return RedirectToAction("Index");
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

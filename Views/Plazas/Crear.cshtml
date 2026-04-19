@@ -109,77 +109,12 @@
         <!-- Sección 4 -->
         <div class="seccion">
             <h5>4️⃣ Documentos que se solicitarán al postulante</h5>
-            <p class="text-muted mb-4">Seleccione los documentos que el postulante deberá adjuntar. Puede marcar si son obligatorios o no.</p>
 
-            <div class="row gy-3">
-                <!-- Colegiatura -->
-                <div class="col-md-6">
-                    <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff;">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="chkColegiado" name="SolicitarColegiatura" value="true">
-                            <label class="form-check-label fw-semibold" style="color:#435563;" for="chkColegiado">
-                                Solicitar número y foto de colegiatura
-                            </label>
-                        </div>
-                        <div id="obliCole" class="form-check d-none">
-                            <input class="form-check-input" type="checkbox" name="ColegiaturaObligatoria" value="true">
-                            <label class="form-check-label text-danger fw-semibold">Requisito obligatorio</label>
-                        </div>
-                    </div>
-                </div>
+            <div id="listaDocumentos"></div>
 
-                <!-- Licencia -->
-                <div class="col-md-6">
-                    <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff;">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="chkLicencia" name="SolicitarLicencia" value="true">
-                            <label class="form-check-label fw-semibold" style="color:#435563;" for="chkLicencia">
-                                Solicitar tipo y foto de licencia de conducir
-                            </label>
-                        </div>
-                        <div id="obliLic" class="form-check d-none">
-                            <input class="form-check-input" type="checkbox" name="LicenciaObligatoria" value="true">
-                            <label class="form-check-label text-danger fw-semibold">Requisito obligatorio</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Armas -->
-                <div class="col-md-6">
-                    <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff;">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="chkArmas" name="SolicitarPermisoArmas" value="true">
-                            <label class="form-check-label fw-semibold" style="color:#435563;" for="chkArmas">
-                                Solicitar número y foto del permiso de portación de armas
-                            </label>
-                        </div>
-                        <div id="obliArmas" class="form-check d-none">
-                            <input class="form-check-input" type="checkbox" name="ArmasObligatorio" value="true">
-                            <label class="form-check-label text-danger fw-semibold">Requisito obligatorio</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Títulos -->
-                <div class="col-md-6">
-                    <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff;">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="chkTitulos" name="SolicitarTitulos" value="true">
-                            <label class="form-check-label fw-semibold" style="color:#435563;" for="chkTitulos">
-                                Solicitar títulos o certificaciones con foto
-                            </label>
-                        </div>
-                        <div id="obliTit" class="form-check d-none">
-                            <input class="form-check-input" type="checkbox" name="TitulosObligatorios" value="true">
-                            <label class="form-check-label text-danger fw-semibold">Requisito obligatorio</label>
-                        </div>
-
-                        <div id="divTitulos" class="mt-3 d-none">
-                            <label class="fw-semibold mb-1" style="color:#435563;">Especifique los títulos o certificaciones requeridas</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button type="button" class="btn btn-outline-primary mt-3" onclick="agregarDocumento()">
+                <i class="bi bi-plus-circle"></i> Agregar documento
+            </button>
         </div>
 
         <div class="botones-formulario mt-4">
@@ -231,21 +166,71 @@
         })();
 
         // Mostrar/ocultar opciones de documentos según checkboxes
-        document.getElementById('chkColegiado').addEventListener('change', function() {
-            document.getElementById('obliCole').classList.toggle('d-none', !this.checked);
-        });
+        // document.getElementById('chkColegiado').addEventListener('change', function() {
+        //     document.getElementById('obliCole').classList.toggle('d-none', !this.checked);
+        // });
 
-        document.getElementById('chkLicencia').addEventListener('change', function() {
-            document.getElementById('obliLic').classList.toggle('d-none', !this.checked);
-        });
+        // document.getElementById('chkLicencia').addEventListener('change', function() {
+        //     document.getElementById('obliLic').classList.toggle('d-none', !this.checked);
+        // });
 
-        document.getElementById('chkArmas').addEventListener('change', function() {
-            document.getElementById('obliArmas').classList.toggle('d-none', !this.checked);
-        });
+        // document.getElementById('chkArmas').addEventListener('change', function() {
+        //     document.getElementById('obliArmas').classList.toggle('d-none', !this.checked);
+        // });
 
-        document.getElementById('chkTitulos').addEventListener('change', function() {
-            document.getElementById('obliTit').classList.toggle('d-none', !this.checked);
-            document.getElementById('divTitulos').classList.toggle('d-none', !this.checked);
-        });
+        // document.getElementById('chkTitulos').addEventListener('change', function() {
+        //     document.getElementById('obliTit').classList.toggle('d-none', !this.checked);
+        //     document.getElementById('divTitulos').classList.toggle('d-none', !this.checked);
+        // });
+
+        let contador = 0;
+
+        function agregarDocumento(nombre = "", obligatorio = false) {
+
+            const container = document.getElementById("listaDocumentos");
+
+                    const html = `
+            <div class="card p-3 mb-2 shadow-sm">
+                <div class="row align-items-center">
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               name="Documentos[${contador}].Nombre"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="col-md-4 form-check mt-2">
+                        <input type="hidden"
+                               name="Documentos[${contador}].Obligatorio"
+                               value="false" />
+
+                        <input type="checkbox"
+                               name="Documentos[${contador}].Obligatorio"
+                               class="form-check-input"
+                               value="true" />
+
+                        <label class="form-check-label text-danger">
+                            Obligatorio
+                        </label>
+                    </div>
+
+                    <div class="col-md-2 text-end">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="eliminarDocumento(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        `;
+
+            container.insertAdjacentHTML("beforeend", html);
+            contador++;
+        }
+
+        function eliminarDocumento(btn) {
+            btn.closest(".card").remove();
+        }
     </script>
 }
