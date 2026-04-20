@@ -6,17 +6,27 @@
 }
 
 <div class="container-fluid px-4">
-    <h2 class="titulo-pagina">💼 Plazas Disponibles para Postulación</h2>
+
+    <!-- 🔶 HEADER INSTITUCIONAL -->
+    <div class="mb-4 p-4 rounded shadow-sm bg-white border-start border-4 border-warning">
+        <h2 class="titulo-pagina mb-1">
+            💼 Plazas Disponibles para Postulación
+        </h2>
+        <small class="text-muted">
+            Municipalidad de Curridabat • Sistema de Postulación
+        </small>
+    </div>
 
     @if (plazasVigentes.Any())
     {
+        <!-- 🔍 FILTROS -->
         <div class="row mb-4 g-3">
             <div class="col-md-8">
-                <input type="text" id="busquedaPlaza" class="form-control"
+                <input type="text" id="busquedaPlaza" class="form-control shadow-sm"
                        placeholder="🔍 Buscar por título, departamento, requisitos u observaciones..." />
             </div>
             <div class="col-md-4">
-                <select id="filtroDepartamento" class="form-select">
+                <select id="filtroDepartamento" class="form-select shadow-sm">
                     <option value="">Todos los departamentos</option>
                     @foreach (var depto in plazasVigentes
                                     .Where(p => !string.IsNullOrWhiteSpace(p.Departamento))
@@ -33,11 +43,14 @@
 
     @if (!plazasVigentes.Any())
     {
-        <p class="no-plazas">🚫 No hay plazas disponibles en este momento.</p>
+        <div class="alert alert-warning text-center mt-4">
+            🚫 No hay plazas disponibles en este momento.
+        </div>
     }
     else
     {
         <div class="plaza-grid" id="contenedorPlazas">
+
             @foreach (var plaza in plazasVigentes)
             {
                 var observaciones = plaza.Observaciones ?? "";
@@ -46,60 +59,72 @@
                 var horario = plaza.Horario ?? "";
                 var titulo = plaza.Titulo ?? "";
 
-                <div class="plaza-card plaza-filtrable"
+                <div class="plaza-card plaza-filtrable shadow-sm border-0"
+                     style="border-radius:12px;"
                      data-titulo="@titulo.ToLower()"
                      data-departamento="@departamento.ToLower()"
                      data-requisitos="@requisitos.ToLower()"
                      data-observaciones="@observaciones.ToLower()">
 
-                    <div>
+                    <div class="p-3">
+
+                        <!-- HEADER CARD -->
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="mb-1">@plaza.Titulo</h5>
-                            <span class="badge bg-primary-subtle text-primary-emphasis">
+                            <h5 class="mb-1 fw-bold">@plaza.Titulo</h5>
+
+                            <span class="badge bg-warning text-dark">
                                 @plaza.TipoConcurso
                             </span>
                         </div>
 
-                        <p class="subtitulo">
-                            <i class="bi bi-briefcase"></i> @plaza.TipoConcurso Nº @plaza.NumeroConcurso
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-briefcase"></i>
+                            @plaza.TipoConcurso Nº @plaza.NumeroConcurso
                         </p>
 
-                        <p><strong>Departamento:</strong> @plaza.Departamento</p>
-                        <p><strong>Horario:</strong> @plaza.Horario</p>
+                        <p class="mb-1"><strong>Departamento:</strong> @plaza.Departamento</p>
+                        <p class="mb-2"><strong>Horario:</strong> @plaza.Horario</p>
 
-                        <div class="bloque-info">
+                        <!-- REQUISITOS -->
+                        <div class="mb-2">
                             <strong>Requisitos:</strong>
-                            <p>@plaza.Requisitos</p>
+                            <p class="small mb-1">@plaza.Requisitos</p>
                         </div>
 
+                        <!-- OBSERVACIONES -->
                         @if (!string.IsNullOrEmpty(plaza.Observaciones))
                         {
-                            <div class="bloque-info">
+                            <div class="mb-2">
                                 <strong>Observaciones:</strong>
-                                <p>@plaza.Observaciones</p>
+                                <p class="small mb-1">@plaza.Observaciones</p>
                             </div>
                         }
 
-                        <div class="bloque-info">
+                        <!-- SALARIO -->
+                        <div class="mb-2">
                             <strong>Salario:</strong>
-                            <p>Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
-                            <p>Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
+                            <p class="small mb-0">Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
+                            <p class="small">Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
                         </div>
 
-                        <div class="bloque-info">
+                        <!-- FECHA -->
+                        <div class="mb-2">
                             <strong>Fecha límite:</strong>
-                            <p>📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
-                            <p>🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
+                            <p class="small mb-0">📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
+                            <p class="small">🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
                         </div>
 
-                        <p class="text-muted mt-2">
-                            <small>📢 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy") a las @plaza.FechaCreacion.ToString("hh:mm tt")</small>
+                        <p class="text-muted mt-2 small">
+                            📢 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy")
                         </p>
                     </div>
 
-                    <div class="acciones">
-                        <a asp-controller="Postulacion" asp-action="Aplicar" asp-route-id="@plaza.Id"
-                           class="btn btn-primary w-100">
+                    <!-- BOTÓN -->
+                    <div class="p-3 pt-0">
+                        <a asp-controller="Postulacion"
+                           asp-action="Aplicar"
+                           asp-route-id="@plaza.Id"
+                           class="btn btn-warning w-100 fw-bold shadow-sm">
                             <i class="bi bi-pencil-square"></i> Postularme
                         </a>
                     </div>
@@ -107,7 +132,7 @@
             }
         </div>
 
-        <div id="mensajeSinResultados" class="no-plazas" style="display:none;">
+        <div id="mensajeSinResultados" class="alert alert-secondary text-center mt-4" style="display:none;">
             🚫 No se encontraron plazas con esos filtros.
         </div>
     }

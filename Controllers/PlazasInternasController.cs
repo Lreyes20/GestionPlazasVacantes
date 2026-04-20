@@ -160,7 +160,7 @@ public class PlazasInternasController : Controller
         // =========================================================
         // ENVIAR A API
         // =========================================================
-        var response = await _api.PostAsync("api/plazas/postular", form);
+        var response = await _api.PostAsync("api/plazas-internas/aplicar", form);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -172,7 +172,9 @@ public class PlazasInternasController : Controller
             return View(vm);
         }
 
-        return RedirectToAction("Index", "Home");
+        var result = await response.Content.ReadFromJsonAsync<PostulacionResponseDto>();
+
+        return RedirectToAction("Confirmacion", "PlazasInternas", new { id = result.Id });
     }
 
     public async Task<IActionResult> Confirmacion(int id)
@@ -184,6 +186,18 @@ public class PlazasInternasController : Controller
             return NotFound();
 
         return View(postulante);
+    }
+
+    public async Task<IActionResult> DescargarComprobantePdf(int id)
+    {
+        var response = await _api.GetAsync($"api/plazas-internas/comprobante/{id}");
+
+        if (!response.IsSuccessStatusCode)
+            return NotFound();
+
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+
+        return File(bytes, "application/pdf", $"Comprobante_{id}.pdf");
     }
 
     // 🔥 PDF

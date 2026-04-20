@@ -1,20 +1,26 @@
 ﻿@* @model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante> *@
 @model IEnumerable<GestionPlazasVacantes.DTOs.PlazaDto>
 
-
 @{
     ViewData["Title"] = "Listado de Plazas Vacantes";
-    // var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
 }
-
-
 
 <div class="container-fluid px-4">
     <h2 class="titulo-pagina">📋 Listado de Plazas Vacantes Vigentes</h2>
 
-    @if (TempData["SuccessMessage"] != null)
+    <!-- 🔥 MENSAJES -->
+    @if (TempData.Peek("SuccessMessage") != null)
     {
-        <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData.Peek("ErrorMessage") != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["ErrorMessage"]
+        </div>
     }
 
     <div class="text-end my-3">
@@ -68,7 +74,10 @@
                         </div>
 
                         <p class="text-muted mt-2">
-                            <small>📅 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy") a las @plaza.FechaCreacion.ToString("hh:mm tt")</small>
+                            <small>
+                                📅 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy")
+                                a las @plaza.FechaCreacion.ToString("hh:mm tt")
+                            </small>
                         </p>
                     </div>
 
@@ -76,8 +85,14 @@
                         <a asp-action="Editar" asp-route-id="@plaza.Id" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
-                        <form asp-action="Eliminar" asp-route-id="@plaza.Id" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta plaza?')">
+
+                        <form asp-action="Eliminar"
+                              asp-route-id="@plaza.Id"
+                              method="post"
+                              onsubmit="return confirm('¿Estás seguro de eliminar esta plaza?')">
+
                             @Html.AntiForgeryToken()
+
                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                 <i class="bi bi-trash"></i> Eliminar
                             </button>
@@ -88,3 +103,12 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        // 🔥 AUTO-CLOSE ALERT (opcional, no rompe nada)
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(a => a.remove());
+        }, 4000);
+    </script>
+}

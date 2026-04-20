@@ -1,4 +1,5 @@
-﻿using GestionPlazasVacantes.DTOs;
+﻿using Azure;
+using GestionPlazasVacantes.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
@@ -57,11 +58,12 @@ namespace GestionPlazasVacantes.Controllers
         // GET: Plazas/Editar/5
         public async Task<IActionResult> Editar(int id)
         {
-            var plaza = await _api
-                .GetFromJsonAsync<PlazaDto>($"api/plazas/{id}");
+            var response = await _api.GetAsync($"api/plazas/{id}");
 
-            if (plaza == null)
+            if (!response.IsSuccessStatusCode)
                 return NotFound();
+
+            var plaza = await response.Content.ReadFromJsonAsync<PlazaDto>();
 
             return View(plaza);
         }

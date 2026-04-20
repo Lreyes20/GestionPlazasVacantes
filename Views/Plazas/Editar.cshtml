@@ -1,11 +1,9 @@
 ﻿@using GestionPlazasVacantes.Models
-@model GestionPlazasVacantes.Models.PlazaVacante
+@model GestionPlazasVacantes.DTOs.PlazaDto
 
 @{
     ViewData["Title"] = "Editar Plaza Vacante";
 }
-
-
 
 <div class="formulario-plaza">
     <h4><i class="bi bi-pencil-square me-2"></i>Editar Plaza Vacante</h4>
@@ -20,17 +18,12 @@
             <div class="row g-3 align-items-center justify-content-center">
                 <div class="col-md-4">
                     <label asp-for="TipoConcurso"></label>
-                    <select asp-for="TipoConcurso"
-                            class="form-select"
-                            asp-items="Html.GetEnumSelectList<TipoConcursoEnum>()">
-                    </select>
-                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
-                    @* <select asp-for="TipoConcurso" class="form-select" required>
+                    <select asp-for="TipoConcurso" class="form-select">
                         <option value="">Seleccione...</option>
                         <option value="Interno">Interno</option>
                         <option value="Externo">Externo</option>
                     </select>
-                    <span asp-validation-for="TipoConcurso" class="text-danger"></span> *@
+                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-4">
@@ -41,7 +34,7 @@
             </div>
 
             <div id="previewConcurso" class="mt-4">
-                <h5 id="tituloConcurso">CONCURSO @Model.TipoConcurso.ToString().ToUpper() N° @Model.NumeroConcurso</h5>
+                <h5 id="tituloConcurso">CONCURSO @(string.IsNullOrEmpty(Model.TipoConcurso) ? "—" : Model.TipoConcurso.ToUpper()) N° @Model.NumeroConcurso</h5>
                 <p>Requiere contratar los servicios de:</p>
             </div>
         </div>
@@ -109,20 +102,44 @@
         </div>
 
         <!-- Sección 4 -->
+        <!-- DOCUMENTOS DINÁMICOS -->
         <div class="seccion">
-            <h5>4️⃣ Requisitos Especiales</h5>
+            <h5>📎 Documentos requeridos</h5>
 
-            <div class="form-check">
-                <input asp-for="SolicitarColegiatura" class="form-check-input" />
-                <label asp-for="SolicitarColegiatura" class="form-check-label"></label>
+            <div id="documentos-container">
+                @for (int i = 0; i < Model.Documentos.Count; i++)
+                {
+                    <div class="row mb-2 documento-item">
+                        <div class="col-md-6">
+                            <input type="text"
+                                   name="Documentos[@i].Nombre"
+                                   value="@Model.Documentos[i].Nombre"
+                                   class="form-control"
+                                   placeholder="Nombre del documento" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       name="Documentos[@i].Obligatorio"
+                                       class="form-check-input"
+                                       @(Model.Documentos[i].Obligatorio ? "checked" : "") />
+                                <label class="form-check-label">Obligatorio</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-sm eliminar-doc">
+                                ❌
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <div class="form-check">
-                <input asp-for="ColegiaturaObligatoria" class="form-check-input" />
-                <label asp-for="ColegiaturaObligatoria" class="form-check-label"></label>
-            </div>
-
-            <!-- repetir para los demás -->
+            <button type="button" id="agregar-doc" class="btn btn-outline-primary mt-2">
+                ➕ Agregar documento
+            </button>
         </div>
 
         <div class="botones-formulario mt-4">
@@ -139,7 +156,6 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Actualiza el encabezado dinámicamente
         const tipo = document.getElementById('TipoConcurso');
         const numero = document.getElementById('NumeroConcurso');
         const titulo = document.getElementById('tituloConcurso');
@@ -150,7 +166,52 @@
             titulo.textContent = `CONCURSO ${tipoTexto} N° ${numTexto}`;
         }
 
-        tipo.addEventListener('change', actualizarTitulo);
-        numero.addEventListener('input', actualizarTitulo);
+        if (tipo && numero && titulo) {
+            tipo.addEventListener('change', actualizarTitulo);
+            numero.addEventListener('input', actualizarTitulo);
+        }
+
+            let index = @Model.Documentos.Count;
+
+        document.getElementById("agregar-doc").addEventListener("click", function () {
+
+            const container = document.getElementById("documentos-container");
+
+            const html = `
+                <div class="row mb-2 documento-item">
+                    <div class="col-md-6">
+                        <input type="text"
+                               name="Documentos[${index}].Nombre"
+                               class="form-control"
+                               placeholder="Nombre del documento" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   name="Documentos[${index}].Obligatorio"
+                                   class="form-check-input" />
+                            <label class="form-check-label">Obligatorio</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm eliminar-doc">
+                            ❌
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", html);
+
+            index++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("eliminar-doc")) {
+                e.target.closest(".documento-item").remove();
+            }
+        });
     </script>
 }

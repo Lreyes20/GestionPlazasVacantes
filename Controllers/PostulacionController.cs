@@ -87,7 +87,7 @@ namespace GestionPlazasVacantes.Controllers
             }
         }
 
-        // SOLO CAMBIA ESTE MÉTODO, TODO LO DEMÁS QUEDA IGUAL
+        // SOLO SE CAMBIA ESTE MÉTODO, TODO LO DEMÁS QUEDA IGUAL
 
         [HttpPost]
         [AllowAnonymous]
