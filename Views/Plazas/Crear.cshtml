@@ -54,9 +54,26 @@
                     <input asp-for="Titulo" class="form-control" placeholder="Ejemplo: Ingeniero Civil" />
                     <span asp-validation-for="Titulo" class="text-danger"></span>
                 </div>
-                <div class="col-md-6">
+                @* <div class="col-md-6">
                     <label asp-for="Departamento"></label>
                     <input asp-for="Departamento" class="form-control" placeholder="Ejemplo: Obras Públicas" />
+                </div> *@
+                <div class="col-md-6">
+                    <label asp-for="Departamento"></label>
+
+                    <select asp-for="Departamento" class="form-select">
+                        <option value="">Seleccione un departamento...</option>
+                        <option value="Tecnologías de Información">Tecnologías de Información</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="Finanzas">Finanzas</option>
+                        <option value="Operaciones">Operaciones</option>
+                        <option value="Logística">Logística</option>
+                        <option value="Ventas">Ventas</option>
+                        <option value="Compras">Compras</option>
+                        <option value="Legal">Legal</option>
+                        <option value="Mercadeo">Mercadeo</option>
+                    </select>
+
                 </div>
             </div>
         </div>

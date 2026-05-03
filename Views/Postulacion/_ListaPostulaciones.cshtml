@@ -1,0 +1,61 @@
+﻿@model List<GestionPlazasVacantes.Models.Postulante>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning mt-3">
+        No se encontraron postulaciones para esta plaza.
+    </div>
+}
+else
+{
+    <div class="plaza-grid mt-3">
+
+        @foreach (var p in Model)
+        {
+            var estado = p.EstadoProceso?.ToLower() ?? "";
+
+            var claseEstado = estado switch
+            {
+                "en revisión" => "warning",
+                "en proceso" => "info",
+                "aprobado" => "success",
+                "rechazado" => "danger",
+                _ => "secondary"
+            };
+
+            <div class="plaza-card shadow-sm">
+
+                <div class="card-header-institucional">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="~/images/curridabat-logo.jpg" class="logo-mini" />
+                        <small class="text-muted">Municipalidad de Curridabat</small>
+                    </div>
+
+                    <span class="badge bg-@claseEstado px-3 py-2">
+                        @p.EstadoProceso
+                    </span>
+                </div>
+
+                <h5 class="mb-1">@p.PlazaVacante?.Titulo</h5>
+
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+
+                    <a class="btn btn-outline-primary btn-sm"
+                       asp-action="Confirmacion"
+                       asp-route-id="@p.Id">
+                        🔍 Ver detalle
+                    </a>
+
+                    <a class="btn btn-success btn-sm"
+                       href="@($"{ViewBag.ApiBaseUrl}/api/PostulacionPublica/comprobante/{p.Id}")"
+                       target="_blank">
+                        📄 Descargar comprobante
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+}

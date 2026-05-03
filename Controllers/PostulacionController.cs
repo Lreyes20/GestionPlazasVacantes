@@ -335,28 +335,29 @@ namespace GestionPlazasVacantes.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> MisPostulaciones(string cedula)
+        public async Task<IActionResult> MisPostulaciones()
         {
-            if (string.IsNullOrWhiteSpace(cedula))
-                return View(new List<Postulante>());
-
             var client = _httpClientFactory.CreateClient("Api");
 
-            var options = new JsonSerializerOptions
+            //var plazas = await client.GetFromJsonAsync<List<dynamic>>("api/PostulacionPublica/plazas");
+            List<PlazaSimpleDto> plazas = new();
+
+            try
             {
-                PropertyNameCaseInsensitive = true,
-            };
+                var response = await client.GetAsync("api/PostulacionPublica/plazas");
 
-            options.Converters.Add(new JsonStringEnumConverter());
+                if (response.IsSuccessStatusCode)
+                {
+                    plazas = await response.Content.ReadFromJsonAsync<List<PlazaSimpleDto>>();
+                }
+            }
+            catch
+            {
+            }
 
-            var data = await client.GetFromJsonAsync<List<Postulante>>(
-                $"api/PostulacionPublica/mis-postulaciones?cedula={cedula}",
-                options
-            );
+            ViewBag.Plazas = plazas;
 
-            ViewBag.ApiBaseUrl = _configuration["Api:BaseUrl"]?.TrimEnd('/');
-
-            return View(data ?? new List<Postulante>());
+            return View(new List<Postulante>());
         }
 
         public async Task<IActionResult> DescargarComprobantePdf(int id)
@@ -485,6 +486,30 @@ namespace GestionPlazasVacantes.Controllers
                 "application/pdf",
                 $"Comprobante_{modelo.Cedula}_{modelo.Id}.pdf"
             );
+        }
+
+        public async Task<IActionResult> BuscarAjax(string numeroPlaza, string cedula)
+        {
+            var client = _httpClientFactory.CreateClient("Api");
+
+            List<Postulante> data = new();
+
+            try
+            {
+                var response = await client.GetAsync(
+                    $"api/PostulacionPublica/buscar-por-plaza?numeroPlaza={numeroPlaza}&cedula={cedula}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    data = await response.Content.ReadFromJsonAsync<List<Postulante>>(_jsonOptions);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return PartialView("_ListaPostulaciones", data);
         }
     }
 }

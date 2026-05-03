@@ -34,6 +34,27 @@
             margin-left: auto;
             background: #6c757d;
         }
+
+        .sidebar {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar {
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
     </style>
 </head>
 
@@ -126,6 +147,14 @@
                            asp-controller="Asignaciones"
                            asp-action="Index">
                             Asignaciones
+                        </a>
+                    </div>
+
+                    <div class="collapse" id="gestion">
+                        <a class="nav-link @(controller == "MisPostulaciones" ? "active" : "")"
+                           asp-controller="Postulacion"
+                           asp-action="MisPostulaciones">
+                            Buscar postulaciones
                         </a>
                     </div>
 

@@ -110,18 +110,18 @@
                                         @plaza.FechaLimite.ToString("dd/MM/yyyy")
                                         @if (plaza.FechaLimite < DateTime.Now.AddDays(7))
                                         {
-                                            <span class="badge bg-danger ms-1">Próxima</span>
+                                            <span class="badge bg-danger ms-1 text-black">Próxima</span>
                                         }
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">
+                                        <span class="badge bg-secondary text-black">
                                             @plaza.CantidadPostulantes
                                         </span>
                                     </td>
                                     <td>
                                         @if (!string.IsNullOrWhiteSpace(plaza.UsuarioAsignadoNombre))
                                         {
-                                            <span class="badge bg-success">
+                                            <span class="badge bg-success text-white">
                                                 <i class="bi bi-person-check"></i> @plaza.UsuarioAsignadoNombre
                                             </span>
                                         }

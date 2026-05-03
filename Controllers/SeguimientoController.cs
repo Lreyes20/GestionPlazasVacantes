@@ -57,7 +57,12 @@ namespace GestionPlazasVacantes.Controllers
             ViewBag.Plaza = data.Plaza;
             ViewBag.Seguimientos = data.Seguimientos;
 
-            return View(data.Postulantes);
+            var postulantesActivos = data.Postulantes
+                .Where(p => p.EstadoProceso != "Descartado")
+                .ToList();
+
+            return View(postulantesActivos);
+            //return View(data.Postulantes);
         }
 
         // 🧾 Detalle individual de un postulante

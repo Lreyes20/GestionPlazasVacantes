@@ -72,7 +72,7 @@
                                     <span class="badge bg-info mb-1">
                                         <i class="bi bi-gear"></i> Técnica: @(s?.NotaPruebaTecnica?.ToString("0.0") ?? "-")
                                     </span>
-                                    <span class="badge bg-secondary">
+                                    <span class="badge bg-success text-white">
                                         <i class="bi bi-brain"></i> Psico: @(s?.NotaPsicometrica?.ToString("0.0") ?? "-")
                                     </span>
                                 </div>
@@ -93,20 +93,46 @@
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning px-2 py-1">
-                                        <i class="bi bi-hourglass-split"></i> En proceso
+                                    <span class="badge bg-warning px-2 py-1 text-black">
+                                        <i class="bi bi-hourglass-split text-black"></i> En proceso
                                     </span>
                                 }
                             </td>
 
                             <td>@p.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</td>
 
-                            <td>
+                            @* <td>
                                 <a asp-controller="Seguimiento" asp-action="Detalle" asp-route-id="@p.Id"
                                    class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-eye"></i> Revisar
                                 </a>
+                            </td> *@
+
+                            <td class="d-flex gap-2">
+
+                                <!-- Ver detalle -->
+                                <a asp-controller="Seguimiento" asp-action="Detalle" asp-route-id="@p.Id"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <!-- ❌ Descartar -->
+                                <form asp-action="Descartar" asp-controller="Seguimiento" method="post"
+                                      onsubmit="return confirmarDescarte();">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="postulanteId" value="@p.Id" />
+
+                                    <input type="hidden" name="motivo" value="Descartado desde lista" />
+
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+
                             </td>
+
                         </tr>
                     }
                 </tbody>
@@ -121,3 +147,9 @@
         </a>
     </div>
 </div>
+
+<script>
+    function confirmarDescarte() {
+        return confirm("¿Seguro que deseas descartar este postulante?");
+    }
+</script>
