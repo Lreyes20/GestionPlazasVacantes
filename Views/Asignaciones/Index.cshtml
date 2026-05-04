@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Asignación de Plazas";
     var colaboradores = ViewBag.Colaboradores as List<GestionPlazasVacantes.DTOs.UsuarioDto>;
+    var esJefe = User.IsInRole("Jefe");
 }
 
 <div class="container-fluid py-4">
@@ -91,7 +92,10 @@
                                 <th>Fecha Límite</th>
                                 <th>Postulantes</th>
                                 <th>Asignado a</th>
-                                <th style="width: 250px;">Acciones</th>
+                                @if (esJefe)
+                                {
+                                    <th style="width: 250px;">Acciones</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -132,41 +136,44 @@
                                             </span>
                                         }
                                     </td>
-                                    <td>
-                                        <form method="post" class="d-flex gap-2 align-items-center">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="plazaId" value="@plaza.Id" />
-                                            
-                                            <select name="usuarioId" class="form-select form-select-sm" style="width: 150px;">
-                                                <option value="">Seleccionar...</option>
-                                                @foreach (var colaborador in colaboradores ?? new List<GestionPlazasVacantes.DTOs.UsuarioDto>())
-                                                {
-                                                    var isSelected = plaza.UsuarioAsignadoId == colaborador.Id;
-                                                    <option value="@colaborador.Id" selected="@isSelected">
-                                                        @colaborador.Nombre
-                                                    </option>
-                                                }
-                                            </select>
-                                            
-                                            <button type="submit" 
-                                                    formaction="@Url.Action("AsignarPlaza")" 
-                                                    class="btn btn-sm btn-primary"
-                                                    title="Asignar">
-                                                <i class="bi bi-check-lg"></i>
-                                            </button>
-                                            
-                                            @if (plaza.UsuarioAsignadoId != null)
-                                            {
-                                                <button type="submit" 
-                                                        formaction="@Url.Action("RemoverAsignacion")" 
-                                                        class="btn btn-sm btn-danger"
-                                                        title="Remover asignación"
-                                                        onclick="return confirm('¿Está seguro de remover la asignación de esta plaza?');">
-                                                    <i class="bi bi-x-lg"></i>
+                                    @if (esJefe)
+                                    {
+                                        <td>
+                                            <form method="post" class="d-flex gap-2 align-items-center">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="plazaId" value="@plaza.Id" />
+
+                                                <select name="usuarioId" class="form-select form-select-sm" style="width: 150px;">
+                                                    <option value="">Seleccionar...</option>
+                                                    @foreach (var colaborador in colaboradores ?? new List<GestionPlazasVacantes.DTOs.UsuarioDto>())
+                                                    {
+                                                        var isSelected = plaza.UsuarioAsignadoId == colaborador.Id;
+                                                        <option value="@colaborador.Id" selected="@isSelected">
+                                                            @colaborador.Nombre
+                                                        </option>
+                                                    }
+                                                </select>
+
+                                                <button type="submit"
+                                                        formaction="@Url.Action("AsignarPlaza")"
+                                                        class="btn btn-sm btn-primary"
+                                                        title="Asignar">
+                                                    <i class="bi bi-check-lg"></i>
                                                 </button>
-                                            }
-                                        </form>
-                                    </td>
+
+                                                @if (plaza.UsuarioAsignadoId != null)
+                                                {
+                                                    <button type="submit"
+                                                            formaction="@Url.Action("RemoverAsignacion")"
+                                                            class="btn btn-sm btn-danger"
+                                                            title="Remover asignación"
+                                                            onclick="return confirm('¿Está seguro de remover la asignación de esta plaza?');">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
+                                                }
+                                            </form>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>

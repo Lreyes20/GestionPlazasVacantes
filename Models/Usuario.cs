@@ -56,5 +56,6 @@ namespace GestionPlazasVacantes.Models
 
         // Relación con plazas asignadas
         public ICollection<PlazaVacante> PlazasAsignadas { get; set; } = new List<PlazaVacante>();
+        public bool DebeCambiarPassword { get; set; }
     }
 }

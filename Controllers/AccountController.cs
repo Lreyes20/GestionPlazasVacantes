@@ -100,6 +100,11 @@ namespace GestionPlazasVacantes.Controllers
                     AllowRefresh = true
                 });
 
+            if (user.DebeCambiarPassword)
+            {
+                return RedirectToAction("CambiarPassword");
+            }
+
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -123,5 +128,44 @@ namespace GestionPlazasVacantes.Controllers
         /// Vista cuando el usuario no tiene permisos para un recurso.
         /// </summary>
         public IActionResult Denied() => View();
+
+        [HttpGet]
+        public IActionResult CambiarPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CambiarPassword(CambiarPasswordDto dto)
+        {
+            if (dto.NuevaPassword != dto.ConfirmarPassword)
+            {
+                ModelState.AddModelError("", "Las contraseñas no coinciden");
+                return View(dto);
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.NuevaPassword) || dto.NuevaPassword.Length < 6)
+            {
+                ModelState.AddModelError("", "La contraseña debe tener al menos 6 caracteres");
+                return View(dto);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var response = await _apiNoAuth .PutAsJsonAsync(
+                $"api/auth/cambiar-password/{userId}",
+                new { NuevaPassword = dto.NuevaPassword });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Error al cambiar contraseña");
+                return View(dto);
+            }
+
+            // 🔥 IMPORTANTE: quitar el flag
+            HttpContext.Session.SetString("DebeCambiarPassword", "false");
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

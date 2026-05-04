@@ -137,6 +137,7 @@ app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 // Cabeceras seguras + CSP
 //app.Use(async (ctx, next) =>
 //{

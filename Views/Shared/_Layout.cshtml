@@ -109,11 +109,11 @@
                         Crear plaza vacante
                     </a>
 
-                    <a class="nav-link @(controller=="Asignaciones"?"active":"")"
+                    @* <a class="nav-link @(controller=="Asignaciones"?"active":"")"
                        asp-controller="Asignaciones" asp-action="Index">
                         Asignaciones
                         <span class="badge badge-count">@totalAsignaciones</span>
-                    </a>
+                    </a> *@
 
                     <a class="nav-link @(controller=="Plazas" && action=="Index"?"active":"")"
                        asp-controller="Plazas" asp-action="Index">
@@ -147,36 +147,62 @@
                            asp-controller="Asignaciones"
                            asp-action="Index">
                             Asignaciones
+                            <span class="badge badge-count">@totalAsignaciones</span>
                         </a>
                     </div>
 
                     <div class="collapse" id="gestion">
                         <a class="nav-link @(controller == "MisPostulaciones" ? "active" : "")"
                            asp-controller="Postulacion"
-                           asp-action="MisPostulaciones">
+                           asp-action="MisPostulaciones"
+                           target="_blank">
                             Buscar postulaciones
                         </a>
                     </div>
-
                 </div>
 
-                <!-- REPORTERÍA -->
-                <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#reportes">
-                    <i class="bi bi-bar-chart"></i> Reportería
-                </a>
-
-                <div class="collapse @(esReporteria ? "show" : "")" id="reportes">
-
-                    <a class="nav-link @(controller == "Dashboard" ? "active" : "")"
-                       asp-controller="Dashboard" asp-action="Index">
-                        Dashboard
+                @if (User.IsInRole("Jefe"))
+                {
+                    <!-- GESTIÓN ADMINISTRATIVA -->
+                    <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#admin">
+                        <i class="bi bi-gear"></i>Gestión administrativa
                     </a>
 
-                    <a class="nav-link @(controller == "Reportes" ? "active" : "")"
-                       asp-controller="Reportes" asp-action="Index">
-                        Reportes
+                    <div class="collapse @(controller == "Usuarios" ? "show" : "")" id="admin">
+
+                        <a class="nav-link @(controller == "Usuarios" && action == "Index" ? "active" : "")"
+                           asp-controller="Usuarios" asp-action="Index">
+                            Usuarios
+                        </a>
+
+                        <a class="nav-link @(controller == "Usuarios" && action == "Crear" ? "active" : "")"
+                           asp-controller="Usuarios" asp-action="Crear">
+                            Crear usuario
+                        </a>
+
+                    </div>
+                }
+
+                @if (User.IsInRole("Jefe"))
+                {
+                    <!-- REPORTERÍA -->
+                    <a class="nav-link tree-toggle" data-bs-toggle="collapse" href="#reportes">
+                        <i class="bi bi-bar-chart"></i> Reportería
                     </a>
-                </div>
+
+                    <div class="collapse @(esReporteria ? "show" : "")" id="reportes">
+
+                        <a class="nav-link @(controller == "Dashboard" ? "active" : "")"
+                           asp-controller="Dashboard" asp-action="Index">
+                            Dashboard
+                        </a>
+
+                        <a class="nav-link @(controller == "Reportes" ? "active" : "")"
+                           asp-controller="Reportes" asp-action="Index">
+                            Reportes
+                        </a>
+                    </div>
+                }
 
                 <!-- Salir -->
                 <a class="nav-link" asp-controller="Account" asp-action="Logout">

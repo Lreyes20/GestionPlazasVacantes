@@ -1,0 +1,253 @@
+﻿@model List<GestionPlazasVacantes.DTOs.UsuarioDto>
+
+<h3>Usuarios</h3>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var u in Model)
+        {
+            @* <tr> *@
+            <tr class="@(u.Activo ? "" : "table-secondary")">
+                <td>@u.Username</td>
+                <td>@u.Nombre</td>
+
+                <!-- ESTADO VISUAL -->
+                <td>
+                    <span id="estado-@u.Id"
+                          class="badge @(u.Activo ? "bg-success" : "bg-danger") text-black">
+                        @(u.Activo ? "Activo" : "Inactivo")
+                    </span>
+                </td>
+                @* <td>
+                    @if (u.Activo)
+                    {
+                        <span class="badge bg-success text-black">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger text-black">Inactivo</span>
+                    }
+                </td> *@
+
+
+                <td class="d-flex gap-2">
+
+                    <!-- Editar -->
+                    <a asp-action="Editar" asp-route-id="@u.Id"
+                       class="btn btn-sm btn-primary">
+                        ✏️ Editar
+                    </a>
+
+                    <!-- Activar / Desactivar -->
+                    @* <form asp-action="Toggle" method="post"
+                          onsubmit="return confirmarToggle('@u.Username', @u.Activo)">
+                        <input type="hidden" name="id" value="@u.Id" />
+
+                        @if (u.Activo)
+                        {
+                            <button class="btn btn-sm btn-warning">
+                                🔒 Desactivar
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-success">
+                                🔓 Activar
+                            </button>
+                        }
+                    </form> *@
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input toggle-usuario"
+                               type="checkbox"
+                               data-id="@u.Id"
+                               @(u.Activo ? "checked" : "") />
+                        <label class="form-check-label">
+                            @(u.Activo ? "Activo" : "Inactivo")
+                        </label>
+                    </div>
+
+                    <!-- Reset password -->
+                    <button class="btn btn-sm btn-danger"
+                            onclick="abrirModalReset(@u.Id, '@u.Username')">
+                        🔐 Reset Password
+                    </button>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modalReset" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Resetear contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="resetUserId" />
+
+                <div class="mb-2">
+                    <label>Nueva contraseña</label>
+                    <input type="password" id="password1" class="form-control" />
+                </div>
+
+                <div class="mb-2">
+                    <label>Confirmar contraseña</label>
+                    <input type="password" id="password2" class="form-control" />
+                </div>
+
+                <div id="errorReset" class="text-danger"></div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarPassword()">Guardar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let modalReset;
+
+    function abrirModalReset(id, username) {
+        document.getElementById("resetUserId").value = id;
+        document.getElementById("password1").value = "";
+        document.getElementById("password2").value = "";
+        document.getElementById("errorReset").textContent = "";
+
+        modalReset = new bootstrap.Modal(document.getElementById('modalReset'));
+        modalReset.show();
+    }
+
+    async function guardarPassword() {
+
+        const id = document.getElementById("resetUserId").value;
+        const pass1 = document.getElementById("password1").value;
+        const pass2 = document.getElementById("password2").value;
+        const errorDiv = document.getElementById("errorReset");
+
+        // 🔴 VALIDACIONES
+        if (!pass1 || !pass2) {
+            errorDiv.textContent = "Debe completar ambos campos";
+            return;
+        }
+
+        if (pass1 !== pass2) {
+            errorDiv.textContent = "Las contraseñas no coinciden";
+            return;
+        }
+
+        if (pass1.length < 6) {
+            errorDiv.textContent = "La contraseña debe tener al menos 6 caracteres";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Usuarios/ResetPassword`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `id=${id}&nuevaPassword=${encodeURIComponent(pass1)}`
+            });
+
+            if (!response.ok) throw new Error();
+
+            modalReset.hide();
+
+            alert("✅ Contraseña actualizada correctamente");
+
+        } catch {
+            errorDiv.textContent = "Error al actualizar la contraseña";
+        }
+    }
+</script>
+
+@* @section Scripts {
+    <script>
+        document.querySelectorAll('.toggle-usuario').forEach(toggle => {
+
+            toggle.addEventListener('change', async function () {
+
+                const id = this.dataset.id;
+                const estadoAnterior = !this.checked;
+
+                // 🔴 Confirmación
+                const confirmacion = confirm(
+                    this.checked
+                        ? "¿Desea ACTIVAR este usuario?"
+                        : "¿Desea DESACTIVAR este usuario?"
+                );
+
+                if (!confirmacion) {
+                    this.checked = estadoAnterior;
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/Usuarios/Toggle`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `id=${id}`
+                    });
+
+                    if (!response.ok) throw new Error();
+
+                    const label = this.nextElementSibling;
+                    const fila = this.closest("tr");
+                    const badge = document.getElementById(`estado-${id}`);
+
+                    // 🔥 ACTUALIZAR LABEL
+                    label.textContent = this.checked ? "Activo" : "Inactivo";
+
+                    // 🔥 ACTUALIZAR BADGE
+                    badge.textContent = this.checked ? "Activo" : "Inactivo";
+                    badge.classList.remove("bg-success", "bg-danger");
+                    badge.classList.add(this.checked ? "bg-success" : "bg-danger");
+
+                    // 🔥 ACTUALIZAR COLOR DE FILA
+                    fila.classList.remove("table-secondary");
+                    if (!this.checked) {
+                        fila.classList.add("table-secondary");
+                    }
+
+                    // 🔥 FEEDBACK VISUAL
+                    fila.classList.add("table-success");
+                    setTimeout(() => {
+                        fila.classList.remove("table-success");
+                    }, 800);
+
+                } catch {
+                    alert("Error al actualizar el estado");
+                    this.checked = estadoAnterior;
+                }
+            });
+
+        });
+    </script>
+} *@

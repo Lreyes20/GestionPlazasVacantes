@@ -10,6 +10,7 @@
         // 🔐 Tokens
         public string Token { get; set; } = string.Empty;          // Access Token (JWT)
         public string RefreshToken { get; set; } = string.Empty;   // Refresh Token
+        public bool DebeCambiarPassword { get; set; }
     }
 
 }

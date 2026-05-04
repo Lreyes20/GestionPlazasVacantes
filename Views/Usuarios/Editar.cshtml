@@ -1,0 +1,18 @@
+﻿@using GestionPlazasVacantes.DTOs
+@model CrearUsuarioDto
+
+<h3>Editar usuario</h3>
+
+<form method="post">
+
+    <input asp-for="Username" class="form-control mb-2" />
+    <input asp-for="FullName" class="form-control mb-2" />
+
+    <select asp-for="Rol" class="form-select mb-2">
+        <option value="Jefe">Jefe</option>
+        <option value="Colaborador">Colaborador</option>
+    </select>
+
+    <button class="btn btn-primary">Guardar</button>
+
+</form>
