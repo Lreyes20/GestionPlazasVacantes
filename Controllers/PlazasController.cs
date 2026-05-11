@@ -1,5 +1,4 @@
-﻿using Azure;
-using GestionPlazasVacantes.DTOs;
+﻿using GestionPlazasVacantes.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
@@ -30,8 +29,9 @@ namespace GestionPlazasVacantes.Controllers
         }
 
         // GET: Plazas/Crear
-        public IActionResult Crear()
+        public async Task<IActionResult> Crear()
         {
+            await CargarCatalogos();
             return View(new PlazaDto());
         }
 
@@ -41,13 +41,18 @@ namespace GestionPlazasVacantes.Controllers
         public async Task<IActionResult> Crear(PlazaDto plaza)
         {
             if (!ModelState.IsValid)
+            {
+                await CargarCatalogos();
                 return View(plaza);
+            }
 
             var response = await _api.PostAsJsonAsync("api/plazas", plaza);
 
             if (!response.IsSuccessStatusCode)
             {
                 TempData["ErrorMessage"] = "❌ Error al crear la plaza.";
+
+                await CargarCatalogos();
                 return View(plaza);
             }
 
@@ -65,6 +70,8 @@ namespace GestionPlazasVacantes.Controllers
 
             var plaza = await response.Content.ReadFromJsonAsync<PlazaDto>();
 
+            await CargarCatalogos();
+
             return View(plaza);
         }
 
@@ -77,13 +84,29 @@ namespace GestionPlazasVacantes.Controllers
                 return NotFound();
 
             if (!ModelState.IsValid)
+            {
+                await CargarCatalogos();
                 return View(plaza);
+            }
 
             var response = await _api.PutAsJsonAsync($"api/plazas/{id}", plaza);
+            //////////////////////////////////////////////////////////////////////////////////////////////////////
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+
+                TempData["ErrorMessage"] = $"❌ Error al actualizar la plaza: {error}";
+
+                await CargarCatalogos();
+                return View(plaza);
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////
 
             if (!response.IsSuccessStatusCode)
             {
                 TempData["ErrorMessage"] = "❌ Error al actualizar la plaza.";
+
+                await CargarCatalogos();
                 return View(plaza);
             }
 
@@ -136,6 +159,44 @@ namespace GestionPlazasVacantes.Controllers
             ViewBag.Postulantes = data!.Postulantes;
 
             return View(data.Plaza);
+        }
+
+        // =========================================================
+        // 🔥 CARGAR CATÁLOGOS (REUTILIZABLE)
+        // =========================================================
+        private async Task CargarCatalogos()
+        {
+            try
+            {
+                var reqResponse = await _api.GetAsync("api/catalogos/requisitos");
+
+                if (reqResponse.IsSuccessStatusCode)
+                {
+                    ViewBag.RequisitosCatalogo = await reqResponse.Content
+                        .ReadFromJsonAsync<List<CatalogoDto>>();
+                }
+                else
+                {
+                    ViewBag.RequisitosCatalogo = new List<CatalogoDto>();
+                }
+
+                var docResponse = await _api.GetAsync("api/catalogos/documentos");
+
+                if (docResponse.IsSuccessStatusCode)
+                {
+                    ViewBag.DocumentosCatalogo = await docResponse.Content
+                        .ReadFromJsonAsync<List<CatalogoDto>>();
+                }
+                else
+                {
+                    ViewBag.DocumentosCatalogo = new List<CatalogoDto>();
+                }
+            }
+            catch
+            {
+                ViewBag.RequisitosCatalogo = new List<CatalogoDto>();
+                ViewBag.DocumentosCatalogo = new List<CatalogoDto>();
+            }
         }
     }
 }

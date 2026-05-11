@@ -78,8 +78,15 @@ namespace GestionPlazasVacantes.Controllers
                 if (plaza == null)
                     return NotFound();
 
+                // 🔥 IMPORTANTE: asegurar lista para la vista
+                plaza.Documentos ??= new List<DocumentoDto>();
+
                 ViewBag.Plaza = plaza;
-                return View(new Postulante { PlazaVacanteId = id });
+
+                return View(new Postulante
+                {
+                    PlazaVacanteId = id
+                });
             }
             catch
             {
@@ -87,19 +94,14 @@ namespace GestionPlazasVacantes.Controllers
             }
         }
 
-        // SOLO SE CAMBIA ESTE MÉTODO, TODO LO DEMÁS QUEDA IGUAL
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Aplicar(
             Postulante postulante,
             IFormFile? archivoCV,
-            IFormFile? FotoTitulo,
-            IFormFile? FotoColegiatura,
-            IFormFile? FotoLicencia,
-            IFormFile? FotoPermisoArmas,
-            List<IFormFile>? ArchivoTitulos
+            List<IFormFile>? DocumentosSubidos,
+            List<string>? DocumentosNombres
         )
         {
             var client = _httpClientFactory.CreateClient("Api");
@@ -114,6 +116,7 @@ namespace GestionPlazasVacantes.Controllers
                 return RedirectToAction("Index");
             }
 
+            plaza.Documentos ??= new List<DocumentoDto>();
             ViewBag.Plaza = plaza;
 
             if (!ModelState.IsValid)
@@ -137,17 +140,20 @@ namespace GestionPlazasVacantes.Controllers
                 foreach (var prop in typeof(Postulante).GetProperties())
                 {
                     var value = prop.GetValue(postulante);
+
                     if (value != null)
                         content.Add(new StringContent(value.ToString()!), prop.Name);
                 }
 
-                // 🔹 ARCHIVOS
+                // 🔹 FUNCIÓN AUXILIAR
                 void AddFile(IFormFile? file, string name)
                 {
-                    if (file != null)
+                    if (file != null && file.Length > 0)
                     {
                         var stream = file.OpenReadStream();
+
                         var fileContent = new StreamContent(stream);
+
                         fileContent.Headers.ContentType =
                             new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
 
@@ -155,25 +161,44 @@ namespace GestionPlazasVacantes.Controllers
                     }
                 }
 
+                // 🔥 CV
                 AddFile(archivoCV, "archivoCV");
-                AddFile(FotoTitulo, "FotoTitulo");
-                AddFile(FotoColegiatura, "FotoColegiatura");
-                AddFile(FotoLicencia, "FotoLicencia");
-                AddFile(FotoPermisoArmas, "FotoPermisoArmas");
 
-                if (ArchivoTitulos != null)
+                // =====================================================
+                // 🔥 DOCUMENTOS DINÁMICOS
+                // =====================================================
+                if (DocumentosSubidos != null && DocumentosNombres != null)
                 {
-                    foreach (var file in ArchivoTitulos)
-                        AddFile(file, "ArchivoTitulos");
+                    for (int i = 0; i < DocumentosSubidos.Count; i++)
+                    {
+                        var file = DocumentosSubidos[i];
+                        var nombre = DocumentosNombres.ElementAtOrDefault(i);
+
+                        if (file != null && file.Length > 0 && !string.IsNullOrWhiteSpace(nombre))
+                        {
+                            var stream = file.OpenReadStream();
+
+                            var fileContent = new StreamContent(stream);
+
+                            fileContent.Headers.ContentType =
+                                new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                            content.Add(fileContent, "Documentos", file.FileName);
+                            content.Add(new StringContent(nombre.Trim()), "DocumentosNombres");
+                        }
+                    }
                 }
 
                 var response = await client.PostAsync(
-                    "api/PostulacionPublica/postular", content);
+                    "api/PostulacionPublica/postular",
+                    content);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
+
                     TempData["ErrorMessage"] = error;
+
                     return View(postulante);
                 }
 
@@ -184,6 +209,7 @@ namespace GestionPlazasVacantes.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
+
                 return View(postulante);
             }
         }

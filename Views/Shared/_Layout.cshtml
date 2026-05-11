@@ -168,8 +168,9 @@
                         <i class="bi bi-gear"></i>Gestión administrativa
                     </a>
 
-                    <div class="collapse @(controller == "Usuarios" ? "show" : "")" id="admin">
+                    <div class="collapse @(controller == "Usuarios" || controller == "Catalogos" ? "show" : "")" id="admin">
 
+                        <!-- USUARIOS -->
                         <a class="nav-link @(controller == "Usuarios" && action == "Index" ? "active" : "")"
                            asp-controller="Usuarios" asp-action="Index">
                             Usuarios
@@ -178,6 +179,12 @@
                         <a class="nav-link @(controller == "Usuarios" && action == "Crear" ? "active" : "")"
                            asp-controller="Usuarios" asp-action="Crear">
                             Crear usuario
+                        </a>
+
+                        <!-- 🔥 NUEVO: CATÁLOGOS -->
+                        <a class="nav-link @(controller == "Catalogos" && action == "Index" ? "active" : "")"
+                           asp-controller="Catalogos" asp-action="Index">
+                            Catálogos
                         </a>
 
                     </div>

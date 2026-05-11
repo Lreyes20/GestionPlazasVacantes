@@ -1,6 +1,11 @@
 ﻿@model GestionPlazasVacantes.Models.Postulante
+
 @{
     ViewData["Title"] = "Confirmación de Postulación";
+
+    var tieneModelo = Model != null;
+    var plazaTitulo = Model?.PlazaVacante?.Titulo ?? "Plaza Vacante";
+    var numeroConcurso = Model?.PlazaVacante?.NumeroConcurso;
 }
 
 <style>
@@ -113,41 +118,107 @@
                 font-size: 1rem;
             }
     }
+
+    /* ===== IMPRESIÓN ===== */
+    @@media print {
+        body {
+            background: white !important;
+        }
+
+        .confirmacion-container {
+            box-shadow: none !important;
+            margin: 1rem auto !important;
+            border-top: 6px solid #FF8200 !important;
+        }
+
+        .d-print-none {
+            display: none !important;
+        }
+
+        .d-print-block {
+            display: block !important;
+        }
+    }
 </style>
 
 <div class="confirmacion-container">
+
     @if (TempData["ErrorMessage"] != null)
     {
         <div class="icono-exito" style="color:#dc3545;">
             <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
+
         <h2>Hubo un problema con tu postulación</h2>
+
         <p>@TempData["ErrorMessage"]</p>
+    }
+    else if (!tieneModelo)
+    {
+        <div class="icono-exito" style="color:#dc3545;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+
+        <h2>No se pudo cargar la confirmación</h2>
+
+        <p>
+            La postulación fue procesada, pero no fue posible cargar los datos del comprobante.
+        </p>
     }
     else
     {
         <div class="icono-exito d-print-none">
             <i class="bi bi-check-circle-fill"></i>
         </div>
+
         <h2 class="d-print-none">¡Tu postulación fue enviada con éxito!</h2>
-        
-        <!-- COMPROBANTE DE RECIBIDO (Visible en Pantalla e Impresión) -->
+
+        <!-- COMPROBANTE DE RECIBIDO -->
         <div class="text-start mt-4 border p-4 rounded bg-light" id="comprobante-detalles">
+
             <div class="text-center mb-4">
-               <h4 style="color:#FF8200; font-weight:700;">COMPROBANTE DE POSTULACIÓN</h4>
-               <p class="text-muted small">Municipalidad de Curridabat</p>
+                <h4 style="color:#FF8200; font-weight:700;">COMPROBANTE DE POSTULACIÓN</h4>
+                <p class="text-muted small mb-0">Municipalidad de Curridabat</p>
             </div>
-            
+
             <div class="row">
-                <div class="col-6 mb-2"><strong>Fecha:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")</div>
-                <div class="col-6 mb-2"><strong>Cédula:</strong> @Model.Cedula</div>
-                <div class="col-12 mb-2"><strong>Postulante:</strong> @Model.NombreCompleto</div>
-                <div class="col-12 mb-2"><strong>Plaza:</strong> @(Model.PlazaVacante?.Titulo ?? "Plaza Vacante")</div>
-                <div class="col-12 mb-2"><strong>Estado:</strong> <span class="badge bg-success">Recibido</span></div>
+                <div class="col-md-6 mb-2">
+                    <strong>Número de postulación:</strong> #@Model!.Id
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <strong>Fecha:</strong> @Model.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <strong>Cédula:</strong> @Model.Cedula
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <strong>Estado:</strong>
+                    <span class="badge bg-success">Recibido</span>
+                </div>
+
+                <div class="col-12 mb-2">
+                    <strong>Postulante:</strong> @Model.NombreCompleto
+                </div>
+
+                <div class="col-12 mb-2">
+                    <strong>Plaza:</strong> @plazaTitulo
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(numeroConcurso))
+                {
+                    <div class="col-12 mb-2">
+                        <strong>Número de concurso:</strong> @numeroConcurso
+                    </div>
+                }
             </div>
-            
+
             <div class="mt-4 text-center border-top pt-3 d-none d-print-block">
-                <p class="small text-muted">Este documento sirve como comprobante de que su solicitud fue ingresada al sistema.</p>
+                <p class="small text-muted mb-0">
+                    Este documento sirve como comprobante de que su solicitud fue ingresada al sistema.
+                </p>
             </div>
         </div>
 
@@ -155,18 +226,26 @@
             Gracias por aplicar. Tu solicitud ha sido registrada correctamente.
             Conserve este comprobante para sus registros.
         </p>
-        
+
         <div class="d-flex justify-content-center gap-3 mt-4 d-print-none">
-            <button onclick="window.print()" class="btn btn-outline-secondary">
+            <button type="button" onclick="window.print()" class="btn btn-outline-secondary">
                 <i class="bi bi-printer"></i> Imprimir Comprobante
             </button>
+
+            <a asp-controller="Postulacion"
+               asp-action="DescargarComprobantePdf"
+               asp-route-id="@Model.Id"
+               class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+            </a>
         </div>
     }
 
-
-    <a asp-controller="Postulacion" asp-action="Index" class="btn btn-primary">
-        <i class="bi bi-arrow-left-circle"></i> Volver al listado de plazas
-    </a>
+    <div class="d-print-none mt-4">
+        <a asp-controller="Postulacion" asp-action="Index" class="btn btn-primary">
+            <i class="bi bi-arrow-left-circle"></i> Volver al listado de plazas
+        </a>
+    </div>
 
     <p class="text-muted small mt-4">
         Municipalidad de Curridabat · Gestión de Plazas Vacantes © 2025

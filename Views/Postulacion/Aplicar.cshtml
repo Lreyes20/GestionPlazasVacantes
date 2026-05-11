@@ -5,8 +5,6 @@
     Layout = "_Layout";
 }
 
-
-
 <div class="formulario-postulacion">
     <h4><i class="bi bi-person-badge me-2"></i>Formulario de Postulación</h4>
     <p class="subtitle text-center mb-4">Plaza: <strong>@plaza?.Titulo</strong></p>
@@ -17,6 +15,7 @@
             <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
         </div>
     }
+
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success text-center fw-semibold">
@@ -27,32 +26,39 @@
     <form id="formPostulacion" asp-action="Aplicar" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" />
         @Html.AntiForgeryToken()
+
         <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
         <input type="hidden" asp-for="PlazaVacanteId" />
 
         <!-- 🔹 Datos personales -->
         <div class="seccion">
             <h5>1️⃣ Datos Personales</h5>
+
             <div class="row">
                 <div class="col-md-6">
                     <label asp-for="NombreCompleto"></label>
                     <input asp-for="NombreCompleto" class="form-control" required />
                 </div>
+
                 <div class="col-md-6">
                     <label asp-for="Cedula"></label>
                     <input asp-for="Cedula" class="form-control" required />
                 </div>
             </div>
+
             <div class="row mt-2">
                 <div class="col-md-6">
                     <label asp-for="Correo"></label>
                     <input asp-for="Correo" type="email" class="form-control" required />
                 </div>
+
                 <div class="col-md-6">
                     <label asp-for="Telefono"></label>
                     <input asp-for="Telefono" class="form-control" />
                 </div>
             </div>
+
             <div class="row mt-2">
                 <div class="col-12">
                     <label asp-for="Direccion"></label>
@@ -87,6 +93,7 @@
             <textarea asp-for="OtrosDatos" class="form-control" rows="2" placeholder="Cualquier otra información que consideres relevante..."></textarea>
         </div>
 
+        <!-- 🔹 Currículum Vitae -->
         <div class="seccion">
             <h5>📎 Currículum Vitae</h5>
             <p class="text-muted">Podés subir tu currículum en PDF o generarlo automáticamente con los datos del formulario.</p>
@@ -97,63 +104,97 @@
                     <input type="file" name="archivoCV" id="archivoCV" accept=".pdf" class="form-control" />
                     <small class="text-muted">Tamaño máximo: 10 MB</small>
                 </div>
+
                 <div class="col-md-6 text-center">
                     <p class="mb-2"><strong>O bien</strong></p>
+
                     <button type="button" id="btnGenerarCV" class="btn btn-outline-primary">
                         <i class="bi bi-file-earmark-pdf"></i> Generar CV Automático
                     </button>
+
                     <small class="d-block text-muted mt-1">Se generará un PDF con los datos ingresados</small>
                 </div>
             </div>
         </div>
 
-        <!-- 🔹 Documentos requeridos -->
-        @if (plaza != null && (plaza.SolicitarColegiatura || plaza.SolicitarLicencia || plaza.SolicitarPermisoArmas || plaza.SolicitarTitulos))
+        <!-- 🔹 Documentos requeridos dinámicos -->
+        @{
+            var documentosRequeridos = plaza?.Documentos?
+            .Where(d => !string.IsNullOrWhiteSpace(d.Nombre))
+            .GroupBy(d => d.Nombre.Trim().ToLower())
+            .Select(g => g.First())
+            .ToList() ?? new List<GestionPlazasVacantes.DTOs.DocumentoDto>();
+        }
+
+        @if (documentosRequeridos.Any())
         {
             <div class="seccion mt-4">
                 <h5>📚 Documentos Requeridos por la Plaza</h5>
+                <p class="text-muted">
+                    Adjunte únicamente los documentos solicitados para esta plaza.
+                </p>
 
-                @if (plaza.SolicitarColegiatura)
+                @foreach (var doc in documentosRequeridos)
                 {
-                    <label>Número de colegiatura @(plaza.ColegiaturaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="NumeroColegiatura" class="form-control" required="@plaza.ColegiaturaObligatoria" />
-                    <label class="mt-2">Foto del carné del colegio profesional</label>
-                    <input type="file" name="FotoColegiatura" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ColegiaturaObligatoria" />
+                    <div class="card p-3 mb-3 shadow-sm documento-dinamico">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <label class="form-label fw-semibold">
+                                    @doc.Nombre
+
+                                    @if (doc.Obligatorio)
+                                    {
+                                        <span class="badge bg-danger text-dark ms-1">Obligatorio</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary text-dark ms-1">Opcional</span>
+                                    }
+                                </label>
+
+                                <!--
+                                    🔥 Importante:
+                                    Este hidden inicia disabled para que NO se envíe si no hay archivo.
+                                    Se habilita automáticamente cuando el usuario selecciona archivo.
+                                -->
+                                <input type="hidden"
+                                       class="doc-nombre"
+                                       name="DocumentosNombres"
+                                       value="@doc.Nombre"
+                                       disabled />
+
+                                <input type="file"
+                                       name="DocumentosSubidos"
+                                       class="form-control doc-file"
+                                       accept=".jpg,.jpeg,.png,.pdf"
+                                       @(doc.Obligatorio ? "required" : "") />
+
+                                <small class="text-muted">
+                                    Formatos permitidos: JPG, PNG o PDF. Tamaño máximo: 10 MB.
+                                </small>
+                            </div>
+
+                            <div class="col-md-5 mt-3 mt-md-0">
+                                <div class="alert alert-light border mb-0">
+                                    <small>
+                                        <strong>Documento solicitado:</strong><br />
+                                        @doc.Nombre
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 }
-
-                @if (plaza.SolicitarLicencia)
-                {
-                    <label class="mt-3">Tipo de licencia @(plaza.LicenciaObligatoria ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="TipoLicencia" class="form-control" required="@plaza.LicenciaObligatoria" />
-                    <label class="mt-2">Foto de la licencia</label>
-                    <input type="file" name="FotoLicencia" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.LicenciaObligatoria" />
-                }
-
-                @if (plaza.SolicitarPermisoArmas)
-                {
-                    <label class="mt-3">Número de permiso de portación de armas @(plaza.ArmasObligatorio ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input asp-for="NumeroPermisoArmas" class="form-control" required="@plaza.ArmasObligatorio" />
-                    <label class="mt-2">Foto del permiso</label>
-                    <input type="file" name="FotoPermisoArmas" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.ArmasObligatorio" />
-                }
-
-                @if (plaza.SolicitarTitulos)
-                {
-                    <label class="mt-3">Adjuntar títulos o certificaciones @(plaza.TitulosObligatorios ? "(Obligatorio)" : "(Opcional)")</label>
-                    <input type="file" name="ArchivoTitulos" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
-
-                    <label class="mt-2">Foto del título principal</label>
-                    <input type="file" name="FotoTitulo" accept=".jpg,.jpeg,.png,.pdf" class="form-control" required="@plaza.TitulosObligatorios" />
-                }
-
             </div>
         }
 
         <!-- 🔹 Declaración bajo juramento -->
         <div class="seccion mt-4 declaracion">
             <h6 class="fw-bold mb-3"><i class="bi bi-shield-check"></i> Declaración bajo juramento</h6>
+
             <div class="form-check">
                 <input class="form-check-input me-2" type="checkbox" id="declaracionJurada" required />
+
                 <label class="form-check-label" for="declaracionJurada">
                     Declaro bajo juramento que la información brindada en este formulario y los documentos adjuntos es veraz,
                     completa y corresponde a mi persona. Entiendo que cualquier falsedad podrá ser motivo de
@@ -164,7 +205,6 @@
 
         <!-- 🔘 Botones -->
         <div class="botones-formulario mt-4">
-            
             <button type="submit" id="btnEnviar" class="btn btn-primary">
                 <i class="bi bi-send-check"></i> Enviar Postulación
             </button>
@@ -174,15 +214,52 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const btnEnviar = document.getElementById("btnEnviar");
+        const formPostulacion = document.getElementById("formPostulacion");
         const btnGenerarCV = document.getElementById("btnGenerarCV");
 
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB
+
+        // 🔹 Sincronizar documentos dinámicos
+        // Solo se envía el nombre del documento si el usuario adjuntó archivo.
+        function sincronizarDocumentos() {
+            document.querySelectorAll(".documento-dinamico").forEach(item => {
+                const fileInput = item.querySelector(".doc-file");
+                const nombreInput = item.querySelector(".doc-nombre");
+
+                if (!fileInput || !nombreInput) return;
+
+                const tieneArchivo = fileInput.files && fileInput.files.length > 0;
+                nombreInput.disabled = !tieneArchivo;
+            });
+        }
+
+        document.querySelectorAll(".documento-dinamico").forEach(item => {
+            const fileInput = item.querySelector(".doc-file");
+            const nombreInput = item.querySelector(".doc-nombre");
+
+            if (fileInput && nombreInput) {
+                fileInput.addEventListener("change", () => {
+                    const tieneArchivo = fileInput.files && fileInput.files.length > 0;
+                    nombreInput.disabled = !tieneArchivo;
+
+                    if (tieneArchivo && fileInput.files[0].size > maxFileSize) {
+                        alert("⚠️ El archivo seleccionado supera el tamaño máximo permitido de 10 MB.");
+                        fileInput.value = "";
+                        nombreInput.disabled = true;
+                    }
+                });
+            }
+        });
+
         // Validación del formulario principal
-        btnEnviar.addEventListener("click", (e) => {
+        formPostulacion.addEventListener("submit", (e) => {
+            sincronizarDocumentos();
+
             const nombre = document.querySelector('[name="NombreCompleto"]').value.trim();
             const cedula = document.querySelector('[name="Cedula"]').value.trim();
             const correo = document.querySelector('[name="Correo"]').value.trim();
             const check = document.getElementById("declaracionJurada");
+            const archivoCV = document.getElementById("archivoCV");
 
             if (!nombre || !cedula || !correo) {
                 e.preventDefault();
@@ -194,6 +271,31 @@
                 e.preventDefault();
                 alert("⚠️ Debes aceptar la declaración bajo juramento para continuar.");
                 return false;
+            }
+
+            if (archivoCV && archivoCV.files && archivoCV.files.length > 0) {
+                if (archivoCV.files[0].size > maxFileSize) {
+                    e.preventDefault();
+                    alert("⚠️ El currículum supera el tamaño máximo permitido de 10 MB.");
+                    return false;
+                }
+            }
+
+            // 🔹 Validación adicional para documentos obligatorios dinámicos
+            const documentosObligatorios = document.querySelectorAll('.documento-dinamico input[type="file"][required]');
+
+            for (let input of documentosObligatorios) {
+                if (!input.files || input.files.length === 0) {
+                    e.preventDefault();
+                    alert("⚠️ Debes adjuntar todos los documentos obligatorios solicitados por la plaza.");
+                    return false;
+                }
+
+                if (input.files[0].size > maxFileSize) {
+                    e.preventDefault();
+                    alert("⚠️ Uno de los documentos obligatorios supera el tamaño máximo permitido de 10 MB.");
+                    return false;
+                }
             }
         });
 
@@ -214,12 +316,24 @@
             form.target = '_blank';
 
             // Copiar todos los campos del formulario principal
-            const campos = ['NombreCompleto', 'Cedula', 'Correo', 'Telefono', 'Direccion', 
-                           'PerfilProfesional', 'ExperienciaLaboral', 'FormacionAcademica', 
-                           'Habilidades', 'Idiomas', 'FormacionComplementaria', 'OtrosDatos'];
+            const campos = [
+                'NombreCompleto',
+                'Cedula',
+                'Correo',
+                'Telefono',
+                'Direccion',
+                'PerfilProfesional',
+                'ExperienciaLaboral',
+                'FormacionAcademica',
+                'Habilidades',
+                'Idiomas',
+                'FormacionComplementaria',
+                'OtrosDatos'
+            ];
 
             campos.forEach(campo => {
                 const input = document.querySelector(`[name="${campo}"]`);
+
                 if (input && input.value) {
                     const hidden = document.createElement('input');
                     hidden.type = 'hidden';
@@ -231,6 +345,7 @@
 
             // Agregar token antiforgery
             const token = document.querySelector('input[name="__RequestVerificationToken"]');
+
             if (token) {
                 const hiddenToken = document.createElement('input');
                 hiddenToken.type = 'hidden';

@@ -17,40 +17,92 @@ else
             var claseEstado = estado switch
             {
                 "en revisión" => "warning",
+                "en revision" => "warning",
+                "postulado" => "warning",
                 "en proceso" => "info",
                 "aprobado" => "success",
+                "contratado" => "success",
                 "rechazado" => "danger",
+                "descartado" => "danger",
+                "cierre de plaza" => "secondary",
                 _ => "secondary"
             };
+
+            var tituloPlaza = !string.IsNullOrWhiteSpace(p.PlazaVacante?.Titulo)
+            ? p.PlazaVacante.Titulo
+            : "Plaza no disponible";
+
+            var numeroConcurso = !string.IsNullOrWhiteSpace(p.PlazaVacante?.NumeroConcurso)
+            ? p.PlazaVacante.NumeroConcurso
+            : "N/D";
+
+            var apiBaseUrl = ViewBag.ApiBaseUrl as string;
 
             <div class="plaza-card shadow-sm">
 
                 <div class="card-header-institucional">
                     <div class="d-flex align-items-center gap-2">
-                        <img src="~/images/curridabat-logo.jpg" class="logo-mini" />
+                        <img src="~/images/curridabat-logo.jpg"
+                             class="logo-mini"
+                             alt="Municipalidad de Curridabat" />
+
                         <small class="text-muted">Municipalidad de Curridabat</small>
                     </div>
 
                     <span class="badge bg-@claseEstado px-3 py-2">
-                        @p.EstadoProceso
+                        @(string.IsNullOrWhiteSpace(p.EstadoProceso) ? "Sin estado" : p.EstadoProceso)
                     </span>
                 </div>
 
-                <h5 class="mb-1">@p.PlazaVacante?.Titulo</h5>
+                <h5 class="mb-1">@tituloPlaza</h5>
+
+                <p class="text-muted mb-1">
+                    <small>
+                        <strong>Concurso:</strong> @numeroConcurso
+                    </small>
+                </p>
+
+                <p class="text-muted mb-1">
+                    <small>
+                        <strong>Cédula:</strong> @(p.Cedula ?? "N/D")
+                    </small>
+                </p>
+
+                <p class="text-muted mb-1">
+                    <small>
+                        <strong>Postulante:</strong> @(p.NombreCompleto ?? "N/D")
+                    </small>
+                </p>
+
+                <p class="text-muted mb-3">
+                    <small>
+                        <strong>Fecha:</strong> @p.FechaActualizacion.ToString("dd/MM/yyyy hh:mm tt")
+                    </small>
+                </p>
 
                 <div class="mt-4 d-flex gap-2 flex-wrap">
 
                     <a class="btn btn-outline-primary btn-sm"
+                       asp-controller="Postulacion"
                        asp-action="Confirmacion"
                        asp-route-id="@p.Id">
                         🔍 Ver detalle
                     </a>
 
-                    <a class="btn btn-success btn-sm"
-                       href="@($"{ViewBag.ApiBaseUrl}/api/PostulacionPublica/comprobante/{p.Id}")"
-                       target="_blank">
-                        📄 Descargar comprobante
-                    </a>
+                    @if (!string.IsNullOrWhiteSpace(apiBaseUrl))
+                    {
+                        <a class="btn btn-success btn-sm"
+                           href="@($"{apiBaseUrl.TrimEnd('/')}/api/PostulacionPublica/comprobante/{p.Id}")"
+                           target="_blank">
+                            📄 Descargar comprobante
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted small">
+                            Comprobante no disponible
+                        </span>
+                    }
 
                 </div>
 

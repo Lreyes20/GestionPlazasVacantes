@@ -1,0 +1,324 @@
+﻿@model List<GestionPlazasVacantes.DTOs.CatalogoDto>
+
+@{
+    ViewData["Title"] = "Catálogos";
+    var documentos = ViewBag.Documentos as List<GestionPlazasVacantes.DTOs.CatalogoDto>;
+}
+
+<style>
+    .badge {
+        color: black !important;
+    }
+</style>
+
+<h3 class="mb-4">Gestión de Catálogos</h3>
+
+<div class="row">
+
+    <!-- ================= REQUISITOS ================= -->
+    <div class="col-md-6">
+        <h5>Requisitos</h5>
+
+        <div class="d-flex gap-2 mb-3">
+            <input id="inputRequisito" class="form-control" placeholder="Nuevo requisito..." />
+            <button class="btn btn-primary" onclick="crearRequisito()">Agregar</button>
+        </div>
+
+        <table class="table table-sm table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaRequisitos">
+
+                @foreach (var r in Model)
+                {
+                    <tr data-id="@r.Id" data-nombre="@r.Nombre.ToLower()" class="@(r.Activo ? "" : "table-secondary")">
+                        <td>
+                            <span class="nombre-texto">@r.Nombre</span>
+                            <input class="form-control form-control-sm nombre-edit d-none" value="@r.Nombre" />
+                        </td>
+
+                        <td>
+                            <span class="badge @(r.Activo ? "bg-success" : "bg-danger") text-black estado">
+                                @(r.Activo ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+
+                        <td class="d-flex gap-1">
+                            <button class="btn btn-sm btn-secondary" onclick="editarInline(this)">✏️</button>
+                            <button class="btn btn-sm btn-success d-none" onclick="guardarInline(this, 'requisito')">💾</button>
+
+                            <button class="btn btn-sm @(r.Activo ? "btn-warning" : "btn-success")"
+                                    onclick="toggleItem(@r.Id, this, 'requisito')">
+                                @(r.Activo ? "Desactivar" : "Activar")
+                            </button>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ================= DOCUMENTOS ================= -->
+    <div class="col-md-6">
+        <h5>Documentos</h5>
+
+        <div class="d-flex gap-2 mb-3">
+            <input id="inputDocumento" class="form-control" placeholder="Nuevo documento..." />
+            <button class="btn btn-primary" onclick="crearDocumento()">Agregar</button>
+        </div>
+
+        <table class="table table-sm table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaDocumentos">
+
+                @foreach (var d in documentos)
+                {
+                    <tr data-id="@d.Id" data-nombre="@d.Nombre.ToLower()" class="@(d.Activo ? "" : "table-secondary")">
+                        <td>
+                            <span class="nombre-texto">@d.Nombre</span>
+                            <input class="form-control form-control-sm nombre-edit d-none" value="@d.Nombre" />
+                        </td>
+
+                        <td>
+                            <span class="badge @(d.Activo ? "bg-success" : "bg-danger") text-black estado">
+                                @(d.Activo ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+
+                        <td class="d-flex gap-1">
+                            <button class="btn btn-sm btn-secondary" onclick="editarInline(this)">✏️</button>
+                            <button class="btn btn-sm btn-success d-none" onclick="guardarInline(this, 'documento')">💾</button>
+
+                            <button class="btn btn-sm @(d.Activo ? "btn-warning" : "btn-success")"
+                                    onclick="toggleItem(@d.Id, this, 'documento')">
+                                @(d.Activo ? "Desactivar" : "Activar")
+                            </button>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        // =========================
+        // 🚫 VALIDAR DUPLICADOS
+        // =========================
+        function existeNombre(nombre, tablaId) {
+            const rows = document.querySelectorAll(`#${tablaId} tr`);
+            return Array.from(rows).some(r => r.dataset.nombre === nombre.toLowerCase());
+        }
+
+        // =========================
+        // 🔵 CREAR REQUISITO
+        // =========================
+        async function crearRequisito() {
+
+            const input = document.getElementById("inputRequisito");
+            const nombre = input.value.trim();
+
+            if (!nombre) return alert("Ingrese un nombre");
+
+            if (existeNombre(nombre, "tablaRequisitos"))
+                return alert("Ya existe ese requisito");
+
+            const res = await fetch('/Catalogos/CrearRequisito', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre })
+            });
+
+            if (!res.ok) return alert("Error");
+
+            agregarFila(nombre, "tablaRequisitos", "requisito");
+            input.value = "";
+        }
+
+        // =========================
+        // 🟢 CREAR DOCUMENTO
+        // =========================
+        async function crearDocumento() {
+
+            const input = document.getElementById("inputDocumento");
+            const nombre = input.value.trim();
+
+            if (!nombre) return alert("Ingrese un nombre");
+
+            if (existeNombre(nombre, "tablaDocumentos"))
+                return alert("Ya existe ese documento");
+
+            const res = await fetch('/Catalogos/CrearDocumento', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre })
+            });
+
+            if (!res.ok) return alert("Error");
+
+            agregarFila(nombre, "tablaDocumentos", "documento");
+            input.value = "";
+        }
+
+        // =========================
+        // ➕ AGREGAR FILA SIN RELOAD
+        // =========================
+        function agregarFila(nombre, tablaId, tipo) {
+
+            const tabla = document.getElementById(tablaId);
+
+            const row = document.createElement("tr");
+            row.dataset.nombre = nombre.toLowerCase();
+
+            row.innerHTML = `
+                <td>
+                    <span class="nombre-texto">${nombre}</span>
+                    <input class="form-control form-control-sm nombre-edit d-none" value="${nombre}" />
+                </td>
+                <td>
+                    <span class="badge bg-success estado">Activo</span>
+                </td>
+                <td class="d-flex gap-1">
+                    <button class="btn btn-sm btn-secondary" onclick="editarInline(this)">✏️</button>
+                    <button class="btn btn-sm btn-success d-none" onclick="guardarInline(this, '${tipo}')">💾</button>
+                    <button class="btn btn-sm btn-warning" onclick="toggleItem(0, this, '${tipo}')">Desactivar</button>
+                </td>
+            `;
+
+            tabla.prepend(row);
+        }
+
+        // =========================
+        // ✏️ EDITAR INLINE
+        // =========================
+        function editarInline(btn) {
+
+            const row = btn.closest("tr");
+
+            row.querySelector(".nombre-texto").classList.add("d-none");
+            row.querySelector(".nombre-edit").classList.remove("d-none");
+
+            btn.classList.add("d-none");
+            row.querySelector(".btn-success").classList.remove("d-none");
+        }
+
+        // =========================
+        // 💾 GUARDAR INLINE
+        // =========================
+                async function guardarInline(btn, tipo) {
+
+            const row = btn.closest("tr");
+            const id = row.dataset.id;
+            const input = row.querySelector(".nombre-edit");
+            const nuevo = input.value.trim();
+
+            if (!nuevo) return alert("Nombre requerido");
+
+            // 🔥 VALIDAR DUPLICADOS
+            const tablaId = tipo === "requisito" ? "tablaRequisitos" : "tablaDocumentos";
+
+            if (existeNombre(nuevo, tablaId) && nuevo.toLowerCase() !== row.dataset.nombre) {
+                return alert("Ya existe ese nombre");
+            }
+
+            // 🔥 URL CORRECTA (MVC, NO API)
+            const url = tipo === "requisito"
+                ? `/Catalogos/EditarRequisito?id=${id}`
+                : `/Catalogos/EditarDocumento?id=${id}`;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre: nuevo })
+            });
+
+            if (!res.ok) {
+                alert("Error al guardar");
+                return;
+            }
+
+            // 🔥 ACTUALIZAR UI
+            row.querySelector(".nombre-texto").textContent = nuevo;
+            row.dataset.nombre = nuevo.toLowerCase();
+
+            input.classList.add("d-none");
+            row.querySelector(".nombre-texto").classList.remove("d-none");
+
+            btn.classList.add("d-none");
+            row.querySelector(".btn-secondary").classList.remove("d-none");
+        }
+
+        // =========================
+        // 🔄 TOGGLE
+        // =========================
+                async function toggleItem(id, btn, tipo) {
+
+            const url = tipo === "requisito"
+                ? `/Catalogos/ToggleRequisito?id=${id}`
+                : `/Catalogos/ToggleDocumento?id=${id}`;
+
+            try {
+
+                const res = await fetch(url, { method: 'POST' });
+
+                if (!res.ok) {
+                    throw new Error();
+                }
+
+                const row = btn.closest("tr");
+                const badge = row.querySelector(".estado");
+
+                // 🔥 NO dependas del texto → usa clase
+                const esActivo = badge.classList.contains("bg-success");
+
+                if (esActivo) {
+                    badge.textContent = "Inactivo";
+                    badge.classList.remove("bg-success");
+                    badge.classList.add("bg-danger");
+
+                    btn.textContent = "Activar";
+                    btn.classList.remove("btn-warning");
+                    btn.classList.add("btn-success");
+
+                    row.classList.add("table-secondary");
+
+                } else {
+                    badge.textContent = "Activo";
+                    badge.classList.remove("bg-danger");
+                    badge.classList.add("bg-success");
+
+                    btn.textContent = "Desactivar";
+                    btn.classList.remove("btn-success");
+                    btn.classList.add("btn-warning");
+
+                    row.classList.remove("table-secondary");
+                }
+
+                // ✨ feedback visual
+                row.classList.add("table-success");
+                setTimeout(() => row.classList.remove("table-success"), 600);
+
+            } catch {
+                alert("Error al actualizar estado");
+            }
+        }
+
+    </script>
+}

@@ -5,8 +5,9 @@ namespace GestionPlazasVacantes.DTOs
     public class PlazaDto
     {
         public int Id { get; set; }
-        //public TipoConcursoEnum TipoConcurso { get; set; }
-        public string TipoConcurso { get; set; }
+
+        //public string TipoConcurso { get; set; }
+        public TipoConcursoEnum TipoConcursoEnum { get; set; }
 
         public string NumeroConcurso { get; set; } = string.Empty;
         public string Titulo { get; set; } = string.Empty;
@@ -15,8 +16,12 @@ namespace GestionPlazasVacantes.DTOs
         public decimal SalarioGlobal { get; set; }
         public string? Horario { get; set; }
         public DateTime FechaLimite { get; set; }
+
+        // 🔴 SE MANTIENE (compatibilidad)
         public string Requisitos { get; set; } = string.Empty;
+
         public string? Observaciones { get; set; }
+
         public bool Activa { get; set; }
         public DateTime FechaCreacion { get; set; }
 
@@ -28,6 +33,10 @@ namespace GestionPlazasVacantes.DTOs
         public bool ArmasObligatorio { get; set; }
         public bool SolicitarTitulos { get; set; }
         public bool TitulosObligatorios { get; set; }
+
         public List<DocumentoDto> Documentos { get; set; } = new();
+
+        // 🔥 NUEVO (CATÁLOGO)
+        public List<string> RequisitosSeleccionados { get; set; } = new();
     }
 }

@@ -1,9 +1,12 @@
 ﻿@using GestionPlazasVacantes.DTOs
 @model GestionPlazasVacantes.DTOs.DetallePostulanteVM
+
 @{
     var p = Model.Postulante;
     var s = Model.Seguimiento;
     var baseUrl = ViewBag.ApiBaseUrl as string;
+
+    var plaza = p.PlazaVacante;
 
     var etapas = new List<string>
     {
@@ -30,10 +33,40 @@
         return ruta;
     }
 
-    bool EsPdf(string? ruta) => !string.IsNullOrWhiteSpace(ruta) && ruta.ToLower().EndsWith(".pdf");
+    bool EsPdf(string? ruta) =>
+        !string.IsNullOrWhiteSpace(ruta) &&
+        ruta.ToLower().EndsWith(".pdf");
+
+    bool EsImagen(string? ruta)
+    {
+        if (string.IsNullOrWhiteSpace(ruta))
+            return false;
+
+        var lower = ruta.ToLower();
+
+        return lower.EndsWith(".jpg") ||
+               lower.EndsWith(".jpeg") ||
+               lower.EndsWith(".png") ||
+               lower.EndsWith(".webp");
+    }
 
     var archivosDinamicos = Model.Archivos ?? new List<ArchivoDto>();
-    var documentosPlaza = Model.Postulante?.PlazaVacante?.Documentos ?? new List<DocumentoDto>();
+
+    var documentosPlaza = plaza?.Documentos?
+        .Where(d => !string.IsNullOrWhiteSpace(d.Nombre))
+        .GroupBy(d => d.Nombre.Trim().ToLower())
+        .Select(g => g.First())
+        .ToList() ?? new List<DocumentoDto>();
+
+    var tiposDocumentosPlaza = documentosPlaza
+        .Select(d => d.Nombre.Trim().ToLower())
+        .ToList();
+
+    var archivosAdicionales = archivosDinamicos
+        .Where(a =>
+            !string.IsNullOrWhiteSpace(a.Tipo) &&
+            !tiposDocumentosPlaza.Contains(a.Tipo.Trim().ToLower()))
+        .ToList();
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
@@ -43,12 +76,30 @@
     <div class="card mb-4">
         <div class="card-body">
             <h3><i class="bi bi-person-badge"></i> @p.NombreCompleto</h3>
+
             <p class="text-muted mb-1">
-                <i class="bi bi-briefcase"></i> Plaza ID: @p.PlazaVacanteId
+                <i class="bi bi-briefcase"></i>
+                Plaza ID: @p.PlazaVacanteId
             </p>
-            <p class="text-muted">
-                <i class="bi bi-building"></i> Información de plaza no disponible
-            </p>
+
+            @if (plaza != null)
+            {
+                <p class="text-muted">
+                    <i class="bi bi-building"></i>
+                    <strong>Plaza:</strong> @plaza.Titulo
+
+                    @if (!string.IsNullOrWhiteSpace(plaza.Departamento))
+                    {
+                        <span> | <strong>Departamento:</strong> @plaza.Departamento</span>
+                    }
+                </p>
+            }
+            else
+            {
+                <p class="text-muted">
+                    <i class="bi bi-building"></i> Información de plaza no disponible
+                </p>
+            }
 
             <div class="row mt-3">
                 <div class="col-md-6">
@@ -56,6 +107,7 @@
                     <p><i class="bi bi-telephone"></i> <strong>Teléfono:</strong> @(p.Telefono ?? "No registrado")</p>
                     <p><i class="bi bi-person-vcard"></i> <strong>Cédula:</strong> @p.Cedula</p>
                 </div>
+
                 <div class="col-md-6">
                     <p><i class="bi bi-geo-alt"></i> <strong>Dirección:</strong> @(p.Direccion ?? "No registrada")</p>
                     <p><i class="bi bi-calendar-event"></i> <strong>Actualizado:</strong> @p.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</p>
@@ -64,6 +116,7 @@
 
             <!-- DOCUMENTOS -->
             <hr class="my-4" />
+
             <h5 class="fw-bold text-secondary">
                 <i class="bi bi-folder2-open"></i> Documentos Adjuntos
             </h5>
@@ -107,6 +160,11 @@
                     flex-wrap: wrap;
                     margin-top: 8px;
                 }
+
+                .doc-status {
+                    margin-top: 8px;
+                    font-size: 13px;
+                }
             </style>
 
             <div class="documentos-grid mt-3">
@@ -122,17 +180,26 @@
                         if (EsPdf(rutaCv))
                         {
                             <div class="doc-actions">
-                                <a href="@rutaCv" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="@rutaCv" target="_blank" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                </a>
+                            </div>
+                        }
+                        else if (EsImagen(rutaCv))
+                        {
+                            <img src="@rutaCv" class="doc-preview" alt="CV" />
+
+                            <div class="doc-actions">
+                                <a href="@rutaCv" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-image"></i> Ver imagen
                                 </a>
                             </div>
                         }
                         else
                         {
-                            <img src="@rutaCv" class="doc-preview" alt="CV" />
                             <div class="doc-actions">
-                                <a href="@rutaCv" target="_blank" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-image"></i> Ver imagen
+                                <a href="@rutaCv" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-download"></i> Descargar
                                 </a>
                             </div>
                         }
@@ -143,19 +210,29 @@
                     }
                 </div>
 
-                <!-- DOCUMENTOS DINÁMICOS -->
+                <!-- DOCUMENTOS DINÁMICOS DE LA PLAZA -->
                 @if (documentosPlaza.Any())
                 {
                     foreach (var doc in documentosPlaza)
                     {
                         var archivo = archivosDinamicos
-                        .FirstOrDefault(a => a.Tipo != null &&
-                        a.Tipo.Trim().ToLower() == doc.Nombre.Trim().ToLower());
+                        .FirstOrDefault(a =>
+                        !string.IsNullOrWhiteSpace(a.Tipo) &&
+                        a.Tipo.Trim().Equals(doc.Nombre.Trim(), StringComparison.OrdinalIgnoreCase));
 
                         var rutaDinamicaNormalizada = NormalizarRuta(archivo?.Ruta);
 
                         <div class="doc-card">
                             <strong>📎 @doc.Nombre</strong><br />
+
+                            @if (doc.Obligatorio)
+                            {
+                                <span class="badge bg-danger text-dark mt-2">Obligatorio</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary text-dark mt-2">Opcional</span>
+                            }
 
                             @if (!string.IsNullOrEmpty(rutaDinamicaNormalizada))
                             {
@@ -167,19 +244,98 @@
                                         </a>
                                     </div>
                                 }
-                                else
+                                else if (EsImagen(rutaDinamicaNormalizada))
                                 {
                                     <img src="@rutaDinamicaNormalizada" class="doc-preview" alt="@doc.Nombre" />
+
                                     <div class="doc-actions">
                                         <a href="@rutaDinamicaNormalizada" target="_blank" class="btn btn-outline-primary btn-sm">
                                             <i class="bi bi-image"></i> Ver imagen
                                         </a>
                                     </div>
                                 }
+                                else
+                                {
+                                    <div class="doc-actions">
+                                        <a href="@rutaDinamicaNormalizada" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                            <i class="bi bi-download"></i> Descargar
+                                        </a>
+                                    </div>
+                                }
+
+                                <div class="doc-status text-success">
+                                    <i class="bi bi-check-circle"></i> Adjuntado
+                                </div>
                             }
                             else
                             {
-                                <span class="text-muted fst-italic">No adjuntado</span>
+                                if (doc.Obligatorio)
+                                {
+                                    <div class="doc-status text-danger">
+                                        <i class="bi bi-x-circle"></i> No adjuntado
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="doc-status text-muted fst-italic">
+                                        No adjuntado
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="doc-card">
+                        <strong>📎 Documentos adicionales</strong><br />
+                        <span class="text-muted fst-italic">La plaza no tiene documentos configurados.</span>
+                    </div>
+                }
+
+                <!-- ARCHIVOS ADICIONALES NO CONFIGURADOS EN LA PLAZA -->
+                @if (archivosAdicionales.Any())
+                {
+                    foreach (var archivoExtra in archivosAdicionales)
+                    {
+                        var rutaExtra = NormalizarRuta(archivoExtra.Ruta);
+
+                        <div class="doc-card">
+                            <strong>📁 @archivoExtra.Tipo</strong><br />
+                            <span class="badge bg-info text-dark mt-2">Adicional</span>
+
+                            @if (!string.IsNullOrWhiteSpace(rutaExtra))
+                            {
+                                if (EsPdf(rutaExtra))
+                                {
+                                    <div class="doc-actions">
+                                        <a href="@rutaExtra" target="_blank" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                                        </a>
+                                    </div>
+                                }
+                                else if (EsImagen(rutaExtra))
+                                {
+                                    <img src="@rutaExtra" class="doc-preview" alt="@archivoExtra.Tipo" />
+
+                                    <div class="doc-actions">
+                                        <a href="@rutaExtra" target="_blank" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-image"></i> Ver imagen
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="doc-actions">
+                                        <a href="@rutaExtra" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                            <i class="bi bi-download"></i> Descargar
+                                        </a>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">Ruta no disponible</span>
                             }
                         </div>
                     }
@@ -291,49 +447,16 @@
                     <div class="col-md-6">
                         <label class="form-label">Etapa actual</label>
                         <select name="etapa" class="form-select">
-                            @if (s.EtapaActual == "Revisión documental")
+                            @foreach (var etapa in etapas)
                             {
-                                <option value="Revisión documental" selected>Revisión documental</option>
-                            }
-                            else
-                            {
-                                <option value="Revisión documental">Revisión documental</option>
-                            }
-
-                            @if (s.EtapaActual == "Pruebas técnicas")
-                            {
-                                <option value="Pruebas técnicas" selected>Pruebas técnicas</option>
-                            }
-                            else
-                            {
-                                <option value="Pruebas técnicas">Pruebas técnicas</option>
-                            }
-
-                            @if (s.EtapaActual == "Pruebas psicométricas")
-                            {
-                                <option value="Pruebas psicométricas" selected>Pruebas psicométricas</option>
-                            }
-                            else
-                            {
-                                <option value="Pruebas psicométricas">Pruebas psicométricas</option>
-                            }
-
-                            @if (s.EtapaActual == "Entrevista presencial")
-                            {
-                                <option value="Entrevista presencial" selected>Entrevista presencial</option>
-                            }
-                            else
-                            {
-                                <option value="Entrevista presencial">Entrevista presencial</option>
-                            }
-
-                            @if (s.EtapaActual == "Final")
-                            {
-                                <option value="Final" selected>Final</option>
-                            }
-                            else
-                            {
-                                <option value="Final">Final</option>
+                                if (s.EtapaActual == etapa)
+                                {
+                                    <option value="@etapa" selected>@etapa</option>
+                                }
+                                else
+                                {
+                                    <option value="@etapa">@etapa</option>
+                                }
                             }
 
                             @if (s.EtapaActual == "Descartado")

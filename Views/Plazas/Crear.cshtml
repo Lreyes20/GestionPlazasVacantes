@@ -5,8 +5,6 @@
     ViewData["Title"] = "Formulario de Creación de Plaza Vacante";
 }
 
-
-
 <div class="formulario-plaza">
     <h4><i class="bi bi-clipboard2-check me-2"></i>Formulario de Creación de Plaza Vacante</h4>
     <p class="subtitle">Complete los datos solicitados cuidadosamente antes de guardar.</p>
@@ -18,18 +16,12 @@
         <div class="encabezado-concurso">
             <div class="row g-3 align-items-center justify-content-center">
                 <div class="col-md-4">
-                    <label asp-for="TipoConcurso"></label>
-                    <select asp-for="TipoConcurso"
+                    <label asp-for="TipoConcursoEnum"></label>
+                    <select asp-for="TipoConcursoEnum"
                             class="form-select"
                             asp-items="Html.GetEnumSelectList<TipoConcursoEnum>()">
                     </select>
-                    <span asp-validation-for="TipoConcurso" class="text-danger"></span>
-                    @* <select asp-for="TipoConcurso" class="form-select" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Interno">Interno</option>
-                        <option value="Externo">Externo</option>
-                    </select>
-                    <span asp-validation-for="TipoConcurso" class="text-danger"></span> *@
+                    <span asp-validation-for="TipoConcursoEnum" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-4">
@@ -54,13 +46,9 @@
                     <input asp-for="Titulo" class="form-control" placeholder="Ejemplo: Ingeniero Civil" />
                     <span asp-validation-for="Titulo" class="text-danger"></span>
                 </div>
-                @* <div class="col-md-6">
-                    <label asp-for="Departamento"></label>
-                    <input asp-for="Departamento" class="form-control" placeholder="Ejemplo: Obras Públicas" />
-                </div> *@
+
                 <div class="col-md-6">
                     <label asp-for="Departamento"></label>
-
                     <select asp-for="Departamento" class="form-select">
                         <option value="">Seleccione un departamento...</option>
                         <option value="Tecnologías de Información">Tecnologías de Información</option>
@@ -73,7 +61,6 @@
                         <option value="Legal">Legal</option>
                         <option value="Mercadeo">Mercadeo</option>
                     </select>
-
                 </div>
             </div>
         </div>
@@ -81,173 +68,212 @@
         <!-- Sección 2 -->
         <div class="seccion">
             <h5>2️⃣ Condiciones del Puesto</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <label asp-for="SalarioCompuesto"></label>
-                    <input asp-for="SalarioCompuesto" type="number" step="0.01" class="form-control" placeholder="Ejemplo: 850000.50" />
-                    <span asp-validation-for="SalarioCompuesto" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="SalarioGlobal"></label>
-                    <input asp-for="SalarioGlobal" type="number" step="0.01" class="form-control" placeholder="Ejemplo: 1050000.75" />
-                    <span asp-validation-for="SalarioGlobal" class="text-danger"></span>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-md-6">
-                    <label asp-for="Horario"></label>
-                    <input asp-for="Horario" class="form-control" placeholder="Lunes a Viernes, 8:00 a.m. - 4:00 p.m." />
+                    <label asp-for="SalarioCompuesto"></label>
+                    <input asp-for="SalarioCompuesto" type="number" step="0.01" class="form-control" />
                 </div>
+
                 <div class="col-md-6">
-                    <label asp-for="FechaLimite"></label>
-                    <input asp-for="FechaLimite" type="datetime-local" class="form-control" />
-                    <span asp-validation-for="FechaLimite" class="text-danger"></span>
+                    <label asp-for="SalarioGlobal"></label>
+                    <input asp-for="SalarioGlobal" type="number" step="0.01" class="form-control" />
                 </div>
             </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6">
+                    <label asp-for="Horario"></label>
+                    <input asp-for="Horario"
+                           class="form-control"
+                           placeholder="Ej. Lunes a Viernes 8:00am - 5:00pm" />
+                    <span asp-validation-for="Horario" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaLimite"></label>
+                    <input asp-for="FechaLimite"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="FechaLimite" class="text-danger"></span>
+                </div>
+
+            </div>
+
         </div>
 
         <!-- Sección 3 -->
         <div class="seccion">
             <h5>3️⃣ Requisitos y Observaciones</h5>
-            <div class="row">
-                <div class="col-12">
-                    <label asp-for="Requisitos"></label>
-                    <textarea asp-for="Requisitos" class="form-control" rows="5" placeholder="Describa los requisitos principales..."></textarea>
-                    <span asp-validation-for="Requisitos" class="text-danger"></span>
-                </div>
-                <div class="col-12 mt-3">
-                    <label asp-for="Observaciones"></label>
-                    <textarea asp-for="Observaciones" class="form-control" rows="3" placeholder="Ejemplo: Se valorará experiencia en gestión pública."></textarea>
-                </div>
+
+            <label>Requisitos</label>
+
+            <!-- 🔥 FILTRO SIN SELECT2 -->
+            <input type="text"
+                   id="filtroRequisitos"
+                   class="form-control form-control-sm mb-2"
+                   placeholder="🔎 Buscar requisito..." />
+
+            <!-- 🔥 LISTA CON CHECKBOXES UX PRO -->
+            <div id="listaRequisitos"
+                 class="border rounded p-3 bg-light"
+                 style="max-height:260px; overflow-y:auto;">
+
+                @foreach (var r in ViewBag.RequisitosCatalogo as List<GestionPlazasVacantes.DTOs.CatalogoDto>)
+                {
+                    <div class="form-check requisito-item mb-2">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="RequisitosSeleccionados"
+                               value="@r.Nombre"
+                               id="req_@r.Id" />
+
+                        <label class="form-check-label" for="req_@r.Id">
+                            @r.Nombre
+                        </label>
+                    </div>
+                }
+            </div>
+
+            <!-- fallback -->
+            @* <textarea asp-for="Requisitos" class="form-control mt-2"></textarea> *@
+
+            <div class="mt-3">
+                <label asp-for="Observaciones"></label>
+                <textarea asp-for="Observaciones" class="form-control"></textarea>
             </div>
         </div>
 
         <!-- Sección 4 -->
         <div class="seccion">
-            <h5>4️⃣ Documentos que se solicitarán al postulante</h5>
+            <h5>4️⃣ Documentos que se solicitarán</h5>
 
-            <div id="listaDocumentos"></div>
+            @foreach (var d in ViewBag.DocumentosCatalogo as List<GestionPlazasVacantes.DTOs.CatalogoDto>)
+            {
+                <div class="card p-2 mb-2 shadow-sm documento-item">
 
-            <button type="button" class="btn btn-outline-primary mt-3" onclick="agregarDocumento()">
-                <i class="bi bi-plus-circle"></i> Agregar documento
-            </button>
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <!-- 🔥 Checkbox visual, NO se envía directo al modelo -->
+                            <input type="checkbox"
+                                   class="doc-check"
+                                   id="doc_@d.Id" />
+
+                            <label for="doc_@d.Id">
+                                <strong>@d.Nombre</strong>
+                            </label>
+
+                            <!-- 🔥 Campos reales del modelo. Van deshabilitados hasta que se seleccione -->
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos.Index"
+                                   value="@d.Id"
+                                   disabled />
+
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos[@d.Id].Id"
+                                   value="@d.Id"
+                                   disabled />
+
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos[@d.Id].Nombre"
+                                   value="@d.Nombre"
+                                   disabled />
+                        </div>
+
+                        <div>
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos[@d.Id].Obligatorio"
+                                   value="false"
+                                   disabled />
+
+                            <input type="checkbox"
+                                   class="doc-obligatorio doc-field"
+                                   name="Documentos[@d.Id].Obligatorio"
+                                   value="true"
+                                   disabled />
+
+                            <small class="text-danger">Obligatorio</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
         </div>
 
         <div class="botones-formulario mt-4">
-            <button type="reset" class="btn-limpiar">
-                <i class="bi bi-x-circle"></i> Limpiar
-            </button>
             <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check2-circle"></i> Guardar Plaza
+                Guardar Plaza
             </button>
         </div>
     </form>
 </div>
 
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
     <script>
-        // Actualiza el encabezado en tiempo real
-        const tipo = document.getElementById('TipoConcurso');
-        const numero = document.getElementById('NumeroConcurso');
-        const titulo = document.getElementById('tituloConcurso');
+        // 🔥 FILTRO DE REQUISITOS SIN SELECT2
+        const filtroRequisitos = document.getElementById("filtroRequisitos");
 
-        function actualizarTitulo() {
-            const tipoTexto = tipo.value ? tipo.value.toUpperCase() : "—";
-            const numTexto = numero.value || "—";
-            titulo.textContent = `CONCURSO ${tipoTexto} N° ${numTexto}`;
-        }
+        if (filtroRequisitos) {
+            filtroRequisitos.addEventListener("keyup", function () {
+                const filtro = this.value.toLowerCase();
+                const items = document.querySelectorAll(".requisito-item");
 
-        tipo.addEventListener('change', actualizarTitulo);
-        numero.addEventListener('input', actualizarTitulo);
-
-        // Validación visual con Bootstrap
-        (() => {
-            'use strict';
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-            document.querySelector('form').addEventListener('submit', e => {
-                document.querySelectorAll('input[type="number"]').forEach(inp => {
-                    inp.value = inp.value.replace(/,/g, '');
+                items.forEach(item => {
+                    const texto = item.innerText.toLowerCase();
+                    item.style.display = texto.includes(filtro) ? "" : "none";
                 });
             });
-        })();
-
-        // Mostrar/ocultar opciones de documentos según checkboxes
-        // document.getElementById('chkColegiado').addEventListener('change', function() {
-        //     document.getElementById('obliCole').classList.toggle('d-none', !this.checked);
-        // });
-
-        // document.getElementById('chkLicencia').addEventListener('change', function() {
-        //     document.getElementById('obliLic').classList.toggle('d-none', !this.checked);
-        // });
-
-        // document.getElementById('chkArmas').addEventListener('change', function() {
-        //     document.getElementById('obliArmas').classList.toggle('d-none', !this.checked);
-        // });
-
-        // document.getElementById('chkTitulos').addEventListener('change', function() {
-        //     document.getElementById('obliTit').classList.toggle('d-none', !this.checked);
-        //     document.getElementById('divTitulos').classList.toggle('d-none', !this.checked);
-        // });
-
-        let contador = 0;
-
-        function agregarDocumento(nombre = "", obligatorio = false) {
-
-            const container = document.getElementById("listaDocumentos");
-
-                    const html = `
-            <div class="card p-3 mb-2 shadow-sm">
-                <div class="row align-items-center">
-
-                    <div class="col-md-6">
-                        <input type="text"
-                               name="Documentos[${contador}].Nombre"
-                               class="form-control"
-                               required />
-                    </div>
-
-                    <div class="col-md-4 form-check mt-2">
-                        <input type="hidden"
-                               name="Documentos[${contador}].Obligatorio"
-                               value="false" />
-
-                        <input type="checkbox"
-                               name="Documentos[${contador}].Obligatorio"
-                               class="form-check-input"
-                               value="true" />
-
-                        <label class="form-check-label text-danger">
-                            Obligatorio
-                        </label>
-                    </div>
-
-                    <div class="col-md-2 text-end">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="eliminarDocumento(this)">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        `;
-
-            container.insertAdjacentHTML("beforeend", html);
-            contador++;
         }
 
-        function eliminarDocumento(btn) {
-            btn.closest(".card").remove();
-        }
+        // 🔥 DOCUMENTOS DINÁMICOS
+        document.querySelectorAll(".documento-item").forEach(item => {
+
+            const check = item.querySelector(".doc-check");
+            const obligatorio = item.querySelector(".doc-obligatorio");
+            const fields = item.querySelectorAll(".doc-field");
+
+            function sincronizarDocumento() {
+                const seleccionado = check.checked;
+
+                fields.forEach(field => {
+                    field.disabled = !seleccionado;
+                });
+
+                if (!seleccionado) {
+                    obligatorio.checked = false;
+                }
+            }
+
+            check.addEventListener("change", sincronizarDocumento);
+            sincronizarDocumento();
+        });
+
+        // 🔥 VALIDACIÓN DOCUMENTOS
+        document.querySelector("form").addEventListener("submit", function (e) {
+
+            const items = document.querySelectorAll(".documento-item");
+
+            for (let item of items) {
+
+                const seleccionado = item.querySelector(".doc-check");
+                const obligatorio = item.querySelector(".doc-obligatorio");
+
+                if (obligatorio.checked && !seleccionado.checked) {
+                    e.preventDefault();
+                    alert("⚠️ Hay documentos obligatorios que no están seleccionados.");
+                    return;
+                }
+            }
+        });
     </script>
 }
