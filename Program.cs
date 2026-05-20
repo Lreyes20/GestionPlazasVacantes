@@ -72,13 +72,13 @@ builder.Services.AddTransient<JwtAuthorizationHandler>();
 // Cliente sin auth, por si lo ocupas
 builder.Services.AddHttpClient("ApiNoAuth", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:44330/");
+    client.BaseAddress = new Uri("http://localhost:5132/");
 });
 
 // Cliente principal API
 builder.Services.AddHttpClient("Api", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:44330/");
+    client.BaseAddress = new Uri("http://localhost:5132/");
 })
 .AddHttpMessageHandler<GestionPlazasVacantes.Services.JwtDelegatingHandler>();
 
@@ -106,18 +106,15 @@ app.Use(async (ctx, next) =>
 
     ctx.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
-        "img-src 'self' https://localhost:44330 data:; " +
+        "img-src 'self' http://localhost:5132 data:; " +
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
         "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
-        "connect-src 'self' https://localhost:44330; " +
+        "connect-src 'self' http://localhost:5132; " +
         "frame-ancestors 'none'; base-uri 'self';";
 
     await next();
 });
-
-var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine("CONNECTION STRING = " + (cs ?? "NULL"));
 
 // Inicializar datos de prueba
 //using (var scope = app.Services.CreateScope())

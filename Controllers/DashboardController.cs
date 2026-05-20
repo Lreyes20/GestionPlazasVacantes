@@ -20,10 +20,23 @@ namespace GestionPlazasVacantes.Controllers
         [HttpGet]
         public async Task<IActionResult> Counts(string groupBy = "plaza")
         {
-            var data = await _api.GetFromJsonAsync<List<DashboardCountDto>>(
-                $"api/dashboard/counts?groupBy={groupBy}");
+            try
+            {
+                var response = await _api.GetAsync(
+                    $"api/dashboard/counts?groupBy={groupBy}");
 
-            return Json(data ?? new());
+                if (!response.IsSuccessStatusCode)
+                    return Json(new List<DashboardCountDto>());
+
+                var data = await response.Content
+                    .ReadFromJsonAsync<List<DashboardCountDto>>();
+
+                return Json(data ?? new());
+            }
+            catch (Exception)
+            {
+                return Json(new List<DashboardCountDto>());
+            }
         }
     }
 }

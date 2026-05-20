@@ -6,11 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPlazas = document.getElementById('totalPlazas');
     const totalPostulantes = document.getElementById('totalPostulantes');
     const ultimaActualizacion = document.getElementById('ultimaActualizacion');
-    const baseUrl = window.dashboardCountsUrl || '/Dashboard/Counts';
-    const url = `${baseUrl}?groupBy=${groupBy()}`;
-
 
     let timer = null;
+    let cachedData = []; // Cache para filtrado client-side
 
     // Si no estamos en el dashboard, no hacemos nada
     if (!cards || !q || !refresh || !totalPlazas || !totalPostulantes || !ultimaActualizacion) {
@@ -35,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res = await fetch(url, {
                 cache: 'no-store',
-                credentials: 'include'   // no hace daño, y manda cookies igual
+                credentials: 'include'
             });
 
             console.log("Dashboard → status:", res.status);
@@ -53,15 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error("La respuesta no es un arreglo.");
             }
 
-            render(data);
-            updateSummary(data);
+            cachedData = data;       // Guardar en cache
+            render(cachedData);      // Renderizar con filtro actual
+            updateSummary(cachedData);
         } catch (err) {
             console.error("❌ Error cargando datos del Dashboard:", err);
             cards.innerHTML = `<div class="alert alert-danger w-100 text-center">Error al cargar datos del servidor.</div>`;
         }
     }
-
-
 
     function updateSummary(items) {
         const nPlazas = items.length;
@@ -103,15 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="badge-soft">
                             <i class="bi bi-bullseye"></i> ${fmt(x.plazasActivas)} plaza(s)
                         </span>
-                        <!-- Por ahora sin botón de Ver/Postulantes para evitar más variables -->
                     </div>
                 `;
                 cards.appendChild(el);
             });
     }
 
-    // Eventos
-    q.addEventListener('input', () => loadData());
+    // Búsqueda: filtrar client-side (no re-fetch al servidor)
+    q.addEventListener('input', () => render(cachedData));
+
+    // Cambio de agrupación: sí requiere re-fetch
     document.querySelectorAll('input[name="groupBy"]').forEach(r =>
         r.addEventListener('change', loadData)
     );

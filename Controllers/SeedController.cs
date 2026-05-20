@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GestionPlazasVacantes.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Jefe")]
     public class SeedController : Controller
     {
         private readonly AppDbContext _context;
