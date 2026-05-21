@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using GestionPlazasVacantes.DTOs;
+using GestionPlazasVacantes.Helpers;
 using GestionPlazasVacantes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -211,116 +212,98 @@ public class PlazasInternasController : Controller
 
         QuestPDF.Settings.License = LicenseType.Community;
 
-        // 🔥 FIX LOGO (CORRECTO EN MVC)
         var logoPath = Path.Combine(_env.WebRootPath, "images", "logo.png");
 
         var document = Document.Create(container =>
         {
             container.Page(page =>
             {
-                page.Margin(40);
+                page.MarginTop(40);
+                page.MarginBottom(40);
+                page.MarginLeft(30);
+                page.MarginRight(30);
+
+                // 🔶 HEADER INSTITUCIONAL
+                page.Header().Element(h => h.DocumentHeader(logoPath, "CURRÍCULUM VITAE"));
 
                 page.Content().Column(col =>
                 {
-                    col.Spacing(15);
+                    col.Spacing(10);
 
-                    // 🔷 HEADER INSTITUCIONAL
-                    col.Item().Row(row =>
-                    {
-                        if (System.IO.File.Exists(logoPath))
-                            row.ConstantItem(80).Height(80).Image(logoPath);
-
-                        row.RelativeItem().AlignRight().Column(c =>
+                    // ═══ NOMBRE DESTACADO ═══
+                    col.Item().Background(PdfHelper.BlueLight)
+                        .Padding(15)
+                        .Column(nameCol =>
                         {
-                            c.Item().Text("CURRÍCULUM VITAE")
-                                .FontSize(20)
-                                .Bold()
-                                .FontColor(Colors.Blue.Darken2);
-
-                            c.Item().Text("Municipalidad de Curridabat")
-                                .FontSize(12)
-                                .FontColor(Colors.Grey.Darken1);
+                            nameCol.Item().Text(modelo.NombreCompleto)
+                                .FontSize(20).Bold().FontColor(PdfHelper.Blue);
+                            nameCol.Item().Text($"Cédula: {modelo.Cedula}")
+                                .FontSize(11).FontColor(PdfHelper.DarkGrey);
                         });
+
+                    // ═══ DATOS DE CONTACTO ═══
+                    col.Item().DataCard().Column(contact =>
+                    {
+                        contact.Spacing(6);
+                        contact.Item().InfoRow("Correo", modelo.Correo);
+                        contact.Item().InfoRow("Teléfono", modelo.Telefono);
+                        contact.Item().InfoRow("Dirección", modelo.Direccion);
                     });
 
-                    // 🔥 LÍNEA CORPORATIVA (TE FALTABA)
-                    col.Item().LineHorizontal(2)
-                        .LineColor(Colors.Blue.Darken2);
+                    // ═══ SECCIONES CV ═══
+                    void CvSection(string titulo, string? contenido)
+                    {
+                        if (string.IsNullOrWhiteSpace(contenido))
+                            return;
 
-                    // 🔷 CAJA PRINCIPAL
-                    col.Item().Border(1)
-                        .BorderColor(Colors.Grey.Lighten2)
-                        .Background(Colors.Grey.Lighten5)
-                        .Padding(20)
-                        .Column(main =>
+                        col.Item().PaddingTop(8).SectionTitle(titulo);
+                        col.Item().PaddingTop(4).Text(contenido)
+                            .FontSize(10).FontColor(PdfHelper.DarkGrey);
+                    }
+
+                    CvSection("Perfil Profesional", modelo.PerfilProfesional);
+                    CvSection("Experiencia Laboral", modelo.ExperienciaLaboral);
+                    CvSection("Formación Académica", modelo.FormacionAcademica);
+
+                    // ═══ HABILIDADES E IDIOMAS EN DOS COLUMNAS ═══
+                    if (!string.IsNullOrWhiteSpace(modelo.Habilidades) ||
+                        !string.IsNullOrWhiteSpace(modelo.Idiomas))
+                    {
+                        col.Item().PaddingTop(8).Row(row =>
                         {
-                            main.Spacing(12);
-
-                            // 👤 NOMBRE DESTACADO
-                            main.Item().Text(modelo.NombreCompleto)
-                                .FontSize(16)
-                                .Bold();
-
-                            // 📌 DATOS
-                            main.Item().Text($"Cédula: {modelo.Cedula}");
-                            main.Item().Text($"Correo: {modelo.Correo}");
-                            main.Item().Text($"Teléfono: {modelo.Telefono}");
-                            main.Item().Text($"Dirección: {modelo.Direccion}");
-
-                            main.Item().PaddingVertical(5)
-                                .LineHorizontal(1);
-
-                            // 🔷 FUNCIÓN SECCIONES
-                            void Sec(string titulo, string? contenido)
+                            if (!string.IsNullOrWhiteSpace(modelo.Habilidades))
                             {
-                                if (string.IsNullOrWhiteSpace(contenido))
-                                    return;
-
-                                main.Item().PaddingTop(10).Column(sec =>
+                                row.RelativeItem().PaddingRight(5).Column(c =>
                                 {
-                                    sec.Item().Text(titulo)
-                                        .FontSize(12)
-                                        .Bold()
-                                        .FontColor(Colors.Blue.Darken2);
-
-                                    sec.Item().LineHorizontal(1)
-                                        .LineColor(Colors.Grey.Lighten2);
-
-                                    sec.Item().PaddingTop(5)
-                                        .Text(contenido)
-                                        .FontSize(11);
+                                    c.Item().SectionTitle("Habilidades");
+                                    c.Item().PaddingTop(4).Text(modelo.Habilidades)
+                                        .FontSize(10).FontColor(PdfHelper.DarkGrey);
                                 });
                             }
 
-                            // 🔥 SECCIONES CV
-                            Sec("Perfil Profesional", modelo.PerfilProfesional);
-                            Sec("Experiencia Laboral", modelo.ExperienciaLaboral);
-                            Sec("Formación Académica", modelo.FormacionAcademica);
-                            Sec("Habilidades", modelo.Habilidades);
-                            Sec("Idiomas", modelo.Idiomas);
-                            Sec("Formación Complementaria", modelo.FormacionComplementaria);
-                            Sec("Otros Datos", modelo.OtrosDatos);
+                            if (!string.IsNullOrWhiteSpace(modelo.Idiomas))
+                            {
+                                row.RelativeItem().PaddingLeft(5).Column(c =>
+                                {
+                                    c.Item().SectionTitle("Idiomas");
+                                    c.Item().PaddingTop(4).Text(modelo.Idiomas)
+                                        .FontSize(10).FontColor(PdfHelper.DarkGrey);
+                                });
+                            }
                         });
+                    }
 
-                    // 🔻 TEXTO FINAL
-                    col.Item().PaddingTop(10).Text(
-                        "Documento generado automáticamente por el sistema institucional.")
-                        .FontSize(9)
-                        .FontColor(Colors.Grey.Darken1);
+                    CvSection("Formación Complementaria", modelo.FormacionComplementaria);
+                    CvSection("Otros Datos", modelo.OtrosDatos);
+
+                    // ═══ DISCLAIMER ═══
+                    col.Item().LegalText(
+                        "Documento generado automáticamente por el sistema institucional. " +
+                        "La información contenida es responsabilidad del postulante.");
                 });
 
-                // 🔻 FOOTER
-                page.Footer().AlignCenter().Text(txt =>
-                {
-                    txt.Span("Generado automáticamente - ")
-                        .FontSize(9)
-                        .FontColor(Colors.Grey.Darken1);
-
-                    txt.Span(DateTime.Now.ToString("dd/MM/yyyy"))
-                        .Bold()
-                        .FontSize(9)
-                        .FontColor(Colors.Grey.Darken1);
-                });
+                // 🔻 FOOTER PROFESIONAL
+                page.Footer().PaddingTop(10).Element(f => f.DocumentFooter());
             });
         });
 
@@ -335,7 +318,7 @@ public class PlazasInternasController : Controller
     }
 
 
-    [HttpPost("GenerarCVPrevia")]
+    [HttpPost]
     public IActionResult GenerarCVPrevia(
         string NombreCompleto,
         string Cedula,
@@ -351,91 +334,100 @@ public class PlazasInternasController : Controller
         string? OtrosDatos
     )
     {
-        Console.WriteLine("LLEGÓ AL API");
-        Console.WriteLine(NombreCompleto);
-        Console.WriteLine(Cedula);
-        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        var logoPath = Path.Combine(_env.WebRootPath, "images", "logo.png");
 
         var pdf = Document.Create(container =>
         {
             container.Page(page =>
             {
-                page.Margin(30);
+                page.MarginTop(40);
+                page.MarginBottom(40);
+                page.MarginLeft(30);
+                page.MarginRight(30);
+
+                // 🔶 HEADER INSTITUCIONAL
+                page.Header().Element(h => h.DocumentHeader(logoPath, "CURRÍCULUM VITAE"));
 
                 page.Content().Column(col =>
                 {
-                    // 🔷 HEADER CON LOGO
-                    col.Item().Row(row =>
-                    {
-                        row.ConstantItem(80).Height(60).Image(logoPath);
+                    col.Spacing(10);
 
-                        row.RelativeItem().Column(c =>
+                    // ═══ NOMBRE DESTACADO ═══
+                    col.Item().Background(PdfHelper.BlueLight)
+                        .Padding(15)
+                        .Column(nameCol =>
                         {
-                            c.Item().AlignRight().Text(NombreCompleto)
-                                .FontSize(20).Bold();
-
-                            c.Item().AlignRight().Text($"Cédula: {Cedula}")
-                                .FontSize(10).FontColor(Colors.Grey.Darken1);
+                            nameCol.Item().Text(NombreCompleto)
+                                .FontSize(20).Bold().FontColor(PdfHelper.Blue);
+                            nameCol.Item().Text($"Cédula: {Cedula}")
+                                .FontSize(11).FontColor(PdfHelper.DarkGrey);
                         });
+
+                    // ═══ DATOS DE CONTACTO ═══
+                    col.Item().DataCard().Column(contact =>
+                    {
+                        contact.Spacing(6);
+                        contact.Item().InfoRow("Correo", Correo);
+                        contact.Item().InfoRow("Teléfono", Telefono);
+                        contact.Item().InfoRow("Dirección", Direccion);
                     });
 
-                    col.Item().PaddingVertical(5).LineHorizontal(1);
-
-                    // 🔷 CONTACTO
-                    col.Item().PaddingTop(5).Text(text =>
+                    // ═══ SECCIONES CV ═══
+                    void CvSection(string titulo, string? contenido)
                     {
-                        text.Span("Correo: ").SemiBold();
-                        text.Span(Correo ?? "");
-                    });
+                        if (string.IsNullOrWhiteSpace(contenido))
+                            return;
 
-                    col.Item().Text(text =>
-                    {
-                        text.Span("Teléfono: ").SemiBold();
-                        text.Span(Telefono ?? "");
-                    });
-
-                    col.Item().Text(text =>
-                    {
-                        text.Span("Dirección: ").SemiBold();
-                        text.Span(Direccion ?? "");
-                    });
-
-                    // 🔷 SECCIONES
-                    void Seccion(string titulo, string? contenido)
-                    {
-                        col.Item().PaddingTop(10).Text(titulo)
-                            .FontSize(14).Bold().FontColor(Colors.Blue.Darken2);
-
-                        col.Item().LineHorizontal(1);
-
-                        col.Item().Text(contenido ?? "").FontSize(10);
+                        col.Item().PaddingTop(8).SectionTitle(titulo);
+                        col.Item().PaddingTop(4).Text(contenido)
+                            .FontSize(10).FontColor(PdfHelper.DarkGrey);
                     }
 
-                    Seccion("Perfil Profesional", PerfilProfesional);
-                    Seccion("Experiencia Laboral", ExperienciaLaboral);
-                    Seccion("Formación Académica", FormacionAcademica);
+                    CvSection("Perfil Profesional", PerfilProfesional);
+                    CvSection("Experiencia Laboral", ExperienciaLaboral);
+                    CvSection("Formación Académica", FormacionAcademica);
 
-                    // 🔷 DOS COLUMNAS
-                    col.Item().PaddingTop(10).Row(row =>
+                    // ═══ HABILIDADES E IDIOMAS EN DOS COLUMNAS ═══
+                    if (!string.IsNullOrWhiteSpace(Habilidades) ||
+                        !string.IsNullOrWhiteSpace(Idiomas))
                     {
-                        row.RelativeItem().Column(c =>
+                        col.Item().PaddingTop(8).Row(row =>
                         {
-                            c.Item().Text("Habilidades").Bold();
-                            c.Item().LineHorizontal(1);
-                            c.Item().Text(Habilidades ?? "").FontSize(10);
-                        });
+                            if (!string.IsNullOrWhiteSpace(Habilidades))
+                            {
+                                row.RelativeItem().PaddingRight(5).Column(c =>
+                                {
+                                    c.Item().SectionTitle("Habilidades");
+                                    c.Item().PaddingTop(4).Text(Habilidades)
+                                        .FontSize(10).FontColor(PdfHelper.DarkGrey);
+                                });
+                            }
 
-                        row.RelativeItem().Column(c =>
-                        {
-                            c.Item().Text("Idiomas").Bold();
-                            c.Item().LineHorizontal(1);
-                            c.Item().Text(Idiomas ?? "").FontSize(10);
+                            if (!string.IsNullOrWhiteSpace(Idiomas))
+                            {
+                                row.RelativeItem().PaddingLeft(5).Column(c =>
+                                {
+                                    c.Item().SectionTitle("Idiomas");
+                                    c.Item().PaddingTop(4).Text(Idiomas)
+                                        .FontSize(10).FontColor(PdfHelper.DarkGrey);
+                                });
+                            }
                         });
-                    });
+                    }
 
-                    Seccion("Formación Complementaria", FormacionComplementaria);
-                    Seccion("Otros Datos", OtrosDatos);
+                    CvSection("Formación Complementaria", FormacionComplementaria);
+                    CvSection("Otros Datos", OtrosDatos);
+
+                    // ═══ DISCLAIMER ═══
+                    col.Item().LegalText(
+                        "Documento generado automáticamente por el sistema institucional. " +
+                        "La información contenida es responsabilidad del postulante.");
                 });
+
+                // 🔻 FOOTER PROFESIONAL
+                page.Footer().PaddingTop(10).Element(f => f.DocumentFooter());
             });
         });
 

@@ -1,5 +1,7 @@
 using ClosedXML.Excel;
+using GestionPlazasVacantes.Helpers;
 using GestionPlazasVacantes.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -14,10 +16,12 @@ namespace GestionPlazasVacantes.Controllers
     public class ReportesController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IWebHostEnvironment _env;
 
-        public ReportesController(IHttpClientFactory httpClientFactory)
+        public ReportesController(IHttpClientFactory httpClientFactory, IWebHostEnvironment env)
         {
             _httpClientFactory = httpClientFactory;
+            _env = env;
         }
 
         // GET: Reportes
@@ -104,6 +108,8 @@ namespace GestionPlazasVacantes.Controllers
 
             QuestPDF.Settings.License = LicenseType.Community;
 
+            var logoPath = Path.Combine(_env.WebRootPath, "images", "logo.png");
+
             var document = Document.Create(container =>
             {
                 container.Page(page =>
@@ -112,36 +118,74 @@ namespace GestionPlazasVacantes.Controllers
 
                     page.Content().Column(col =>
                     {
-                        // 🟧 FRANJA
-                        col.Item().Background("#F58220").Height(15);
+                        col.Spacing(0);
 
-                        col.Item().Padding(30).Column(c =>
+                        // ═══ BANNER NARANJA INSTITUCIONAL ═══
+                        col.Item().Element(b => b.OrangeBannerHeader(logoPath));
+
+                        // ═══ CONTENIDO PRINCIPAL ═══
+                        col.Item().PaddingVertical(25).PaddingHorizontal(30).Column(body =>
                         {
-                            // HEADER
-                            c.Item().Text("Municipalidad de Curridabat")
-                                .FontSize(12);
+                            body.Spacing(12);
 
-                            c.Item().Text("REPORTE DE PLAZA")
-                                .FontSize(18)
-                                .Bold()
-                                .FontColor("#F58220");
+                            // Título del documento
+                            body.Item().AlignCenter().Text("REPORTE DE PLAZA VACANTE")
+                                .Bold().FontSize(20).FontColor(PdfHelper.Blue);
 
-                            c.Item().PaddingTop(10).Text($"Concurso: {plaza.NumeroConcurso}");
-                            c.Item().Text($"Título: {plaza.Titulo}");
-                            c.Item().Text($"Departamento: {plaza.Departamento}");
+                            body.Item().LineHorizontal(1).LineColor(PdfHelper.Orange);
 
-                            // ESTADÍSTICAS
-                            c.Item().PaddingTop(15).Text("Resumen del proceso:")
-                                .Bold();
+                            // ═══ DATOS DE LA PLAZA ═══
+                            body.Item().DataCard().Column(card =>
+                            {
+                                card.Spacing(6);
+                                card.Item().InfoRowBold("Concurso", plaza.NumeroConcurso);
+                                card.Item().InfoRowBold("Título", plaza.Titulo);
+                                card.Item().InfoRowBold("Departamento", plaza.Departamento);
+                            });
 
-                            c.Item().Text($"Total participantes: {stats.TotalParticipantes}");
-                            c.Item().Text($"Documentación completa: {stats.DocumentacionCompleta}");
-                            c.Item().Text($"Aprobaron técnica: {stats.AprobaronTecnica}");
-                            c.Item().Text($"Aprobaron psicométrica: {stats.AprobaronPsicometrica}");
-                            c.Item().Text($"Elegibles: {stats.CandidatosElegibles}");
-                            c.Item().Text($"Seleccionados: {stats.Seleccionados}");
+                            // ═══ ESTADÍSTICAS EN GRID ═══
+                            body.Item().PaddingTop(8).SectionTitle("Resumen del Proceso");
+
+                            // Fila 1: 3 tarjetas
+                            body.Item().PaddingTop(6).Row(row =>
+                            {
+                                row.RelativeItem().PaddingRight(4)
+                                    .Element(e => e.StatCard("Participantes", stats.TotalParticipantes.ToString(), PdfHelper.Blue));
+                                row.RelativeItem().PaddingHorizontal(2)
+                                    .Element(e => e.StatCard("Doc. Completa", stats.DocumentacionCompleta.ToString(), PdfHelper.Green));
+                                row.RelativeItem().PaddingLeft(4)
+                                    .Element(e => e.StatCard("Doc. Incompleta", stats.DocumentacionIncompleta.ToString(), PdfHelper.Red));
+                            });
+
+                            // Fila 2: 3 tarjetas
+                            body.Item().PaddingTop(6).Row(row =>
+                            {
+                                row.RelativeItem().PaddingRight(4)
+                                    .Element(e => e.StatCard("Técnica", stats.AprobaronTecnica.ToString(), PdfHelper.Orange));
+                                row.RelativeItem().PaddingHorizontal(2)
+                                    .Element(e => e.StatCard("Psicométrica", stats.AprobaronPsicometrica.ToString(), "#7B1FA2"));
+                                row.RelativeItem().PaddingLeft(4)
+                                    .Element(e => e.StatCard("Entrevista", stats.AprobaronEntrevista.ToString(), "#00838F"));
+                            });
+
+                            // Fila 3: 2 tarjetas
+                            body.Item().PaddingTop(6).Row(row =>
+                            {
+                                row.RelativeItem().PaddingRight(4)
+                                    .Element(e => e.StatCard("Elegibles", stats.CandidatosElegibles.ToString(), PdfHelper.Green));
+                                row.RelativeItem().PaddingLeft(4)
+                                    .Element(e => e.StatCard("Seleccionados", stats.Seleccionados.ToString(), PdfHelper.Blue));
+                            });
+
+                            // ═══ DISCLAIMER ═══
+                            body.Item().LegalText(
+                                "Este reporte es generado automáticamente por el sistema institucional y tiene carácter informativo. " +
+                                "Los datos reflejan el estado actual del proceso de selección.");
                         });
                     });
+
+                    // 🔻 FOOTER PROFESIONAL
+                    page.Footer().PaddingVertical(10).PaddingHorizontal(15).Element(f => f.DocumentFooter());
                 });
             });
 
