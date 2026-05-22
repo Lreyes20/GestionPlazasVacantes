@@ -11,21 +11,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 
     <style>
+        /* ── Base ── */
         body {
             background-color: #f4f6f9;
+            font-family: 'Biryani', Verdana, sans-serif;
+            color: #435563;
         }
 
+        /* ── Navbar público ── */
         .navbar-public {
             background: linear-gradient(135deg, #fc8000, #fc7f00);
             color: white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-            .navbar-public .navbar-brand {
-                color: white;
-                font-weight: bold;
-            }
+        .navbar-public .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
 
+        .navbar-public .btn {
+            border-radius: 8px;
+        }
+
+        /* ── Footer ── */
         footer {
             text-align: center;
             padding: 10px;
@@ -33,8 +42,224 @@
             color: #777;
         }
 
-        .navbar-public .btn {
-            border-radius: 8px;
+        /* ── Formulario de postulación ── */
+        .formulario-postulacion {
+            background: #fff;
+            border: none;
+            border-top: 6px solid #FF8200;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            max-width: 900px;
+            margin: 2rem auto;
+            transition: all 0.25s ease-in-out;
+        }
+
+        /* ── Secciones del formulario ── */
+        .seccion {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.8rem;
+            margin-bottom: 2rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .seccion h5 {
+            color: #FF8200;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Declaración jurada ── */
+        .declaracion {
+            background-color: #fff5eb;
+            border: 1px solid #FFD8A8;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            color: #435563;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .declaracion input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* ── Tipografía de formularios ── */
+        .formulario-postulacion h4 {
+            color: #435563;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .formulario-postulacion label {
+            font-weight: 600;
+            color: #435563;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        /* ── Botones formulario ── */
+        .botones-formulario {
+            text-align: center;
+        }
+
+        .btn-outline-primary {
+            border-color: #FF8200;
+            color: #FF8200;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #FF8200;
+            color: #fff;
+            border-color: #FF8200;
+        }
+
+        /* ── Plaza grid (Index) ── */
+        .plaza-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+            justify-items: start;
+            margin: 1.5rem 0;
+        }
+
+        .plaza-card {
+            background-color: #fff;
+            border-radius: 0.8rem;
+            padding: 1.3rem;
+            box-shadow: 0 3px 16px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #FF8200;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease-in-out;
+            width: 100%;
+            max-width: 360px;
+            min-height: 380px;
+        }
+
+        .plaza-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .plaza-card h5 {
+            color: #FF8200;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 0.6rem;
+            text-transform: capitalize;
+        }
+
+        .plaza-card .subtitulo {
+            font-size: 0.88rem;
+            color: #6c757d;
+            margin-bottom: 0.8rem;
+        }
+
+        .plaza-card p {
+            font-size: 0.9rem;
+            color: #435563;
+            margin-bottom: 0.3rem;
+            line-height: 1.4;
+        }
+
+        .plaza-card strong {
+            color: #435563;
+            font-weight: 600;
+        }
+
+        .acciones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 0.4rem;
+        }
+
+        .acciones a.btn,
+        .acciones button.btn {
+            flex: 1;
+            font-size: 0.82rem;
+            padding: 0.4rem 0.6rem;
+            font-weight: 600;
+        }
+
+        .no-plazas {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.05rem;
+            margin-top: 2rem;
+        }
+
+        .bloque-info {
+            background-color: #f8f9fa;
+            padding: 0.7rem 1rem;
+            border-radius: 0.6rem;
+            margin-top: 0.8rem;
+            font-size: 0.88rem;
+            border: 1px solid #e6e6e6;
+        }
+
+        .bloque-info strong {
+            display: block;
+            color: #435563;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── Confirmación ── */
+        .confirmacion-container {
+            background: #fff;
+            border: none;
+            border-top: 6px solid #FF8200;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 650px;
+            margin: 6rem auto;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .confirmacion-container .icono-exito {
+            font-size: 4.5rem;
+            color: #28a745;
+            margin-bottom: 1.2rem;
+            animation: pop 0.4s ease-in-out;
+        }
+
+        /* ── Animaciones ── */
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @@keyframes pop {
+            0%   { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1);   opacity: 1; }
+        }
+
+        /* ── Responsive ── */
+        @@media (min-width: 1200px) {
+            .plaza-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @@media (max-width: 991px) {
+            .plaza-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @@media (max-width: 576px) {
+            .plaza-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>

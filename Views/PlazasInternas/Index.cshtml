@@ -30,16 +30,38 @@
                         <p><strong>Departamento:</strong> @plaza.Departamento</p>
                         <p><strong>Horario:</strong> @plaza.Horario</p>
 
-                        <div class="bloque-info">
-                            <strong>Requisitos:</strong>
-                            <p>@plaza.Requisitos</p>
-                        </div>
+                        @if (!string.IsNullOrWhiteSpace(plaza.Requisitos))
+                        {
+                            <div class="bloque-info">
+                                <strong>Requisitos:</strong>
+                                <p>@plaza.Requisitos</p>
+                            </div>
+                        }
 
                         @if (!string.IsNullOrEmpty(plaza.Observaciones))
                         {
                             <div class="bloque-info">
                                 <strong>Observaciones:</strong>
                                 <p>@plaza.Observaciones</p>
+                            </div>
+                        }
+
+                        @if (plaza.Documentos != null && plaza.Documentos.Any())
+                        {
+                            <div class="bloque-info">
+                                <strong>📎 Documentos requeridos:</strong>
+                                <ul class="mb-0 ps-3">
+                                    @foreach (var doc in plaza.Documentos)
+                                    {
+                                        <li>
+                                            @doc.Nombre
+                                            @if (doc.Obligatorio)
+                                            {
+                                                <span class="badge bg-danger text-dark ms-1" style="font-size:0.7em">Obligatorio</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
                             </div>
                         }
 

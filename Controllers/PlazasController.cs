@@ -191,11 +191,24 @@ namespace GestionPlazasVacantes.Controllers
                 {
                     ViewBag.DocumentosCatalogo = new List<CatalogoDto>();
                 }
+
+                var deptoResponse = await _api.GetAsync("api/catalogos/departamentos");
+
+                if (deptoResponse.IsSuccessStatusCode)
+                {
+                    ViewBag.DepartamentosCatalogo = await deptoResponse.Content
+                        .ReadFromJsonAsync<List<CatalogoDto>>();
+                }
+                else
+                {
+                    ViewBag.DepartamentosCatalogo = new List<CatalogoDto>();
+                }
             }
             catch
             {
                 ViewBag.RequisitosCatalogo = new List<CatalogoDto>();
                 ViewBag.DocumentosCatalogo = new List<CatalogoDto>();
+                ViewBag.DepartamentosCatalogo = new List<CatalogoDto>();
             }
         }
     }

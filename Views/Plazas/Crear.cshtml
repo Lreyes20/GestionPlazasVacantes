@@ -51,15 +51,16 @@
                     <label asp-for="Departamento"></label>
                     <select asp-for="Departamento" class="form-select">
                         <option value="">Seleccione un departamento...</option>
-                        <option value="Tecnologías de Información">Tecnologías de Información</option>
-                        <option value="Recursos Humanos">Recursos Humanos</option>
-                        <option value="Finanzas">Finanzas</option>
-                        <option value="Operaciones">Operaciones</option>
-                        <option value="Logística">Logística</option>
-                        <option value="Ventas">Ventas</option>
-                        <option value="Compras">Compras</option>
-                        <option value="Legal">Legal</option>
-                        <option value="Mercadeo">Mercadeo</option>
+                        @{
+                            var deptosCrear = ViewBag.DepartamentosCatalogo as List<GestionPlazasVacantes.DTOs.CatalogoDto>;
+                        }
+                        @if (deptosCrear != null)
+                        {
+                            foreach (var depto in deptosCrear.Where(d => d.Activo).OrderBy(d => d.Nombre))
+                            {
+                                <option value="@depto.Nombre">@depto.Nombre</option>
+                            }
+                        }
                     </select>
                 </div>
             </div>
@@ -186,16 +187,16 @@
                         </div>
 
                         <div>
-                            <input type="hidden"
-                                   class="doc-field"
-                                   name="Documentos[@d.Id].Obligatorio"
-                                   value="false"
-                                   disabled />
-
                             <input type="checkbox"
                                    class="doc-obligatorio doc-field"
                                    name="Documentos[@d.Id].Obligatorio"
                                    value="true"
+                                   disabled />
+
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos[@d.Id].Obligatorio"
+                                   value="false"
                                    disabled />
 
                             <small class="text-danger">Obligatorio</small>

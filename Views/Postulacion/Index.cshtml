@@ -1,19 +1,97 @@
-﻿@model IEnumerable<GestionPlazasVacantes.Models.PlazaVacante>
+﻿@model IEnumerable<GestionPlazasVacantes.DTOs.PlazaDto>
 
 @{
     ViewData["Title"] = "Plazas Disponibles";
     var plazasVigentes = Model.Where(p => p.FechaLimite > DateTime.Now).ToList();
 }
 
+<style>
+    /* ── Cards de plazas (público) ── */
+    .plaza-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+    }
+
+    .plaza-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+    }
+
+    .plaza-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+    }
+
+    .plaza-card h5 {
+        color: #FF8200;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .plaza-card .subtitulo {
+        font-size: 0.88rem;
+        color: #6c757d;
+    }
+
+    .plaza-card p {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .plaza-card strong {
+        color: #435563;
+    }
+
+    .plaza-card .bloque-info {
+        background-color: #f8f9fa;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+    }
+
+    .plaza-card .bloque-info strong {
+        display: block;
+        margin-bottom: 0.15rem;
+        font-size: 0.82rem;
+    }
+
+    .plaza-card .acciones {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #eee;
+    }
+
+    .no-plazas {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    @@media (max-width: 991px) {
+        .plaza-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @@media (max-width: 576px) {
+        .plaza-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
 <div class="container-fluid px-4">
 
     <!-- 🔶 HEADER INSTITUCIONAL -->
     <div class="mb-4 p-4 rounded shadow-sm bg-white border-start border-4 border-warning">
-        <h2 class="titulo-pagina mb-1">
+        <h2 class="mb-1" style="color:#435563;">
             💼 Plazas Disponibles para Postulación
         </h2>
         <small class="text-muted">
-            Municipalidad de Curridabat • Sistema de Postulación
+            Municipalidad de Curridabat • Portal de Empleo
         </small>
     </div>
 
@@ -43,9 +121,7 @@
 
     @if (!plazasVigentes.Any())
     {
-        <div class="alert alert-warning text-center mt-4">
-            🚫 No hay plazas disponibles en este momento.
-        </div>
+        <p class="no-plazas">🚫 No hay plazas disponibles en este momento.</p>
     }
     else
     {
@@ -59,68 +135,81 @@
                 var horario = plaza.Horario ?? "";
                 var titulo = plaza.Titulo ?? "";
 
-                <div class="plaza-card plaza-filtrable shadow-sm border-0"
-                     style="border-radius:12px;"
+                <div class="plaza-card plaza-filtrable"
                      data-titulo="@titulo.ToLower()"
                      data-departamento="@departamento.ToLower()"
                      data-requisitos="@requisitos.ToLower()"
                      data-observaciones="@observaciones.ToLower()">
 
-                    <div class="p-3">
-
+                    <div style="padding:1rem;">
                         <!-- HEADER CARD -->
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="mb-1 fw-bold">@plaza.Titulo</h5>
-
-                            <span class="badge bg-warning text-dark">
-                                @plaza.TipoConcurso
-                            </span>
-                        </div>
-
-                        <p class="text-muted small mb-2">
-                            <i class="bi bi-briefcase"></i>
-                            @plaza.TipoConcurso Nº @plaza.NumeroConcurso
+                        <h5>@plaza.Titulo</h5>
+                        <p class="subtitulo">
+                            <i class="bi bi-building"></i> @plaza.TipoConcursoEnum Nº @plaza.NumeroConcurso
                         </p>
 
-                        <p class="mb-1"><strong>Departamento:</strong> @plaza.Departamento</p>
-                        <p class="mb-2"><strong>Horario:</strong> @plaza.Horario</p>
+                        <p><strong>Departamento:</strong> @plaza.Departamento</p>
+                        <p><strong>Horario:</strong> @plaza.Horario</p>
 
                         <!-- REQUISITOS -->
-                        <div class="mb-2">
-                            <strong>Requisitos:</strong>
-                            <p class="small mb-1">@plaza.Requisitos</p>
-                        </div>
+                        @if (!string.IsNullOrWhiteSpace(plaza.Requisitos))
+                        {
+                            <div class="bloque-info">
+                                <strong>Requisitos:</strong>
+                                <p class="mb-0">@plaza.Requisitos</p>
+                            </div>
+                        }
 
                         <!-- OBSERVACIONES -->
                         @if (!string.IsNullOrEmpty(plaza.Observaciones))
                         {
-                            <div class="mb-2">
+                            <div class="bloque-info">
                                 <strong>Observaciones:</strong>
-                                <p class="small mb-1">@plaza.Observaciones</p>
+                                <p class="mb-0">@plaza.Observaciones</p>
+                            </div>
+                        }
+
+                        <!-- DOCUMENTOS REQUERIDOS -->
+                        @if (plaza.Documentos != null && plaza.Documentos.Any())
+                        {
+                            <div class="bloque-info">
+                                <strong>📎 Documentos requeridos:</strong>
+                                <ul class="mb-0 ps-3">
+                                    @foreach (var doc in plaza.Documentos)
+                                    {
+                                        <li>
+                                            @doc.Nombre
+                                            @if (doc.Obligatorio)
+                                            {
+                                                <span class="badge bg-danger text-dark ms-1" style="font-size:0.7em">Obligatorio</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
                             </div>
                         }
 
                         <!-- SALARIO -->
-                        <div class="mb-2">
+                        <div class="bloque-info">
                             <strong>Salario:</strong>
-                            <p class="small mb-0">Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
-                            <p class="small">Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
+                            <p class="mb-0">Compuesto: ₡@plaza.SalarioCompuesto.ToString("N2")</p>
+                            <p class="mb-0">Global: ₡@plaza.SalarioGlobal.ToString("N2")</p>
                         </div>
 
                         <!-- FECHA -->
-                        <div class="mb-2">
+                        <div class="bloque-info">
                             <strong>Fecha límite:</strong>
-                            <p class="small mb-0">📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
-                            <p class="small">🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
+                            <p class="mb-0">📅 @plaza.FechaLimite.ToString("dd/MM/yyyy")</p>
+                            <p class="mb-0">🕒 @plaza.FechaLimite.ToString("hh:mm tt")</p>
                         </div>
 
-                        <p class="text-muted mt-2 small">
-                            📢 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy")
+                        <p class="text-muted mt-2">
+                            <small>📢 Publicada el @plaza.FechaCreacion.ToString("dd/MM/yyyy")</small>
                         </p>
                     </div>
 
                     <!-- BOTÓN -->
-                    <div class="p-3 pt-0">
+                    <div class="acciones">
                         <a asp-controller="Postulacion"
                            asp-action="Aplicar"
                            asp-route-id="@plaza.Id"

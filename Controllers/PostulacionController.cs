@@ -52,16 +52,16 @@ namespace GestionPlazasVacantes.Controllers
             {
                 var client = _httpClientFactory.CreateClient("Api");
 
-                var plazasExternas = await client.GetFromJsonAsync<List<PlazaVacante>>(
+                var plazasExternas = await client.GetFromJsonAsync<List<PlazaDto>>(
                     "api/PostulacionPublica/plazas-externas",
                     _jsonOptions);
 
-                return View(plazasExternas ?? new List<PlazaVacante>());
+                return View(plazasExternas ?? new List<PlazaDto>());
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"❌ Error al cargar plazas: {ex.Message}";
-                return View(new List<PlazaVacante>());
+                return View(new List<PlazaDto>());
             }
         }
 
@@ -72,7 +72,7 @@ namespace GestionPlazasVacantes.Controllers
             {
                 var client = _httpClientFactory.CreateClient("Api");
 
-                var plaza = await client.GetFromJsonAsync<PlazaVacante>(
+                var plaza = await client.GetFromJsonAsync<PlazaDto>(
                     $"api/PostulacionPublica/plazas/{id}",
                     _jsonOptions);
 

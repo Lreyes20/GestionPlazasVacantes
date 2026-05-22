@@ -49,7 +49,19 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Departamento"></label>
-                    <input asp-for="Departamento" class="form-control" />
+                    <select asp-for="Departamento" class="form-select">
+                        <option value="">Seleccione un departamento...</option>
+                        @{
+                            var deptosEditar = ViewBag.DepartamentosCatalogo as List<GestionPlazasVacantes.DTOs.CatalogoDto>;
+                        }
+                        @if (deptosEditar != null)
+                        {
+                            foreach (var depto in deptosEditar.Where(d => d.Activo).OrderBy(d => d.Nombre))
+                            {
+                                <option value="@depto.Nombre">@depto.Nombre</option>
+                            }
+                        }
+                    </select>
                 </div>
             </div>
         </div>
@@ -185,17 +197,17 @@
                         </div>
 
                         <div>
-                            <input type="hidden"
-                                   class="doc-field"
-                                   name="Documentos[@d.Id].Obligatorio"
-                                   value="false"
-                                   disabled="@(seleccionado ? null : "disabled")" />
-
                             <input type="checkbox"
                                    class="doc-obligatorio doc-field"
                                    name="Documentos[@d.Id].Obligatorio"
                                    value="true"
                                    @(obligatorio ? "checked" : "")
+                                   disabled="@(seleccionado ? null : "disabled")" />
+
+                            <input type="hidden"
+                                   class="doc-field"
+                                   name="Documentos[@d.Id].Obligatorio"
+                                   value="false"
                                    disabled="@(seleccionado ? null : "disabled")" />
 
                             <small class="text-danger">Obligatorio</small>

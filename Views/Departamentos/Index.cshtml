@@ -1,0 +1,202 @@
+@model List<GestionPlazasVacantes.DTOs.CatalogoDto>
+
+@{
+    ViewData["Title"] = "Departamentos";
+}
+
+<style>
+    .badge {
+        color: black !important;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <h3 class="mb-4">🏢 Gestión de Departamentos</h3>
+
+    <p class="text-muted mb-3">
+        Administre los departamentos disponibles para la creación de plazas vacantes.
+        Los departamentos inactivos no aparecerán en el selector al crear o editar plazas.
+    </p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="d-flex gap-2 mb-3">
+                <input id="inputDepartamento" class="form-control" placeholder="Nuevo departamento..." />
+                <button class="btn btn-primary" onclick="crearDepartamento()">
+                    <i class="bi bi-plus-circle"></i> Agregar
+                </button>
+            </div>
+
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaDepartamentos">
+
+                    @foreach (var d in Model)
+                    {
+                        <tr data-id="@d.Id" data-nombre="@d.Nombre.ToLower()" class="@(d.Activo ? "" : "table-secondary")">
+                            <td>
+                                <span class="nombre-texto">@d.Nombre</span>
+                                <input class="form-control form-control-sm nombre-edit d-none" value="@d.Nombre" />
+                            </td>
+
+                            <td>
+                                <span class="badge @(d.Activo ? "bg-success" : "bg-danger") text-black estado">
+                                    @(d.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+
+                            <td class="d-flex gap-1">
+                                <button class="btn btn-sm btn-secondary" onclick="editarInline(this)">✏️</button>
+                                <button class="btn btn-sm btn-success d-none" onclick="guardarInline(this)">💾</button>
+
+                                <button class="btn btn-sm @(d.Activo ? "btn-warning" : "btn-success")"
+                                        onclick="toggleItem(@d.Id, this)">
+                                    @(d.Activo ? "Desactivar" : "Activar")
+                                </button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+
+        // =========================
+        // 🚫 VALIDAR DUPLICADOS
+        // =========================
+        function existeNombre(nombre) {
+            const rows = document.querySelectorAll('#tablaDepartamentos tr');
+            return Array.from(rows).some(r => r.dataset.nombre === nombre.toLowerCase());
+        }
+
+        // =========================
+        // 🔵 CREAR DEPARTAMENTO
+        // =========================
+        async function crearDepartamento() {
+
+            const input = document.getElementById("inputDepartamento");
+            const nombre = input.value.trim();
+
+            if (!nombre) return alert("Ingrese un nombre");
+
+            if (existeNombre(nombre))
+                return alert("Ya existe ese departamento");
+
+            const res = await fetch('/Departamentos/Crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre })
+            });
+
+            if (!res.ok) return alert("Error al crear departamento");
+
+            agregarFila(nombre);
+            input.value = "";
+        }
+
+        // =========================
+        // ➕ AGREGAR FILA SIN RELOAD
+        // =========================
+        function agregarFila(nombre) {
+
+            const tabla = document.getElementById("tablaDepartamentos");
+
+            const row = document.createElement("tr");
+            row.dataset.nombre = nombre.toLowerCase();
+
+            row.innerHTML = `
+                <td>
+                    <span class="nombre-texto">${nombre}</span>
+                    <input class="form-control form-control-sm nombre-edit d-none" value="${nombre}" />
+                </td>
+                <td>
+                    <span class="badge bg-success estado">Activo</span>
+                </td>
+                <td class="d-flex gap-1">
+                    <button class="btn btn-sm btn-secondary" onclick="editarInline(this)">✏️</button>
+                    <button class="btn btn-sm btn-success d-none" onclick="guardarInline(this)">💾</button>
+                    <button class="btn btn-sm btn-warning" onclick="toggleItem(0, this)">Desactivar</button>
+                </td>
+            `;
+
+            tabla.appendChild(row);
+        }
+
+        // =========================
+        // ✏️ EDITAR INLINE
+        // =========================
+        function editarInline(btn) {
+            const row = btn.closest('tr');
+            row.querySelector('.nombre-texto').classList.add('d-none');
+            row.querySelector('.nombre-edit').classList.remove('d-none');
+            btn.classList.add('d-none');
+            row.querySelector('.btn-success').classList.remove('d-none');
+        }
+
+        // =========================
+        // 💾 GUARDAR INLINE
+        // =========================
+        async function guardarInline(btn) {
+            const row = btn.closest('tr');
+            const id = parseInt(row.dataset.id);
+            const input = row.querySelector('.nombre-edit');
+            const nombre = input.value.trim();
+
+            if (!nombre) return alert("Nombre requerido");
+
+            const res = await fetch(`/Departamentos/Editar/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre })
+            });
+
+            if (!res.ok) return alert("Error al editar");
+
+            row.querySelector('.nombre-texto').textContent = nombre;
+            row.querySelector('.nombre-texto').classList.remove('d-none');
+            input.classList.add('d-none');
+            btn.classList.add('d-none');
+            row.querySelector('.btn-secondary').classList.remove('d-none');
+            row.dataset.nombre = nombre.toLowerCase();
+        }
+
+        // =========================
+        // 🔄 TOGGLE
+        // =========================
+        async function toggleItem(id, btn) {
+            const row = btn.closest('tr');
+
+            // Para filas recién creadas (id=0), no hay toggle
+            if (id === 0) return alert("Recargue la página para usar toggle en elementos nuevos.");
+
+            const res = await fetch(`/Departamentos/Toggle/${id}`, { method: 'POST' });
+
+            if (!res.ok) return alert("Error");
+
+            const estado = row.querySelector('.estado');
+            const activo = estado.textContent.trim() === "Activo";
+
+            estado.textContent = activo ? "Inactivo" : "Activo";
+            estado.className = `badge ${activo ? "bg-danger" : "bg-success"} text-black estado`;
+
+            btn.textContent = activo ? "Activar" : "Desactivar";
+            btn.className = `btn btn-sm ${activo ? "btn-success" : "btn-warning"}`;
+
+            row.classList.toggle("table-secondary", activo);
+        }
+
+    </script>
+
+}

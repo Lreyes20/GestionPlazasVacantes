@@ -10,6 +10,9 @@
 
 
 <div class="formulario-postulacion">
+    <a href="/PlazasInternas/Index" class="btn btn-outline-warning btn-sm mb-3">
+        <i class="bi bi-arrow-left"></i> Regresar a Plazas Disponibles
+    </a>
     <h4><i class="bi bi-person-badge me-2"></i>Formulario de Postulación</h4>
     <p class="subtitle text-center mb-4">Plaza: <strong>@plaza?.Titulo</strong></p>
 
@@ -117,25 +120,50 @@
         {
             <div class="seccion mt-4">
                 <h5>📚 Documentos Requeridos por la Plaza</h5>
+                <p class="text-muted">
+                    Adjunte únicamente los documentos solicitados para esta plaza.
+                </p>
 
                 @for (int i = 0; i < plaza.Documentos.Count; i++)
                 {
                     var doc = plaza.Documentos[i];
 
-                    <div class="mb-3">
-                        <label class="form-label">
-                            @doc.Nombre
-                            @if (doc.Obligatorio)
-                            {
-                                <span class="text-danger">(Obligatorio)</span>
-                            }
-                        </label>
+                    <div class="card p-3 mb-3 shadow-sm documento-dinamico">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <label class="form-label fw-semibold">
+                                    @doc.Nombre
 
-                        <input type="file"
-                               name="Archivos"
-                               class="form-control"
-                               accept=".pdf,.jpg,.jpeg,.png"
-                               @(doc.Obligatorio ? "required" : "") />
+                                    @if (doc.Obligatorio)
+                                    {
+                                        <span class="badge bg-danger text-dark ms-1">Obligatorio</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary text-dark ms-1">Opcional</span>
+                                    }
+                                </label>
+
+                                <input type="file"
+                                       name="Archivos"
+                                       class="form-control"
+                                       accept=".pdf,.jpg,.jpeg,.png"
+                                       @(doc.Obligatorio ? "required" : "") />
+
+                                <small class="text-muted">
+                                    Formatos permitidos: JPG, PNG o PDF. Tamaño máximo: 10 MB.
+                                </small>
+                            </div>
+
+                            <div class="col-md-5 mt-3 mt-md-0">
+                                <div class="alert alert-light border mb-0">
+                                    <small>
+                                        <strong>Documento solicitado:</strong><br />
+                                        @doc.Nombre
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- 🔥 IMPORTANTE: enviar tipo -->
                         <input type="hidden"
